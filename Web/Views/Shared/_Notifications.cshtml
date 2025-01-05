@@ -1,0 +1,31 @@
+﻿@using Web.Models.Enums
+@{
+    // Tipos de notificaciones y sus configuraciones
+    var notificationTypes = new Dictionary<NotificationType, (string icon, string buttonClass)>
+    {
+        { NotificationType.Information, ("info", "btn btn-info") },
+        { NotificationType.Success, ("success", "btn btn-success") },
+        { NotificationType.Warning, ("warning", "btn btn-warning") },
+        { NotificationType.Error, ("error", "btn btn-danger") }
+    };
+}
+
+@foreach (var notificationType in notificationTypes)
+{
+    var message = ViewData[$"notifications.{notificationType.Key}"]?.ToString();
+    if (!string.IsNullOrEmpty(message))
+    {
+        <script charset="utf-8">
+            Swal.fire({
+                text: "",
+                html: "@message",
+                icon: "@notificationType.Value.icon",
+                buttonsStyling: false,
+                confirmButtonText: "Ok",
+                customClass: {
+                    confirmButton: "@notificationType.Value.buttonClass"
+                }
+            });
+        </script>
+    }
+}

@@ -1,0 +1,134 @@
+﻿@model Web.Models.RolesViewModel
+
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("Update", "Roles", FormMethod.Post, new { id = "frmdata" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.NameRoles, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.NameRoles, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        <label class="d-flex align-items-center fs-6 fw-bold mb-2" for="NameRoles">Permisos</label>
+        <hr />
+        <div id="CheckboxTree"></div>
+    </div>
+    <!--end::Input group-->
+
+    <div hidden>
+        @Html.HiddenFor(d => d.RolId);
+        @Html.HiddenFor(x => x.listAccessString);
+    </div>
+
+}
+
+<!--begin::Actions-->
+<div class="text-center">
+    <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3">Cancel</button>
+    <button type="button" id="btnSave" class="btn btn-primary">
+        <span class="indicator-label">Guardar</span>
+        <span class="indicator-progress">
+            Espere por favor...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+    </button>
+</div>
+<!--end::Actions-->
+
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+       // Define form element
+       let frmData = document.getElementById('frmdata');
+
+        // Init form validation rules.
+        var validator = FormValidation.formValidation(
+            frmData,
+            {
+                fields: {
+                    'NameRoles': {
+                        validators: {
+                            notEmpty: {
+                                message: 'El nombre del rol es obligatorio'
+                            }
+                        }
+                    },
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    }),
+                }
+
+            }
+        );
+
+        // Submit button handler
+        const submitButton = document.getElementById('btnSave');
+        submitButton.addEventListener('click', function (e) {
+            // Prevent default button action
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validator) {
+                validator.validate().then(function (status) {
+                    console.log('validated!');
+
+                    if (status == 'Valid') {
+                        // Show loading indication
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+
+                        // Disable button to avoid multiple click
+                        submitButton.disabled = true;
+
+                        $('#listAccessString').val(tree.jstree('get_selected'));
+                        frmData.submit(); // Submit form
+                    }
+                });
+            }
+        });
+
+           $('#CheckboxTree').jstree("destroy").empty();
+           var tree =  $('#CheckboxTree').jstree({
+                'core': {
+                    'data': {
+                        "url": "/Roles/GetPermissions?rolId=" + document.getElementById("RolId").value,
+                        "dataType": "json",
+                        "data": function (node) {
+                            return {
+                                'rolId': node.rolId
+                            };
+                        }
+                    },
+                    'themes': {
+                        'name': 'default',  // Define el tema de jsTree
+                        'responsive': true,  // Habilita la respuesta para diferentes tamaños de pantalla
+                        'icons': false // Deshabilita los íconos
+                    }
+                },
+                'plugins': ["checkbox"], // Habilita el plugin de checkboxes
+                'checkbox': {
+                    "keep_selected_style": false,  // Desactiva el estilo de selección por defecto
+                    "three_state": false,          // Desactiva la opción de seleccionar/deseleccionar todos los hijos
+                    "cascade": "up down"              // Se aplica la selección a los hijos
+                },
+            });
+
+         });
+
+   
+
+   
+</script>

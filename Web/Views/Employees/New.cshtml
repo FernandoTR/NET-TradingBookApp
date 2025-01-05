@@ -1,0 +1,190 @@
+﻿@model Web.Models.EmployeesViewModel
+
+@{
+    Layout = null;
+}
+
+
+@using (Html.BeginForm("Save", "Employees", FormMethod.Post, new { id = "frmdata" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Number, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Number, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Name, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Name, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.LastName, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.LastName, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Email, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Email, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Location, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Location, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Actions-->
+    <div class="text-center">
+        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="btnSave" class="btn btn-primary">
+            <span class="indicator-label">Guardar</span>
+            <span class="indicator-progress">
+                Espere por favor...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+    </div>
+    <!--end::Actions-->
+    /* campos para validaciones */
+    @Html.HiddenFor(d => d.EmployeeNumberTemp)
+    @Html.HiddenFor(d => d.EmailTemp)
+}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Define form element
+        let form = document.getElementById('frmdata');
+
+        // Init form validation rules.
+        var validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    'Number': {
+                        validators: {
+                            notEmpty: {
+                                message: 'El número de empleado es obligatorio'
+                            },
+                            stringLength: {
+                                min: 2,
+                                max: 7,
+                                message: 'Debe tener entre 2 y 7 caracteres'
+                            },
+                            remote: {
+                                message: 'El número de empleado ya está repetido',
+                                method: 'POST',
+                                url: '/Employees/CheckDuplicateKey',
+                                data: function () {
+                                    return {
+                                        employeedNumber: form.querySelector('[name="Number"]').value,
+                                        employeedNumberTemp: form.querySelector('[name="EmployeeNumberTemp"]').value
+                                    };
+                                }
+                            }
+                        }
+                    },
+                    'Name': {
+                        validators: {
+                            notEmpty: {
+                                message: 'El Nombre(s) es obligatorio'
+                            },
+                            stringLength: {
+                                min: 2,
+                                max: 100,
+                                message: 'Debe tener entre 2 y 100 caracteres'
+                            }
+                        }
+                    },
+                    'LastName': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Los Apellidos son obligatorios'
+                            },
+                            stringLength: {
+                                min: 2,
+                                max: 100,
+                                message: 'Debe tener entre 2 y 100 caracteres'
+                            }
+                        }
+                    },
+                    'Email': {
+                        validators: {
+                            notEmpty: {
+                                message: 'El Correo es obligatorio'
+                            },
+                            stringLength: {
+                                max: 100,
+                                message: 'Sobrepasa el límite de 100 caracteres'
+                            },
+                            emailAddress: {
+                                message: 'Correo inválido'
+                            },
+                            remote: {
+                                message: 'El correo ya se encuentra registrado',
+                                method: 'POST',
+                                url: '/Employees/CheckDuplicateEmail',
+                                data: function () {
+                                    return {
+                                        email: form.querySelector('[name="Email"]').value,
+                                        emailTemp: form.querySelector('[name="EmailTemp"]').value
+                                    };
+                                }
+                            }
+                        }
+                    },
+                    'Location': {
+                        validators: {
+                            notEmpty: {
+                                message: 'El Ubicación es obligatorio'
+                            }
+                        }
+                    },
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    }),
+                }
+
+            }
+        );
+    
+
+        // Submit button handler
+        const submitButton = document.getElementById('btnSave');
+        submitButton.addEventListener('click', function (e) {
+            // Prevent default button action
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validator) {
+                validator.validate().then(function (status) {
+                    console.log('validated!');
+
+                    if (status == 'Valid') {
+                        // Show loading indication
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+
+                        // Disable button to avoid multiple click
+                        submitButton.disabled = true;
+                        
+                        form.submit(); // Submit form
+                    }
+                });
+            }
+        });
+
+
+
+    });
+</script>

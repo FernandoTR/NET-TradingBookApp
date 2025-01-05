@@ -1,0 +1,17 @@
+﻿
+using Application.DTOs;
+using Infrastructure;
+using Microsoft.AspNetCore.Identity;
+
+namespace Application.Interfaces;
+
+public interface IRolesRepository
+{
+    Task<bool> AddAsync(AspNetRole role, List<AccessMenu> accessMenus);
+    Task<AspNetRole?> FindAsync(string id);
+    Task<bool> UpdateAsync(AspNetRole role, List<AccessMenu> accessMenus);
+    Task<IEnumerable<AspNetRole>> GetAllAsync();
+    Task<List<string>> GetAllByUserAsync(string userId);
+    Task<List<int>> GetAllPermissionsByUserAsync(string userId);
+    Task<List<GetMenuByUserIdDto>> GetMenuOptionsByUserAsync(string userId);
+}

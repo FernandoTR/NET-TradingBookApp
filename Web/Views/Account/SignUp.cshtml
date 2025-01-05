@@ -1,0 +1,103 @@
+﻿@model Web.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Registrarse";
+    Layout = "";
+}
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "frmRegister", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.EmployeeId)
+    @Html.HiddenFor(m => m.Email)
+
+    <div class="form-group">
+        <h2 class="h4 mb-1">Seleccione los roles para el usuario.</h2>
+        <p class="small text-muted mb-4">Debe seleccionar al menos un rol para el usuario.</p>
+
+        <p id="txtValidationMessage" class="text-danger text-left"></p>
+        <table class="table align-middle">
+            <thead>
+               <tr>
+                    <th class="p-0 w-10px"></th>
+                    <th class="p-0 w-25px"></th>
+                    <th class="p-0 w-200px"></th>
+               </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Roles.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <span data-kt-element="bullet" class="bullet bullet-vertical d-flex align-items-center h-40px bg-primary"></span>
+                        </td>
+                        <td class="ps-0">
+                            <div class="form-check form-check-custom form-check-success form-check-solid">
+                                @* <input class="form-check-input" type="checkbox" value="" checked="checked" data-kt-element="checkbox"> *@
+                                @Html.HiddenFor(x => x.Roles[i].RolId)
+                                @Html.HiddenFor(x => x.Roles[i].Name)
+                                @Html.CheckBoxFor(m => Model.Roles[i].IsCheked, new { @class = "form-check-input" })
+                            </div>
+                        </td>
+                        <td>
+                            @* <a href="#" class="text-gray-800 text-hover-primary fw-bold fs-6">Book p. 77-85, read &amp; complete tasks 1-6 on p. 85</a> *@
+                            @Html.LabelFor(x => Model.Roles[i].IsCheked, Model.Roles[i].Name, new { @class = "text-gray-800 text-hover-primary fw-bold fs-6" })
+                        </td>
+                    </tr>
+                }               
+            </tbody>
+        </table>
+
+
+        @* <ul class="list-group">
+            @for (int i = 0; i < Model.Roles.Count; i++)
+            {
+                <li class="list-group-item">
+                    <div class="form-check form-check-custom form-check-solid">
+                        @Html.HiddenFor(x => x.Roles[i].RolId)
+                        @Html.HiddenFor(x => x.Roles[i].Name)
+                        @Html.CheckBoxFor(m => Model.Roles[i].IsCheked, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => Model.Roles[i].IsCheked, Model.Roles[i].Name, new { @class = "form-check-label" })
+                    </div>
+                </li>
+
+            }
+        </ul> *@
+    </div>
+
+    @Html.ValidationSummary("", new { @class = "fv-plugins-message-container invalid-feedback" })
+
+    <!--begin::Notice-->
+    <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-6">
+        <!--begin::Icon-->
+        <i class="ki-duotone ki-information fs-2tx text-warning me-4">
+            <span class="path1"></span>
+            <span class="path2"></span>
+            <span class="path3"></span>
+        </i>
+        <!--end::Icon-->
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-stack flex-grow-1">
+            <!--begin::Content-->
+            <div class="fw-semibold">
+                <h4 class="text-gray-900 fw-bold">Importante!</h4>
+                <div class="fs-6 text-gray-700">
+                    Al dar click en el botón "Generar" será generada una contraseña temporal para el usuario, misma que será enviada a su correo y deberá cambiar la próxima vez que inicie sesión.
+                </div>
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Notice-->
+
+    
+    <br />
+    <br />
+
+
+    <div class="form-group text-center modal-leyros-form-group-sumit">
+        <input type="submit" value="Generar" class="btn btn-primary modal-leyros-submit-button" />
+    </div>
+
+
+}
