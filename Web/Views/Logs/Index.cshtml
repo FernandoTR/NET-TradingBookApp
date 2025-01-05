@@ -1,0 +1,282 @@
+﻿@model List<Web.Models.LogsViewModel>
+
+@{
+	ViewData["Title"] = "Eventos";
+}
+
+
+<!--begin::Content wrapper-->
+<div class="d-flex flex-column flex-column-fluid">
+	<!--begin::Toolbar-->
+	<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+		<!--begin::Toolbar container-->
+		<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+			<!--begin::Page title-->
+			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+				<!--begin::Title-->
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Registro de Eventos</h1>
+				<!--end::Title-->
+				<!--begin::Breadcrumb-->
+				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+					<!--begin::Item-->
+					<li class="breadcrumb-item text-muted">
+						<a href="index.html" class="text-muted text-hover-primary">Sistema</a>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item">
+						<span class="bullet bg-gray-500 w-5px h-2px"></span>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item text-muted">Eventos</li>
+					<!--end::Item-->
+				</ul>
+				<!--end::Breadcrumb-->
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<!--begin::Filter menu-->
+				<div class="m-0">
+					<!--begin::Menu toggle-->
+					<a href="#" class="btn btn-sm btn-flex btn-secondary fw-bold" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+						<i class="ki-duotone ki-filter fs-6 text-muted me-1">
+							<span class="path1"></span>
+							<span class="path2"></span>
+						</i>Filtro
+					</a>
+					<!--end::Menu toggle-->
+					<!--begin::Menu 1-->
+					<div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_filter">
+						<!--begin::Header-->
+						<div class="px-7 py-5">
+							<div class="fs-5 text-gray-900 fw-bold">Opciones de Filtro</div>
+						</div>
+						<!--end::Header-->
+						<!--begin::Menu separator-->
+						<div class="separator border-gray-200"></div>
+						<!--end::Menu separator-->
+						<!--begin::Form-->
+						<div class="px-7 py-5">
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Fecha:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div>
+									<input class="form-control form-control-solid" placeholder="Elegir rango de fechas" id="kt_daterangepicker_4" />
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Actions-->
+							<div class="d-flex justify-content-end">
+								<button type="reset" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reiniciar</button>
+								<button type="submit" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true" id="btn_AplicarFiltro">Aplicar</button>
+							</div>
+							<!--end::Actions-->
+						</div>
+						<!--end::Form-->
+					</div>
+					<!--end::Menu 1-->
+				</div>
+				<!--end::Filter menu-->
+				<!--begin::Secondary button-->
+				<!--end::Secondary button-->
+				<!--begin::Primary button-->
+				@* <a href="#" class="btn btn-sm fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_create_app">Create</a> *@
+				<!--end::Primary button-->
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Toolbar container-->
+	</div>
+	<!--end::Toolbar-->
+	<!--begin::Content-->
+	<div id="kt_app_content" class="app-content flex-column-fluid">
+		<!--begin::Content container-->
+		<div id="kt_app_content_container" class="app-container container-fluid">
+			<!--begin::Card-->
+			<div class="card">
+				<!--begin::Card header-->
+				@* <div class="card-header border-0 pt-6">
+					<!--begin::Card title-->
+					<div class="card-title">
+						<!--begin::Search-->
+						<div class="d-flex align-items-center position-relative my-1">
+							<i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+							<input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Search Customers" />
+						</div>
+						<!--end::Search-->
+					</div>
+					<!--begin::Card title-->
+					
+				</div> *@
+				<!--end::Card header-->
+				<!--begin::Card body-->
+				<div class="card-body pt-6">
+					<!--begin::Table-->
+					<table id="dtTable" class="table align-middle table-row-dashed fs-6 gy-5"></table>					
+					<!--end::Table-->
+				</div>
+				<!--end::Card body-->
+			</div>
+			<!--end::Card-->
+			
+		</div>
+		<!--end::Content container-->
+	</div>
+	<!--end::Content-->
+</div>
+<!--end::Content wrapper-->
+@section scripts {
+	
+	<script>
+		$(document).ready(function () {
+			// Inicialización de valores iniciales
+			const start = moment().subtract(29, "days");
+			const end = moment();
+			let fechaInicio = moment();
+			let fechaFin = moment();
+
+
+			// Función para actualizar el campo y cargar la tabla
+			function updateDateRange(start, end) {
+				const startDate = start.format("DD/MM/YYYY");
+				const endDate = end.format("DD/MM/YYYY");
+
+				// Actualizar el campo del selector de rango
+				$("#kt_daterangepicker_4").val(`${startDate} - ${endDate}`);
+
+				 fechaInicio = startDate;
+				 fechaFin = endDate;
+				 console.log("fecha1" + fechaInicio);
+				 console.log("fecha2" + fechaFin);
+
+			}
+
+			// Inicializar el daterangepicker
+			$("#kt_daterangepicker_4").daterangepicker({
+				autoUpdateInput: false,
+				locale: {
+					format: "DD/MM/YYYY",
+					applyLabel: "Aplicar",
+					cancelLabel: "Cancelar",
+					fromLabel: "Desde",
+					toLabel: "Hasta",
+					customRangeLabel: "Personalizado",
+					daysOfWeek: moment.weekdaysShort(),
+					monthNames: moment.months(),
+					firstDay: 1
+				},
+				startDate: start,
+				endDate: end,
+				ranges: {
+					"Hoy": [moment(), moment()],
+					"Ayer": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+					"Últimos 7 Días": [moment().subtract(6, "days"), moment()],
+					"Últimos 30 Días": [moment().subtract(29, "days"), moment()],
+					"Este Mes": [moment().startOf("month"), moment().endOf("month")],
+					"Último Mes": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+				}
+			}).on('apply.daterangepicker', function (ev, picker) {
+				updateDateRange(picker.startDate, picker.endDate);
+			}).on('cancel.daterangepicker', function () {
+				$(this).val('');
+			});
+
+			// Evitar cierre del menú al interactuar con el daterangepicker
+			const menu = document.getElementById('kt_menu_filter');
+			const daterangepickerContainer = document.querySelector('.daterangepicker');
+
+			if (menu && daterangepickerContainer) {
+				menu.addEventListener('click', (e) => e.stopPropagation());
+				daterangepickerContainer.addEventListener('click', (e) => e.stopPropagation());
+			}
+
+			// Función para cargar datos en la tabla
+			function loadTableDate() {
+				$('#dtTable').DataTable({
+					destroy: true, // Destruir instancia previa para evitar conflictos
+					ajax: {
+						url: "@Url.Content("~/Logs/JsonDataTable")",
+						type: "POST",
+						dataType: "json",
+						data: { fecha1: fechaInicio, fecha2: fechaFin }
+					},
+					columns: [
+						{ name: "eventId", title: "ID", data: "eventId", autoWidth: true,  className: "min-w-50px " },
+						{
+							name: "eventDate",
+							title: "Fecha",
+							data: "eventDate",
+							autoWidth: true,
+							className: "min-w-50px ",
+							render: function (data, type, row) {
+								// Formatear la fecha solo en las celdas visibles
+								return type === 'display' || type === 'filter'
+									? moment(data).format("DD/MM/YYYY HH:mm:ss")
+									: data;
+							}
+						},
+						{ name: "eventType", title: "Tipo de Evento", data: "eventType", autoWidth: true, className: "min-w-100px " },
+						{ name: "description", title: "Descripción", data: "description", autoWidth: true, className: "min-w-100px " },
+						{ name: "userName", title: "Usuario", data: "userName", autoWidth: false,  className: "text-end min-w-100px " }
+					],
+					processing: true,
+					serverSide: true,
+					pageLength: 10,
+					filter: true,
+					language: {
+						sProcessing: "Procesando...",
+						sLengthMenu: "Mostrar _MENU_ registros",
+						sZeroRecords: "No se encontraron resultados",
+						sEmptyTable: "Ningún dato disponible en esta tabla",
+						sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+						sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+						sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+						sSearch: "Buscar:",
+						sLoadingRecords: "Cargando...",
+						oPaginate: {
+							sFirst: "Primero",
+							sLast: "Último",
+							sNext: "Siguiente",
+							sPrevious: "Anterior"
+						},
+						buttons: {
+							copy: "Copiar",
+							colvis: "Visibilidad"
+						}
+					},
+					drawCallback: function () {
+						$('[data-toggle="tooltip"]').tooltip();
+					},
+					order: [[0, "desc"]]
+				});
+			}
+
+			// Evento click de button aplicar filtro
+			const submitButton = document.getElementById('btn_AplicarFiltro');
+			submitButton.addEventListener('click', function (e) {
+				// Prevent default button action
+				e.preventDefault();
+
+				// Recargar datos de la tabla
+				loadTableDate();
+			});
+
+			// Llamar a la función inicial con valores predeterminados
+			updateDateRange(start, end);
+
+			// Recargar datos de la tabla
+			loadTableDate();
+		});
+	</script>
+
+
+}
