@@ -54,16 +54,17 @@ Proyecto ASP.NET Core en .NET 8 que actúa como punto de entrada de la aplicación
 Esta estructura permite que el código sea modular, testable y fácilmente extensible, facilitando la colaboración en equipos grandes y el mantenimiento a largo plazo.
 
 
-# Documentación: Uso de Scaffold-DbContext
+# Documentación
 
+## Uso de Scaffold-DbContext
 El comando `Scaffold-DbContext` se utiliza en proyectos basados en Entity Framework Core para generar automáticamente las clases de entidad y el contexto de base de datos a partir de una base de datos existente. Este proceso es útil cuando se adopta un enfoque de desarrollo basado en la base de datos.
 
-## **Comando Utilizado**
+### **Comando Utilizado**
 ```bash
 Scaffold-DbContext "Data Source=Fernando-Book\SQLSERVER;Initial Catalog=SolutionTemplateDB;Persist Security Info=True;User ID=sa;Password=123;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force
 ```
 
-## **Descripción de los Parámetros**
+### **Descripción de los Parámetros**
 
 - **Cadena de conexión**: Define los detalles para conectarse a la base de datos SQL Server.
 - **Microsoft.EntityFrameworkCore.SqlServer**: Especifica el proveedor de base de datos.
@@ -73,13 +74,13 @@ Scaffold-DbContext "Data Source=Fernando-Book\SQLSERVER;Initial Catalog=Solution
 - **-DataAnnotations**: Utiliza anotaciones de datos en las clases de entidad en lugar de solo la API fluida.
 - **-Force**: Sobrescribe cualquier archivo generado previamente.
 
-## Acciones Posteriores
+### Acciones Posteriores
 
 1. **Eliminar la Cadena de Conexión en el Contexto**.
 Una vez generado el contexto, es importante asegurar que la cadena de conexión no quede expuesta en el código fuente por motivos de seguridad.
 
 2. **Eliminar del contexto las tablas de identity** (por ejemplo, tablas AspNetUsers, AspNetRoles, etc.) ya que la implementación de IdentityDbContext ya las incluye.
 
-# Documentación: Configuración del archivo `appsettings.json`
+## Configuración del archivo `appsettings.json`
 1. Copia el archivo `appsettings.json` del repositorio.
 2. Rellena los valores necesarios, como las cadenas de conexión y cuenta de correo.
