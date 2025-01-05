@@ -83,4 +83,4 @@ Una vez generado el contexto, es importante asegurar que la cadena de conexión n
 
 ## Configuración del archivo `appsettings.json`
 1. Copia el archivo `appsettings.json` del repositorio.
-2. Rellena los valores necesarios, como las cadenas de conexión y cuenta de correo.
+2. Rellena los valores necesarios, como la cadenas de conexión y cuenta de correo.
