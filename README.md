@@ -61,7 +61,7 @@ El comando `Scaffold-DbContext` se utiliza en proyectos basados en Entity Framew
 
 ### **Comando Utilizado**
 ```bash
-Scaffold-DbContext "Data Source=Fernando-Book\SQLSERVER;Initial Catalog=SolutionTemplateDB;Persist Security Info=True;User ID=sa;Password=123;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force
+Scaffold-DbContext "Data Source=localhost;Initial Catalog=myDb;Persist Security Info=True;User ID=sa;Password=123456789;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force
 ```
 
 ### **Descripción de los Parámetros**
