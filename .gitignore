@@ -10,6 +10,13 @@
 *.userosscache
 *.sln.docstates
 
+# Ignorar archivos de configuración con datos sensibles
+appsettings.*.json
+
+# Ignorar todo en Logs excepto Index.cshtml
+Views/Logs/*
+!Views/Logs/Index.cshtml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

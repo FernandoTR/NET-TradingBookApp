@@ -79,3 +79,7 @@ Scaffold-DbContext "Data Source=Fernando-Book\SQLSERVER;Initial Catalog=Solution
 Una vez generado el contexto, es importante asegurar que la cadena de conexión no quede expuesta en el código fuente por motivos de seguridad.
 
 2. **Eliminar del contexto las tablas de identity** (por ejemplo, tablas AspNetUsers, AspNetRoles, etc.) ya que la implementación de IdentityDbContext ya las incluye.
+
+# Documentación: Configuración del archivo `appsettings.json`
+1. Copia el archivo `appsettings.json` del repositorio.
+2. Rellena los valores necesarios, como las cadenas de conexión y cuenta de correo.
