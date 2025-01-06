@@ -48,5 +48,8 @@ public class RolesService : IRolesService
         return await _repository.GetMenuOptionsByUserAsync(userId);
     }
 
-
+    public async Task<IEnumerable<AspNetRole>> GetAllRolesByUserAsync(string userId)
+    {
+        return await _repository.GetAllRolesByUserAsync(userId);
+    }
 }

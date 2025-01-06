@@ -271,5 +271,34 @@ public class RolesRepository : IRolesRepository
 
     }
 
+    /// <summary>
+    /// Obtiene todos los registros de roles.
+    /// </summary>
+    /// <param name="userId">El identificador del usuario.</param>
+    /// <returns>Una colección enumerable de objetos <see cref="AspNetRole"/>.</returns>
+    public async Task<IEnumerable<AspNetRole>> GetAllRolesByUserAsync(string userId)
+    {
+        try
+        {
+            var roles = await (from userRole in _context.UserRoles
+                                join role in _context.Roles on userRole.RoleId equals role.Id
+                                where userRole.UserId == userId
+                                select new AspNetRole
+                                {
+                                    Id = role.Id,
+                                    Name = role.Name,
+                                    NormalizedName = role.NormalizedName,
+                                    ConcurrencyStamp = role.ConcurrencyStamp
+                                }).ToListAsync();            
+
+            return roles;
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog(nameof(GetAllAsync), ex);
+            return Enumerable.Empty<AspNetRole>();
+        }
+
+    }
 
 }

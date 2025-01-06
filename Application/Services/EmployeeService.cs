@@ -9,11 +9,13 @@ public class EmployeeService : IEmployeeService
 {
     private readonly IEmployeeRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly IRolesRepository _rolesRepository;
 
-    public EmployeeService(IEmployeeRepository repository, IUserRepository userRepository)
+    public EmployeeService(IEmployeeRepository repository, IUserRepository userRepository, IRolesRepository rolesRepository)
     {
         _repository = repository;
         _userRepository = userRepository;
+        _rolesRepository = rolesRepository;
     }
 
 
