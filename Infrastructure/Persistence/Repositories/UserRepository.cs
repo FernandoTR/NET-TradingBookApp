@@ -89,7 +89,7 @@ public class UserRepository : IUserRepository
         {
             // Consulta en la base de datos para obtener el usuario por EmployeeId.
             var users = await _context.Users
-                .AsNoTracking()
+                .AsNoTracking()               
                 .Where(x => x.EmployeeId == id)
                 .Select(x => new AspNetUser
                 {
@@ -111,7 +111,25 @@ public class UserRepository : IUserRepository
                     UserName = x.UserName,
                     ConcurrencyStamp = x.ConcurrencyStamp,
                     NormalizedUserName = x.NormalizedUserName,
-                    NormalizedEmail = x.NormalizedEmail                    
+                    NormalizedEmail = x.NormalizedEmail,
+                    AspNetUserRoles = _context.UserRoles
+                                        .Where(userRole => userRole.UserId == x.Id)
+                                        .Select(userRole => new AspNetUserRole
+                                        {
+                                            UserId = userRole.UserId,
+                                            RoleId = userRole.RoleId,
+                                            Role = _context.Roles
+                                                    .Where(role => role.Id == userRole.RoleId)
+                                                    .Select(role => new AspNetRole
+                                                    {
+                                                        Id = role.Id,
+                                                        Name = role.Name,
+                                                        NormalizedName = role.NormalizedName,
+                                                        ConcurrencyStamp = role.ConcurrencyStamp
+                                                    })
+                                                    .FirstOrDefault() // Obtiene el rol asociado
+                                        })
+                                        .ToList() // Obtiene roles asociados con su detalle
                 })
                 .FirstOrDefaultAsync();
 

@@ -24,3 +24,10 @@ var renderTrueFalse = function (data) {
         '<i class="ki-duotone ki-verify text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
         '<i class="ki-duotone ki-minus-circle text-danger fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 }
+
+// Funcion para cambiar el icono de bandera dependiendo del valor booleano del dato obtenido por el dataTable
+var renderFlag = function (data) {
+    return data == true ?
+        '<i class="ki-duotone ki-flag text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
+        '<i class="ki-duotone ki-flag text-danger fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
+}

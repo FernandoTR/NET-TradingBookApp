@@ -14,4 +14,5 @@ public interface IRolesRepository
     Task<List<string>> GetAllByUserAsync(string userId);
     Task<List<int>> GetAllPermissionsByUserAsync(string userId);
     Task<List<GetMenuByUserIdDto>> GetMenuOptionsByUserAsync(string userId);
+    Task<IEnumerable<AspNetRole>> GetAllRolesByUserAsync(string userId);
 }
