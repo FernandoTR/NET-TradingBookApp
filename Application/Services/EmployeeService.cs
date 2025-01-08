@@ -77,5 +77,10 @@ public class EmployeeService : IEmployeeService
         return employeeDtos;
     }
 
+    public async Task<bool> UpdateEmailAsync(int employeeId, string newEmail)
+    {
+        return await _repository.UpdateEmailAsync(employeeId, newEmail);
+    }
+
 
 }

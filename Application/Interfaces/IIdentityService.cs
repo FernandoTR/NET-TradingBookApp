@@ -15,7 +15,9 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, int employeeId);
     Task<Result> DeleteUserAsync(string userId);
     Task<SignInResult> PasswordSignInAsync(string userName, string password, bool rememberMe);
-    Task SignOutAsync();    
+    Task SignOutAsync();
+    Task<SignInResult> CheckPasswordSignInAsync(string userName, string password);
+    Task<SignInResult> RefreshSignInAsync(string email);
     CurrentUserDto? GetCurrentUserAsync();
     bool IsUserAuthenticated();
     string GetCurrentUserId();
@@ -25,7 +27,10 @@ public interface IIdentityService
     Task<Result> SendTwoFactorCodeAsync(string userId, string provider);
     Task<Result> SendTwoFactorCodeAsync(string provider);
     Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent, bool rememberBrowser);
-
+    Task<string?> GetPhoneNumberAsync(string userId);
+    Task<bool> GetTwoFactorEnabledAsync(string userId);
+    Task<IList<UserLoginInfo>> GetLoginsAsync(string userId);
+    Task<bool> IsTwoFactorClientRememberedAsync(string userId);
 
 }
 

@@ -40,6 +40,8 @@ public class HomeController : Controller
             {
                 ViewData[$"notifications.{notification}"] = message;
             }
+
+            ViewBag.FullName = $"{currentUser.Name} {currentUser.LastName}";
         }
         catch (Exception ex)
         {

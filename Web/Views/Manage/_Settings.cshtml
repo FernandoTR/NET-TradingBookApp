@@ -1,0 +1,479 @@
+﻿@model Web.Models.OverviewViewModel
+
+<!--begin::Sign-in Method-->
+<div class="card mb-5 mb-xl-10">
+	<!--begin::Card header-->
+	<div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_signin_method">
+		<div class="card-title m-0">
+			<h3 class="fw-bold m-0">
+				Método de inicio de sesión
+			</h3>
+		</div>
+	</div>
+	<!--end::Card header-->
+	<!--begin::Content-->
+	<div id="kt_account_settings_signin_method" class="collapse show">
+		<!--begin::Card body-->
+		<div class="card-body border-top p-9">
+			<!--begin::Email Address-->
+			<div class="d-flex flex-wrap align-items-center">
+				<!--begin::Label-->
+				<div id="kt_signin_email">
+					<div class="fs-6 fw-bold mb-1">
+						Dirección de correo electrónico
+					</div>
+					<div class="fw-semibold text-gray-600" id="kt_signin_email_lbl">@Model.Email</div>
+				</div>
+				<!--end::Label-->
+				<!--begin::Edit-->
+				<div id="kt_signin_email_edit" class="flex-row-fluid d-none">
+					<!--begin::Form-->
+					<form id="kt_signin_change_email" class="form" novalidate="novalidate">
+						@Html.AntiForgeryToken()
+						<div class="row mb-6">
+							<div class="col-lg-6 mb-4 mb-lg-0">
+								<div class="fv-row mb-0">
+									<label for="emailaddress" class="form-label fs-6 fw-bold mb-3">Ingrese una nueva dirección de correo electrónico</label>
+									<input type="email" class="form-control form-control-lg form-control-solid" id="emailaddress" placeholder="Dirección de correo electrónico" name="emailaddress" value="@Model.Email" />
+									<input type="email" class="form-control form-control-lg form-control-solid" id="emailaddresstemp" placeholder="Dirección de correo electrónico" name="emailaddresstemp" value="@Model.Email" hidden />
+
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="fv-row mb-0">
+									<label for="confirmemailpassword" class="form-label fs-6 fw-bold mb-3">Confirmar Contraseña</label>
+									<input type="password" class="form-control form-control-lg form-control-solid" name="confirmemailpassword" id="confirmemailpassword" autocomplete="off" />
+								</div>
+							</div>
+						</div>
+						<div class="d-flex">
+							<button id="kt_signin_submit" type="button" class="btn btn-primary me-2 px-6">
+								<span class="indicator-label">Actualizar correo electrónico</span>
+								<span class="indicator-progress">
+									Espere por favor...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+							<button id="kt_signin_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancelar</button>
+						</div>
+					</form>
+					<!--end::Form-->
+				</div>
+				<!--end::Edit-->
+				<!--begin::Action-->
+				<div id="kt_signin_email_button" class="ms-auto">
+					<button class="btn btn-light btn-active-light-primary">
+						Cambiar correo electrónico
+					</button>
+				</div>
+				<!--end::Action-->
+			</div>
+			<!--end::Email Address-->
+			<!--begin::Separator-->
+			<div class="separator separator-dashed my-6"></div>
+			<!--end::Separator-->
+			<!--begin::Password-->
+			<div class="d-flex flex-wrap align-items-center mb-10">
+				<!--begin::Label-->
+				<div id="kt_signin_password">
+					<div class="fs-6 fw-bold mb-1">Contraseña</div>
+					<div class="fw-semibold text-gray-600">************</div>
+				</div>
+				<!--end::Label-->
+				<!--begin::Edit-->
+				<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
+					<!--begin::Form-->
+					<form id="kt_signin_change_password" class="form" novalidate="novalidate">						
+						<div class="row mb-1">
+							<div class="col-lg-4">
+								<div class="fv-row mb-0">
+									<label for="currentpassword" class="form-label fs-6 fw-bold mb-3">Contraseña actual</label>
+									<input type="password" class="form-control form-control-lg form-control-solid" name="currentpassword" id="currentpassword" />
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<div class="fv-row mb-0">
+									<label for="newpassword" class="form-label fs-6 fw-bold mb-3">Nueva Contraseña</label>
+									<input type="password" class="form-control form-control-lg form-control-solid" name="newpassword" id="newpassword" />
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<div class="fv-row mb-0">
+									<label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirmar Nueva Contraseña</label>
+									<input type="password" class="form-control form-control-lg form-control-solid" name="confirmpassword" id="confirmpassword" />
+								</div>
+							</div>
+						</div>
+						<div class="form-text mb-5">La contraseña debe tener al menos 8 caracteres con una combinación de letras, números y simbolos.</div>
+						<div class="d-flex">
+							<button id="kt_password_submit" type="button" class="btn btn-primary me-2 px-6">
+								<span class="indicator-label">Actualizar contraseña</span>
+								<span class="indicator-progress">
+									Espere por favor...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+							<button id="kt_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancelar</button>
+						</div>
+					</form>
+					<!--end::Form-->
+				</div>
+				<!--end::Edit-->
+				<!--begin::Action-->
+				<div id="kt_signin_password_button" class="ms-auto">
+					<button class="btn btn-light btn-active-light-primary">Restablecer contraseña</button>
+				</div>
+				<!--end::Action-->
+			</div>
+			<!--end::Password-->
+			<!--begin::Separator-->
+			<div class="separator separator-dashed my-6"></div>
+			<!--end::Separator-->
+			<!--begin::TwoFactor-->
+			<div class="d-flex flex-wrap align-items-center mb-10">
+				<!--begin::Label-->
+				<div id="kt_signin_password">
+					<div class="fs-6 fw-bold mb-1">Autenticación de dos factores</div>
+					<div class="fw-semibold text-gray-600">ACTIVA</div>
+				</div>
+				<!--end::Label-->
+				<!--begin::Edit-->
+				<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
+					
+				</div>
+				<!--end::Edit-->
+				<!--begin::Action-->
+				<div id="kt_signin_password_button" class="ms-auto">
+					<button class="btn btn-light btn-active-light-primary">Deshabilitar</button>
+				</div>
+				<!--end::Action-->
+			</div>
+			<!--end::TwoFactor-->
+			<!--begin::Notice-->
+			<div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
+				<!--begin::Icon-->
+				<i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4">
+					<span class="path1"></span>
+					<span class="path2"></span>
+				</i>
+				<!--end::Icon-->
+				<!--begin::Wrapper-->
+				<div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+					<!--begin::Content-->
+					<div class="mb-3 mb-md-0 fw-semibold">
+						<h4 class="text-gray-900 fw-bold">
+							Asegure su cuenta
+						</h4>
+						<div class="fs-6 text-gray-700 pe-7">La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, además deberás proporcionar un código de 6 dígitos</div>
+					</div>
+					<!--end::Content-->
+					<!--begin::Action-->
+					<a href="#" class="btn btn-primary px-6 align-self-center text-nowrap" data-bs-toggle="modal" data-bs-target="#kt_modal_two_factor_authentication">Habilitar</a>
+					<!--end::Action-->
+				</div>
+				<!--end::Wrapper-->
+			</div>
+			<!--end::Notice-->
+		</div>
+		<!--end::Card body-->
+	</div>
+	<!--end::Content-->
+</div>
+<!--end::Sign-in Method-->
+
+<script>
+	$(document).ready(function () {
+		
+		
+		document.getElementById('kt_signin_email_button').addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			document.getElementById('kt_signin_email').classList.add("d-none");
+			document.getElementById('kt_signin_email_button').classList.add("d-none");
+			document.getElementById('kt_signin_email_edit').classList.remove("d-none");
+
+			document.querySelector('#confirmemailpassword').value = '';
+		});
+
+		document.getElementById('kt_signin_cancel').addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			document.getElementById('kt_signin_email').classList.remove("d-none");
+			document.getElementById('kt_signin_email_button').classList.remove("d-none");
+			document.getElementById('kt_signin_email_edit').classList.add("d-none");
+		});
+				
+		// Define form element kt_signin_change_email
+		let formSignInEmail = document.getElementById('kt_signin_change_email');
+		var validatorSigninEmail = FormValidation.formValidation(
+			formSignInEmail,
+			{
+				fields: {					
+					'emailaddress': {
+						validators: {
+							notEmpty: {
+								message: 'El Correo es obligatorio'
+							},
+							stringLength: {
+								max: 100,
+								message: 'Sobrepasa el límite de 100 caracteres'
+							},
+							emailAddress: {
+								message: 'Correo inválido'
+							},
+							remote: {
+								message: 'El correo ya se encuentra registrado',
+								method: 'POST',
+								url: '@Url.Content("~/Employees/CheckDuplicateEmail")',
+								data: function () {
+									return {
+										email: formSignInEmail.querySelector('[name="emailaddress"]').value,
+										emailTemp: formSignInEmail.querySelector('[name="emailaddresstemp"]').value
+									};
+								}
+							}
+						}
+					},
+					'confirmemailpassword': {
+						validators: {
+							notEmpty: {
+								message: 'La contraseña es obligatoria'
+							}
+						}
+					},
+				},
+
+				plugins: {
+					trigger: new FormValidation.plugins.Trigger(),
+					bootstrap: new FormValidation.plugins.Bootstrap5({
+						rowSelector: '.fv-row',
+						eleInvalidClass: '',
+						eleValidClass: ''
+					}),
+				}
+
+			}
+		);
+
+		// Submit button kt_signin_submit
+		const submitSignInEmailButton = document.getElementById('kt_signin_submit');
+		submitSignInEmailButton.addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			// Validate form before submit
+			if (validatorSigninEmail) {
+				validatorSigninEmail.validate().then(function (status) {
+
+					if (status == 'Valid') {
+						// Show loading indication
+						submitSignInEmailButton.setAttribute('data-kt-indicator', 'on');
+
+						// Disable button to avoid multiple click
+						submitSignInEmailButton.disabled = true;
+
+						changeEmail();
+					}
+				});
+			}
+		});
+
+	    function changeEmail() {
+			const newEmail = document.querySelector('#emailaddress').value;
+			const password = document.querySelector('#confirmemailpassword').value;
+			const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+			// Crear el objeto de datos para enviar
+			const data = {
+				NewEmail: newEmail,
+				Password: password
+			};
+
+			
+			var url = "@Url.Content("~/Manage/ChangeEmail")";
+			fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(data),
+				headers: {
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
+				}
+			}).then(res => res.json())
+			.catch(error => console.error('Error:', error))
+			.then((data) => {
+				// Show loading indication
+				submitSignInEmailButton.setAttribute('data-kt-indicator', 'off');
+
+				// Disable button to avoid multiple click
+				submitSignInEmailButton.disabled = false;
+
+				ShowNotification(data.notificationType, data.message);
+
+				if(data.success)
+				{				
+					document.getElementById('kt_signin_email').classList.remove("d-none");
+					document.getElementById('kt_signin_email_button').classList.remove("d-none");
+					document.getElementById('kt_signin_email_edit').classList.add("d-none");
+
+					document.getElementById('lbl-email-header').innerText = newEmail;
+					document.getElementById('lbl_email_Overview').innerText = newEmail;
+					document.getElementById('kt_signin_email_lbl').innerText = newEmail;
+				}
+
+					
+			});
+
+
+		}
+
+		document.getElementById('kt_signin_password_button').addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			document.getElementById('kt_signin_password').classList.add("d-none");
+			document.getElementById('kt_signin_password_button').classList.add("d-none");
+			document.getElementById('kt_signin_password_edit').classList.remove("d-none");
+
+			document.querySelector('#currentpassword').value = '';
+			document.querySelector('#newpassword').value = '';
+			document.querySelector('#confirmpassword').value = '';
+
+
+		});
+
+		document.getElementById('kt_password_cancel').addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			document.getElementById('kt_signin_password').classList.remove("d-none");
+			document.getElementById('kt_signin_password_button').classList.remove("d-none");
+			document.getElementById('kt_signin_password_edit').classList.add("d-none");
+		});
+
+		
+		// Define form element kt_signin_change_password
+		let formSignInPassword = document.getElementById('kt_signin_change_password');
+		var validatorSigninPassword = FormValidation.formValidation(
+			formSignInPassword,
+			{
+				fields: {
+					'currentpassword': {
+						validators: {
+							notEmpty: {
+								message: 'La contraseña actual es obligatoria'
+							}
+						}
+					},
+					'newpassword': {
+						validators: {
+							notEmpty: {
+								message: 'La nueva contraseña es obligatoria',
+							},
+							callback: {
+								message: 'La contraseña no cumple con los requisitos.',
+								callback: function (input) {
+									const value = input.value;
+									const regex = validationPasswordRegexp;
+									return regex.test(value);
+								},
+							},
+						},
+					},
+					'confirmpassword': {
+						validators: {
+							notEmpty: {
+								message: 'La confirmación de la contraseña es obligatoria'
+							},
+							identical: {
+								compare: function() {
+									return formSignInPassword.querySelector('[name="newpassword"]').value;
+								},
+								message: 'Las contraseñas no coinciden'
+							}
+						}
+					},
+				},
+
+				plugins: {
+					trigger: new FormValidation.plugins.Trigger(),
+					bootstrap: new FormValidation.plugins.Bootstrap5({
+						rowSelector: '.fv-row',
+						eleInvalidClass: '',
+						eleValidClass: ''
+					}),
+				}
+
+			}
+		);
+
+		// Submit button kt_signin_submit
+		const submitSignInPasswordButton = document.getElementById('kt_password_submit');
+		submitSignInPasswordButton.addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			// Validate form before submit
+			if (validatorSigninPassword) {
+				validatorSigninPassword.validate().then(function (status) {
+
+					if (status == 'Valid') {
+						// Show loading indication
+						submitSignInPasswordButton.setAttribute('data-kt-indicator', 'on');
+
+						// Disable button to avoid multiple click
+						submitSignInPasswordButton.disabled = true;
+
+						changePassword();
+					}
+				});
+			}
+		});
+
+		function changePassword() {
+			const currentPassword = document.querySelector('#currentpassword').value;
+			const newPassword = document.querySelector('#newpassword').value;
+			const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+			// Crear el objeto de datos para enviar
+			const data = {
+				CurrentPassword: currentPassword,
+				NewPassword: newPassword
+			};
+
+
+			var url = "@Url.Content("~/Manage/ChangePassword")";
+			fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(data),
+				headers: {
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
+				}
+			}).then(res => res.json())
+			.catch(error => console.error('Error:', error))
+			.then((data) => {
+				// Show loading indication
+				submitSignInPasswordButton.setAttribute('data-kt-indicator', 'off');
+
+				// Disable button to avoid multiple click
+				submitSignInPasswordButton.disabled = false;
+
+				ShowNotification(data.notificationType, data.message);
+
+				if(data.success)
+				{
+					document.getElementById('kt_signin_password').classList.remove("d-none");
+					document.getElementById('kt_signin_password_button').classList.remove("d-none");
+					document.getElementById('kt_signin_password_edit').classList.add("d-none");
+				}
+
+
+			});
+
+
+		}
+
+	});
+</script>

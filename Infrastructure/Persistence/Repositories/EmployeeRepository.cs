@@ -235,5 +235,73 @@ public class EmployeeRepository : IEmployeeRepository
 
     }
 
+    /// <summary>
+    /// Método para cambiar el correo electrónico de un empleado.
+    /// Actualiza tanto la información del empleado como la del usuario relacionado en la base de datos.
+    /// </summary>
+    /// <param name="newEmail">El nuevo correo electrónico que se asignará.</param>
+    /// <returns>
+    /// Un valor booleano indicando si la operación fue exitosa.
+    /// `true` si los cambios se guardaron correctamente; de lo contrario, `false`.
+    /// </returns>
+    public async Task<bool> UpdateEmailAsync(int employeeId,string newEmail)
+    {
+        try
+        {
+            // Iniciar una transacción
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            // Obtener el empleado desde la base de datos
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+            if (employee == null)
+            {
+                _logService.ErrorLog(nameof(UpdateEmailAsync), new KeyNotFoundException("Empleado no encontrado."));
+                return false;
+            }
+
+            // Actualizar el correo del empleado
+            employee.Email = newEmail;            
+            _context.Employees.Update(employee);
+
+
+            // Obtener el usuario relacionado
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+            if (user == null)
+            {
+                _logService.ErrorLog(nameof(UpdateEmailAsync), new KeyNotFoundException("Usuario relacionado no encontrado."));
+                return false;
+            }
+
+            // Actualizar el correo del usuario
+            user.Email = newEmail;
+            user.EmailConfirmed = false; // desconfirmamos el email 
+            user.UserName = newEmail;
+            user.NormalizedUserName = newEmail.ToUpper();
+            user.NormalizedEmail = newEmail.ToUpper();            
+            _context.Users.Update(user);
+
+            // Guardar los cambios
+            var changesSaved = await _context.SaveChangesAsync() > 0;
+
+            if (changesSaved)
+            {
+                // Confirmar la transacción
+                await transaction.CommitAsync();
+            }
+            else
+            {
+                await transaction.RollbackAsync();
+            }
+
+            return changesSaved;
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog(nameof(UpdateAsync), ex);
+            return false;
+        }
+    }
+
+
 
 }
