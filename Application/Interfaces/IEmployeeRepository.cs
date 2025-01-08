@@ -15,4 +15,5 @@ public interface IEmployeeRepository
     Task<Employee?> FindAsync(int id);
     Task<bool> UpdateAsync(Employee employee);
     Task<IEnumerable<Employee>> GetAllAsync();
+    Task<bool> UpdateEmailAsync(int employeeId, string newEmail);
 }

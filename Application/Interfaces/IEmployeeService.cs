@@ -14,4 +14,5 @@ public interface IEmployeeService
     Task<bool> CheckEmailExistsAsync(string email, string emailTemp);
     Task<bool> CheckNumberExistsAsync(string employeeNumber, string employeeNumberTemp);
     Task<IEnumerable<EmployeeDto>> GetAllAsync();
+    Task<bool> UpdateEmailAsync(int employeeId, string newEmail);
 }

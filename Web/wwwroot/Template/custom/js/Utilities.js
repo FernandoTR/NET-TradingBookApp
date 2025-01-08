@@ -11,6 +11,8 @@ function changeHtmlLetters(str) {
 }
 
 
+var validationPasswordRegexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 // Funcion para cambiar la etiqueta del empleado dependiendo del estatus que se asigna en el dataTable
 var renderStatusEmployee = function (data) {
     return data == "Activo" ?

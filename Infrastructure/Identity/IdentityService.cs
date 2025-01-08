@@ -213,6 +213,72 @@ public class IdentityService : IIdentityService
         await _signInManager.SignOutAsync();
     }
 
+    public async Task<SignInResult> CheckPasswordSignInAsync(string userName, string password)
+    {
+        // Obtener usuario por email
+        var user = await _userManager.FindByEmailAsync(userName);
+        if (user == null)
+        {
+            // Si el usuario no existe, devolver un resultado fallido
+            return SignInResult.Failed; // Significa que el usuario no fue encontrado
+        }
+
+        // Validar las credenciales del usuario
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);        
+        return result;
+    }
+
+    public async Task<SignInResult> RefreshSignInAsync(string userName)
+    {
+        // Obtener usuario por email
+        var user = await _userManager.FindByEmailAsync(userName);
+        if (user == null)
+        {
+            // Si el usuario no existe, devolver un resultado fallido
+            return SignInResult.Failed; // Significa que el usuario no fue encontrado
+        }
+
+        // Renovar la cookie sin cerrar sesión
+        await _signInManager.RefreshSignInAsync(user);
+
+        // Construir DTO del usuario actual
+        var userDto = new CurrentUserDto
+        {
+            UserId = user.Id,
+            Email = user.Email,
+            Enable = user.Enable,
+            EmployeeId = user.EmployeeId,
+            ResetFlag = user.ResetFlag,
+        };
+
+        // Recuperar información adicional del usuario
+        var currentUser = await _userService.GetCurrentUserInformation(userDto);
+        if (currentUser == null)
+        {
+            // Si no se pudo recuperar la información adicional del usuario, salir
+            return SignInResult.Failed; // Podrías también lanzar una excepción si prefieres
+        }
+
+        // Serializar la información del usuario y actualizar el claim de UserData
+        var serializedUser = JsonConvert.SerializeObject(currentUser);
+
+        // Actualizar el claim de UserData (si no existe, se agrega)
+        var existingClaim = (await _userManager.GetClaimsAsync(user))
+            .FirstOrDefault(c => c.Type == ClaimTypes.UserData);
+
+        if (existingClaim != null)
+        {
+            await _userManager.RemoveClaimAsync(user, existingClaim);
+        }
+
+        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.UserData, serializedUser));
+
+        // Registro de actividad
+        _logService.ActivityLog(user.Id, "Inicio de sesión", "El usuario ha iniciado sesión correctamente.");
+
+        // Retornar el resultado de la autenticación
+        return SignInResult.Success;
+    }
 
     /// <summary>
     /// Obtenemos la información del usuario desde la cookie.
@@ -456,6 +522,32 @@ public class IdentityService : IIdentityService
         return result;
     }
 
+    public async Task<string?> GetPhoneNumberAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
 
+        return await _userManager.GetPhoneNumberAsync(user);
+    }
+
+    public async Task<bool> GetTwoFactorEnabledAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.GetTwoFactorEnabledAsync(user);
+    }
+
+    public async Task<IList<UserLoginInfo>> GetLoginsAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.GetLoginsAsync(user);
+    }
+
+    public async Task<bool> IsTwoFactorClientRememberedAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _signInManager.IsTwoFactorClientRememberedAsync(user);
+    }
 
 }

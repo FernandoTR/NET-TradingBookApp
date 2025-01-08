@@ -78,7 +78,7 @@ public class AccountController : Controller
                 return View("SignIn", model);
             }
 
-            var result = await _identityService.PasswordSignInAsync(model.Email, model.Password, model.RememberMe);
+            var result = await _identityService.PasswordSignInAsync(model.Email.Trim(), model.Password, model.RememberMe);
 
             if (result.Succeeded)
             {

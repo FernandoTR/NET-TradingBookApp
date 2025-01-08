@@ -1,0 +1,115 @@
+﻿@model Web.Models.OverviewViewModel
+
+<!--begin::details View-->
+<div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
+	<!--begin::Card header-->
+	<div class="card-header cursor-pointer">
+		<!--begin::Card title-->
+		<div class="card-title m-0">
+			<h3 class="fw-bold m-0">Detalles del perfil</h3>
+		</div>
+		<!--end::Card title-->
+		<!--begin::Action-->
+		@* <a href="account/settings.html" class="btn btn-sm btn-primary align-self-center">Edit Profile</a> *@
+		<!--end::Action-->
+	</div>
+	<!--begin::Card header-->
+	<!--begin::Card body-->
+	<div class="card-body p-9">
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">Número de Empleado</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9">
+				<span class="fw-bold fs-6 text-gray-800">@Model.EmployeeNumber</span>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Row-->
+		<!--begin::Row-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">Nombre completo</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9">
+				<span class="fw-bold fs-6 text-gray-800">@Model.FullName</span>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Row-->
+		<!--begin::Input group-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">Roles</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9 fv-row">
+				<span class="fw-semibold text-gray-800 fs-6">@Model.Roles</span>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Input group-->
+		<!--begin::Input group-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">
+				Teléfono de contacto				
+			</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9 d-flex align-items-center">
+				<span class="fw-bold fs-6 text-gray-800 me-2">@Model.PhoneNumber</span>
+				@if (!string.IsNullOrEmpty(@ViewBag.PhoneNumber))
+				{
+					<span class="badge badge-success">Verificado</span>
+				}
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Input group-->
+		<!--begin::Input group-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">Correo Electrónico</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9">
+				<a href="#" class="fw-semibold fs-6 text-gray-800 text-hover-primary" id="lbl_email_Overview">@Model.Email</a>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Input group-->
+		<!--begin::Input group-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">
+				Correo electrónico confirmado
+			</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9">
+				<span class="fw-bold fs-6 text-gray-800">@Model.EmailConfirmed</span>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Input group-->
+		<!--begin::Input group-->
+		<div class="row mb-7">
+			<!--begin::Label-->
+			<label class="col-lg-3 fw-semibold text-muted">Ubicación</label>
+			<!--end::Label-->
+			<!--begin::Col-->
+			<div class="col-lg-9">
+				<span class="fw-bold fs-6 text-gray-800">@Model.Location</span>
+			</div>
+			<!--end::Col-->
+		</div>
+		<!--end::Input group-->
+
+	</div>
+	<!--end::Card body-->
+</div>
+<!--end::details View-->
