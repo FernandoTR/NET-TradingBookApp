@@ -9,4 +9,7 @@ public class OverviewViewModel
     public string? Roles { get; set; }
     public string? EmailConfirmed { get; set; }
     public string? PhoneNumber { get; set; }
+    public bool TwoFactor { get; set; }
+
 }
+

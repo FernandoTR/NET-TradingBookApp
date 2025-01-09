@@ -1,8 +1,8 @@
 ﻿@model Web.Models.SendCodeViewModel
 @{
-	ViewBag.Title = "Enviar";
-	Layout = "";
+	ViewBag.Title = "Método de autenticación";
 }
+
 <!--begin::Root-->
 <div class="d-flex flex-column flex-root" id="kt_app_root">
 	<!--begin::Authentication - Two-factor -->
@@ -14,10 +14,12 @@
 				<!--begin::Wrapper-->
 				<div class="w-lg-500px p-10">
 					<!--begin::Form-->
-					@using (Html.BeginForm("SendCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, true, new { @class = "form w-100", role = "form" }))
+					@using (Html.BeginForm("SendCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, true, new { @class = "form w-100", role = "form", id = "myForm" }))
 					{
 						@Html.AntiForgeryToken()
-						@Html.Hidden("rememberMe", @Model.RememberMe)
+						@Html.Hidden("RememberMe", @Model.RememberMe)
+						@Html.Hidden("ProviderSelected", @Model.ProviderSelected)
+						@Html.Hidden("UserId", @Model.UserId)
 
 						<!--begin::Icon-->
 						<div class="text-center mb-10">
@@ -30,26 +32,74 @@
 							<h1 class="text-gray-900 mb-3">Verificación de Dos Factores</h1>
 							<!--end::Title-->
 							<!--begin::Sub-title-->
-							<div class="text-muted fw-semibold fs-5 mb-5">Enviar código de verificación</div>
+							<div class="text-muted fw-semibold fs-5 mb-5">Elija un método de autenticación</div>
 							<!--end::Sub-title-->
 						</div>
 						<!--end::Heading-->
 						<!--begin::Section-->
-						<div class="mb-10">
-							<!--begin::Label-->
-							<div class="fw-bold text-start text-gray-900 fs-6 mb-1 ms-1">Seleccione el proveedor de autenticación de dos factores:</div>
-							<!--end::Label-->
-							<!--begin::Input group-->
-							<div class="d-flex flex-wrap flex-stack">
-								@Html.DropDownListFor(model => model.SelectedProvider, Model.Providers, new { @class = "form-control bg-transparent" })
-							</div>
-							<!--begin::Input group-->
+						<div class="pb-10">
+							@{
+								foreach (var provider in Model.Providers)
+								{
+									switch (provider)
+									{
+										case "Authenticator":
+											<!--begin::Option-->
+											<input type="radio" class="btn-check" name="auth_option" value="Authenticator" checked="checked" id="kt_modal_two_factor_authentication_option_1">
+											<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5" for="kt_modal_two_factor_authentication_option_1">
+												<i class="ki-duotone ki-setting-2 fs-4x me-4">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+												<span class="d-block fw-semibold text-start">
+													<span class="text-gray-900 fw-bold d-block fs-3">Aplicaciones de autenticación</span>
+													<span class="text-muted fw-semibold fs-6">Obtenga códigos de una aplicación como Google Authenticator, Microsoft Authenticator, Authy o 1Password.</span>
+												</span>
+											</label>
+											<!--end::Option-->
+											break;
+										case "sms":
+											<!--begin::Option-->
+											<input type="radio" class="btn-check" name="auth_option" value="sms" id="kt_modal_two_factor_authentication_option_2">
+											<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center" for="kt_modal_two_factor_authentication_option_2">
+												<i class="ki-duotone ki-message-text-2 fs-4x me-4">
+													<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+												</i>
+												<span class="d-block fw-semibold text-start">
+													<span class="text-gray-900 fw-bold d-block fs-3">SMS</span>
+													<span class="text-muted fw-semibold fs-6">Te enviaremos un SMS con tu código de verificación.</span>
+												</span>
+											</label>
+											<!--end::Option-->
+											break;
+										default:
+											<!--begin::Option-->
+											<input type="radio" class="btn-check" name="auth_option" value="Email" id="kt_modal_two_factor_authentication_option_3">
+											<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center" for="kt_modal_two_factor_authentication_option_3">
+												<i class="ki-duotone ki-sms fs-4x me-4">
+													<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+												</i>
+												<span class="d-block fw-semibold text-start">
+													<span class="text-gray-900 fw-bold d-block fs-3">Correo electrónico</span>
+													<span class="text-muted fw-semibold fs-6">Te enviaremos un correo electrónico con tu código de verificación.</span>
+												</span>
+											</label>
+											<!--end::Option-->
+											break;
+									}
+									
+								}
+							}
 						</div>
 						<!--end::Section-->
 						<!--begin::Submit-->
 						<div class="d-flex flex-center">
 							<button type="button" id="kt_sing_in_two_factor_submit" class="btn btn-lg btn-primary fw-bold">
-								<span class="indicator-label">Enviar</span>
+								<span class="indicator-label">Continuar</span>
 								<span class="indicator-progress">
 									Espere por favor...
 									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -107,3 +157,30 @@
 	<!--end::Authentication - Two-factor-->
 </div>
 <!--end::Root-->
+@section scripts {
+ <script>
+		// Define form element
+		const form = document.getElementById('myForm');
+
+		// Submit button handler
+		const submitButton = document.getElementById('kt_sing_in_two_factor_submit');
+		submitButton.addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			// Show loading indication
+			submitButton.setAttribute('data-kt-indicator', 'on');
+
+			// Disable button to avoid multiple click
+			submitButton.disabled = true;
+
+			// Obtener la opción seleccionada
+			const selectedOption = document.querySelector('input[name="auth_option"]:checked')?.value;
+
+			document.getElementById('ProviderSelected').value = selectedOption;
+
+			form.submit();
+
+		});
+ </script>
+}

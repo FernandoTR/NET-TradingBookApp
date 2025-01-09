@@ -19,26 +19,28 @@ public class ExternalLoginListViewModel
 
 public class SendCodeViewModel
 {
-    public string SelectedProvider { get; set; }
-    public ICollection<SelectListItem> Providers { get; set; }
-    public string ReturnUrl { get; set; }
+    public string ProviderSelected { get; set; } = string.Empty;
+    public IList<string>? Providers { get; set; }
+    public string ReturnUrl { get; set; } = string.Empty;
     public bool RememberMe { get; set; }
+    public required string UserId { get; set; }
 }
 
 public class VerifyCodeViewModel
 {
     [Required]
-    public string Provider { get; set; }
+    public required string Provider { get; set; }
 
     [Required]
     [Display(Name = "Código")]
-    public string Code { get; set; }
-    public string ReturnUrl { get; set; }
+    public required string Code { get; set; }
+    public string? ReturnUrl { get; set; }
 
     [Display(Name = "¿Recordar este explorador?")]
     public bool RememberBrowser { get; set; }
 
     public bool RememberMe { get; set; }
+    public required string UserId { get; set; } 
 }
 
 public class ForgotViewModel

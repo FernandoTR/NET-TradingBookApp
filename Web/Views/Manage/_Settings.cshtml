@@ -129,58 +129,96 @@
 			<!--begin::Separator-->
 			<div class="separator separator-dashed my-6"></div>
 			<!--end::Separator-->
-			<!--begin::TwoFactor-->
-			<div class="d-flex flex-wrap align-items-center mb-10">
-				<!--begin::Label-->
-				<div id="kt_signin_password">
-					<div class="fs-6 fw-bold mb-1">Autenticación de dos factores</div>
-					<div class="fw-semibold text-gray-600">ACTIVA</div>
-				</div>
-				<!--end::Label-->
-				<!--begin::Edit-->
-				<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
-					
-				</div>
-				<!--end::Edit-->
-				<!--begin::Action-->
-				<div id="kt_signin_password_button" class="ms-auto">
-					<button class="btn btn-light btn-active-light-primary">Deshabilitar</button>
-				</div>
-				<!--end::Action-->
-			</div>
-			<!--end::TwoFactor-->
-			<!--begin::Notice-->
-			<div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
-				<!--begin::Icon-->
-				<i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4">
-					<span class="path1"></span>
-					<span class="path2"></span>
-				</i>
-				<!--end::Icon-->
-				<!--begin::Wrapper-->
-				<div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
-					<!--begin::Content-->
-					<div class="mb-3 mb-md-0 fw-semibold">
-						<h4 class="text-gray-900 fw-bold">
-							Asegure su cuenta
-						</h4>
-						<div class="fs-6 text-gray-700 pe-7">La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, además deberás proporcionar un código de 6 dígitos</div>
+			@if(Model.TwoFactor)
+			{
+				<!--begin::TwoFactor-->
+				<div class="d-flex flex-wrap align-items-center mb-10">
+					<!--begin::Label-->
+					<div id="kt_signin_password">
+						<div class="fs-6 fw-bold mb-1">Autenticación de dos factores</div>
+						<div class="fw-semibold text-gray-600">Activa</div>
 					</div>
-					<!--end::Content-->
+					<!--end::Label-->
+					<!--begin::Edit-->
+					<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
+					</div>
+					<!--end::Edit-->
 					<!--begin::Action-->
-					<a href="#" class="btn btn-primary px-6 align-self-center text-nowrap" data-bs-toggle="modal" data-bs-target="#kt_modal_two_factor_authentication">Habilitar</a>
+					<div id="kt_signin_password_button" class="ms-auto">
+						<button class="btn btn-light btn-active-light-primary">Deshabilitar</button>
+					</div>
 					<!--end::Action-->
 				</div>
-				<!--end::Wrapper-->
-			</div>
-			<!--end::Notice-->
+				<!--end::TwoFactor-->
+			}
+			else
+			{
+				<!--begin::Notice-->
+				<div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
+					<!--begin::Icon-->
+					<i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i>
+					<!--end::Icon-->
+					<!--begin::Wrapper-->
+					<div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+						<!--begin::Content-->
+						<div class="mb-3 mb-md-0 fw-semibold">
+							<h4 class="text-gray-900 fw-bold">
+								Asegure su cuenta
+							</h4>
+							<div class="fs-6 text-gray-700 pe-7">La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, además deberás proporcionar un código de 6 dígitos</div>
+						</div>
+						<!--end::Content-->
+						<!--begin::Action-->
+						<a href="javascript:showModalForEnableAuthenticator()" class="btn btn-primary px-6 align-self-center text-nowrap">Habilitar</a>
+						<!--end::Action-->
+					</div>
+					<!--end::Wrapper-->
+				</div>
+				<!--end::Notice-->
+			}
+			
+			
 		</div>
 		<!--end::Card body-->
 	</div>
 	<!--end::Content-->
 </div>
 <!--end::Sign-in Method-->
-
+<!--begin::Modal-->
+<div class="modal fade" id="kt_modal_two_factor_authentication" tabindex="-1" aria-hidden="true">
+	<!--begin::Modal header-->
+	<div class="modal-dialog modal-dialog-centered mw-650px">
+		<!--begin::Modal content-->
+		<div class="modal-content">
+			<!--begin::Modal header-->
+			<div class="modal-header flex-stack">
+				<!--begin::Title-->
+				<h2 id="title-modal"></h2>
+				<!--end::Title-->
+				<!--begin::Close-->
+				<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+					<i class="ki-duotone ki-cross fs-1">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i>
+				</div>
+				<!--end::Close-->
+			</div>
+			<!--begin::Modal header-->
+			<!--begin::Modal body-->
+			<div class="modal-body scroll-y pt-10 pb-15 px-lg-17" id="contentvModal">
+				
+			</div>
+			<!--begin::Modal body-->
+		</div>
+		<!--end::Modal content-->
+	</div>
+	<!--end::Modal header-->
+</div>
+<!--end::Modal-->
 <script>
 	$(document).ready(function () {
 		
@@ -475,5 +513,23 @@
 
 		}
 
+		
+
 	});
+
+	function showModal(urlContent, title) {
+			fetch(urlContent).then((response) => {
+				return response.text();
+			}).then((data) => {
+				$("#contentvModal").html(data);
+				$('#title-modal').html(title);
+				$("#kt_modal_two_factor_authentication").modal("show");
+			});
+	}
+
+	function showModalForEnableAuthenticator() {
+		urlContentModal = "@Url.Content("~/Manage/EnableAuthenticator")";
+		showModal(urlContentModal, 'Elija un método de autenticación');
+		$('[data-toggle="tooltip"]').tooltip()
+	}
 </script>
