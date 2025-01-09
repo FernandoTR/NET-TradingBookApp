@@ -78,12 +78,20 @@ public class AccountController : Controller
                 return View("SignIn", model);
             }
 
-            var result = await _identityService.PasswordSignInAsync(model.Email.Trim(), model.Password, model.RememberMe);
-
+            // Verifica credenciales
+            var result = await _identityService.CheckPasswordSignInAsync(model.Email.Trim(), model.Password);           
             if (result.Succeeded)
             {
-                // Generar una cookie para el menú lateral ( cookie temporal)
-                //_httpContextAccessor.HttpContext.Response.Cookies.Append("data-kt-app-sidebar-minimize", "on");
+                var user = await _identityService.GetUserByNameAsync(model.Email.Trim());
+
+                // Verifica si tiene 2FA habilitado
+                if (await _identityService.GetTwoFactorEnabledAsync(user.UserId))
+                {
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, model.RememberMe, user.UserId });
+                }
+
+                // Inicia sesión
+                await _identityService.PasswordSignInAsync(model.Email.Trim(), model.Password, model.RememberMe);                
 
                 // Redirigir en función del resultado
                 if (returnUrl == null || !returnUrl.Contains("LogOff"))
@@ -343,18 +351,25 @@ public class AccountController : Controller
 
     // GET: /Account/SendCode
     [AllowAnonymous]
-    public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
+    public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe, string userId)
     {
         try
         {
-            var userFactors = await _identityService.GetValidTwoFactorProvidersAsync();
-            if (userFactors == null)
+            // verificar si existe el usuario
+            var user = await _identityService.GetUserEmailAsync(userId);
+            if (user == null)
+            {
+                ViewData[$"notifications.{NotificationType.Warning}"] = "Intento de inicio de sesión no válido.";
+                return View("SignIn");
+            }
+
+            var twoFactorProviders = (await _identityService.GetValidTwoFactorProvidersAsync(userId)).OrderBy(name => name).ToList();
+            if (twoFactorProviders == null)
             {
                 return View("Error");
             }
-            
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
+                       
+            return View(new SendCodeViewModel { Providers = twoFactorProviders, ReturnUrl = returnUrl, RememberMe = rememberMe, UserId = userId });
         }
         catch (Exception ex)
         {
@@ -370,22 +385,40 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> SendCode(SendCodeViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View();
+        }
+
         try
         {
-            if (!ModelState.IsValid)
+            string ?sendTo = string.Empty;
+           
+            if (model.ProviderSelected != "Authenticator")
             {
-                return View();
+                // Generar el token y enviarlo
+                var result = await _identityService.SendTwoFactorCodeAsync(model.UserId, model.ProviderSelected);
+                if (!result.Succeeded)
+                {
+                    ViewData[$"notifications.{NotificationType.Error}"] = result.Errors[0];
+                    return View("SignIn");
+                }
+                sendTo = model.ProviderSelected == "Email"
+                        ? await _identityService.GetUserEmailAsync(model.UserId)
+                        : MaskString(input: await _identityService.GetPhoneNumberAsync(model.UserId));
             }
 
-            // Generar el token y enviarlo
-            var result = await _identityService.SendTwoFactorCodeAsync(model.SelectedProvider);
-            if (!result.Succeeded)
+            var send2FACodeViewModel = new Send2FACodeViewModel
             {
-                ViewData[$"notifications.{NotificationType.Error}"] = result.Errors[0];
-                return View();
-            }
+                Provider = model.ProviderSelected,
+                UserId = model.UserId,
+                ReturnUrl = model.ReturnUrl,
+                RememberMe = model.RememberMe,
+                SendTo = sendTo,
+            };
 
-            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            return RedirectToAction("Send2FACode", send2FACodeViewModel);
+
         }
         catch (Exception ex)
         {
@@ -393,49 +426,7 @@ public class AccountController : Controller
             _logService.ErrorLog($"Controller: Account, Action: {nameof(SendCode)}", ex);
             return View();
         }
-    }
-
-    // GET: /Account/VerifyCode
-    [AllowAnonymous]
-    public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
-    {
-        // Requerir que el usuario haya iniciado sesión con nombre de usuario y contraseña o inicio de sesión externo
-        if (! _identityService.IsUserAuthenticated())
-        {
-            return View("Error");
-        }
-        return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
-    }
-
-    // POST: /Account/VerifyCode
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
-        // El código siguiente protege de los ataques por fuerza bruta a los códigos de dos factores. 
-        // Si un usuario introduce códigos incorrectos durante un intervalo especificado de tiempo, la cuenta del usuario 
-        // se bloqueará durante un período de tiempo especificado. 
-        // Puede configurar el bloqueo de la cuenta en IdentityConfig
-        var result = await _identityService.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
-        if (result.Succeeded) {
-            return RedirectToLocal(model.ReturnUrl);
-        }
-        else if (result.IsLockedOut)
-        {
-            return View("Lockout");
-        }
-        else
-        {
-            ViewData[$"notifications.{NotificationType.Warning}"] = "Código no válido.";
-            return View(model);
-        }        
-    }
+    }   
 
 
     // POST: /Account/Register
@@ -556,7 +547,50 @@ public class AccountController : Controller
         }
     }
 
+    // GET: /Account/Send2FACode
+    [AllowAnonymous]
+    public async Task<IActionResult> Send2FACode(Send2FACodeViewModel model)
+    {
+        // verificar si existe el usuario
+        var user = await _identityService.GetUserEmailAsync(model.UserId);
+        if (user == null)
+        {
+            ViewData[$"notifications.{NotificationType.Warning}"] = "Intento de inicio de sesión no válido.";
+            return View("SignIn");
+        }
 
+        return View(model);
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Verify2FACode(Send2FACodeViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var isValid = await _identityService.VerifyTwoFactorTokenAsync(model.UserId, model.Provider, model.Code);
+
+        if (isValid)
+        {
+            // Código válido
+            await _identityService.TwoFactorSignInAsync(model.UserId, model.RememberMe);
+            return RedirectToAction("Index", "Home");
+        }
+        else
+        {
+            // Código inválido
+            ViewData[$"notifications.{NotificationType.Error}"] = "El código es incorrecto.";
+            return View("Send2FACode", model);
+        }
+
+        
+
+
+    }
 
     #region Funciones Auxiliares
 
@@ -576,6 +610,20 @@ public class AccountController : Controller
         {
             ViewData[$"notifications.{NotificationType.Error}"] = error;
         }
+    }
+
+    static string MaskString(string input)
+    {
+        if (string.IsNullOrEmpty(input) || input.Length <= 4)
+        {
+            return input; // Si la longitud es menor o igual a 4, devuelve la cadena original
+        }
+
+        int maskLength = input.Length - 4;
+        string maskedPart = new string('*', maskLength); // Crea los asteriscos
+        string lastFourDigits = input.Substring(maskLength); // Obtiene los últimos 4 caracteres
+
+        return maskedPart + lastFourDigits;
     }
     #endregion
 

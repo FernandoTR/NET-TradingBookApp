@@ -207,7 +207,59 @@ public class IdentityService : IIdentityService
         // Retornar el resultado de la autenticación
         return result;
     }
- 
+
+    public async Task TwoFactorSignInAsync(string userId, bool rememberMe)
+    {
+        // Obtener usuario por email
+        var user = await _userManager.FindByIdAsync(userId);          
+
+        // Si el inicio de sesión es exitoso, persistir la sesión
+        await _signInManager.SignInAsync(user, isPersistent: rememberMe);
+
+        // Construir DTO del usuario actual
+        var userDto = new CurrentUserDto
+        {
+            UserId = user.Id,
+            Email = user.Email,
+            Enable = user.Enable,
+            EmployeeId = user.EmployeeId,
+            ResetFlag = user.ResetFlag,
+        };
+
+        // Recuperar información adicional del usuario
+        var currentUser = await _userService.GetCurrentUserInformation(userDto);       
+
+        // Serializar la información del usuario y actualizar el claim de UserData
+        var serializedUser = JsonConvert.SerializeObject(currentUser);
+
+        // Actualizar el claim de UserData (si no existe, se agrega)
+        var existingClaim = (await _userManager.GetClaimsAsync(user))
+            .FirstOrDefault(c => c.Type == ClaimTypes.UserData);
+
+        if (existingClaim != null)
+        {
+            await _userManager.RemoveClaimAsync(user, existingClaim);
+        }
+
+        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.UserData, serializedUser));
+
+        // Registro de actividad
+        _logService.ActivityLog(user.Id, "Inicio de sesión", "El usuario ha iniciado sesión correctamente.");
+
+    }
+
+    public async Task SignInAsync(string userName)
+    {
+        // Obtener usuario por email
+        var user = await _userManager.FindByEmailAsync(userName);
+        if (user == null)
+        {
+            return; // Significa que el usuario no fue encontrado
+        }
+
+        await _signInManager.SignInAsync(user,false);
+    }
+
     public async Task SignOutAsync()
     {
         await _signInManager.SignOutAsync();
@@ -415,6 +467,36 @@ public class IdentityService : IIdentityService
     }
 
     /// <summary>
+    /// Obtiene una lista de los proveedores válidos de autenticación en dos factores para un usuario.
+    /// </summary>
+    /// <returns>
+    /// <param name="userId">ID del usuario.</param>
+    /// Una lista de nombres de proveedores válidos de autenticación en dos factores si el usuario es encontrado; 
+    /// de lo contrario, una lista vacía.
+    /// </returns>
+    public async Task<IList<string>> GetValidTwoFactorProvidersAsync(string userId)
+    {
+        try
+        {
+            // Obtener el usuario autenticado para la autenticación en dos factores.
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                // Retorna una lista vacía si no se encuentra al usuario.
+                return new List<string>();
+            }
+
+            // Obtener los proveedores de autenticación en dos factores válidos para el usuario.
+            return await _userManager.GetValidTwoFactorProvidersAsync(user);
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog("GetValidTwoFactorProvidersAsync", ex);
+            throw new InvalidOperationException("No se pudo obtener los proveedores válidos de autenticación en dos factores.", ex);
+        }
+    }
+
+    /// <summary>
     /// Envía un código de autenticación en dos factores (2FA) al usuario que se indique utilizando el proveedor especificado.
     /// </summary>
     /// <param name="userId">ID del usuario.</param>
@@ -430,13 +512,22 @@ public class IdentityService : IIdentityService
             return Result.Failure(new[] { "Usuario no encontrado." });
         }
 
+        // Verificar si el usuario tiene habilitada la autenticación en dos factores.
         if (!await _userManager.GetTwoFactorEnabledAsync(user))
         {
             return Result.Failure(new[] { "La autenticación en dos pasos no está habilitada para este usuario." });
         }
 
+        // Generar el token 2FA para el proveedor especificado.
         var code = await _userManager.GenerateTwoFactorTokenAsync(user, provider);
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            var errorMessage = $"El proveedor 2FA '{provider}' no generó un código válido.";
+            _logService.ErrorLog(nameof(SendTwoFactorCodeAsync), errorMessage, provider);
+            return Result.Failure(new[] { errorMessage });
+        }
 
+        // Manejar el envío del código según el proveedor.
         switch (provider)
         {
             case "Email":
@@ -448,7 +539,7 @@ public class IdentityService : IIdentityService
             //    break;
 
             default:
-                return Result.Failure(new[] { "Proveedor no soportado." });
+                return Result.Failure(new[] { $"El proveedor '{provider}' no está soportado." });
         }
 
         return Result.Success();
@@ -512,16 +603,6 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task<SignInResult> TwoFactorSignInAsync(string provider, string code, bool isPersistent, bool rememberBrowser)
-    {       
-
-        // Intentar resetear la contraseña
-        var result = await _signInManager.TwoFactorSignInAsync(provider, code, isPersistent, rememberBrowser);
-
-        // Retornar el resultado de la operación
-        return result;
-    }
-
     public async Task<string?> GetPhoneNumberAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
@@ -532,6 +613,13 @@ public class IdentityService : IIdentityService
     public async Task<bool> GetTwoFactorEnabledAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.GetTwoFactorEnabledAsync(user);
+    }
+
+    public async Task<bool> GetTwoFactorEnabledByUserNameAsync(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
 
         return await _userManager.GetTwoFactorEnabledAsync(user);
     }
@@ -549,5 +637,42 @@ public class IdentityService : IIdentityService
 
         return await _signInManager.IsTwoFactorClientRememberedAsync(user);
     }
+
+    public async Task<string?> EnableAuthenticator(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        var key = await _userManager.GetAuthenticatorKeyAsync(user);
+        if (string.IsNullOrEmpty(key))
+        {
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+            key = await _userManager.GetAuthenticatorKeyAsync(user);
+        }
+
+        return key;
+    }
+
+    public async Task<bool> VerifyTwoFactorTokenAsync(string userId, string code)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
+    }
+
+    public async Task SetTwoFactorEnabledAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        await _userManager.SetTwoFactorEnabledAsync(user, true);
+    }
+
+    public async Task<bool> VerifyTwoFactorTokenAsync(string userId, string provider, string code)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.VerifyTwoFactorTokenAsync(user, provider, code);
+    }
+    
+
 
 }

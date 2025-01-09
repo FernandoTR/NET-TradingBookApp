@@ -1,0 +1,169 @@
+﻿@model Web.Models.Send2FACodeViewModel
+@{
+	ViewBag.Title = "Verificación de Dos Factores";
+}
+<!--begin::Root-->
+<div class="d-flex flex-column flex-root" id="kt_app_root">
+	<!--begin::Authentication - Two-factor -->
+	<div class="d-flex flex-column flex-lg-row flex-column-fluid">
+		<!--begin::Body-->
+		<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
+			<!--begin::Form-->
+			<div class="d-flex flex-center flex-column flex-lg-row-fluid">
+				<!--begin::Wrapper-->
+				<div class="w-lg-500px p-10">
+					<!--begin::Form-->
+					@using (Html.BeginForm("Verify2FACode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, true, new { @class = "form-horizontal", role = "form", id = "myForm" }))
+					{
+						@Html.AntiForgeryToken()
+						@Html.Hidden("Code", @Model.Code)
+						@Html.Hidden("RememberMe", @Model.RememberMe)
+						@Html.Hidden("UserId", @Model.UserId)
+						@Html.Hidden("Provider", @Model.Provider)
+
+
+
+
+						<!--begin::Icon-->
+						<div class="text-center mb-10">
+							<img alt="Logo" class="mh-125px" src="~/Template/assets/media/svg/misc/smartphone-2.svg" />
+						</div>
+						<!--end::Icon-->
+						<!--begin::Heading-->
+						<div class="text-center mb-10">
+							<!--begin::Title-->
+							<h1 class="text-gray-900 mb-3">Verificación de Dos Factores</h1>
+							<!--end::Title-->
+							<!--begin::Sub-title-->
+							<div class="text-muted fw-semibold fs-5 mb-5">@(Model.Provider != "Authenticator" ? "Ingresa el código de verificación que acabamos de enviar a" : "Revise su aplicación preferida para códigos de un solo uso y copie el código")</div>
+							<!--end::Sub-title-->
+							<!--begin::Mobile no-->
+							<div class="fw-bold text-gray-900 fs-3">@(Model.Provider != "Authenticator" ? Model.SendTo : "")</div>
+							<!--end::Mobile no-->
+						</div>
+						<!--end::Heading-->
+						<!--begin::Section-->
+						<div class="mb-10">
+							<!--begin::Label-->
+							<div class="fw-bold text-start text-gray-900 fs-6 mb-1 ms-1">Escribe tu código de seguridad de 6 dígitos</div>
+							<!--end::Label-->
+							<!--begin::Input group-->
+							<div class="d-flex flex-wrap flex-stack">
+								<input type="text" name="code_1" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+								<input type="text" name="code_2" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+								<input type="text" name="code_3" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+								<input type="text" name="code_4" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+								<input type="text" name="code_5" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+								<input type="text" name="code_6" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
+							</div>
+							<!--begin::Input group-->
+						</div>
+						<!--end::Section-->
+						<!--begin::Submit-->
+						<div class="d-flex flex-center">
+							<button type="button" id="kt_sing_in_two_factor_submit" class="btn btn-lg btn-primary fw-bold">
+								<span class="indicator-label">Enviar</span>
+								<span class="indicator-progress">
+									Espere por favor...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
+						</div>
+						<!--end::Submit-->
+					}
+					<!--end::Form-->
+					<!--begin::Notice-->
+					<div class="text-center fw-semibold fs-5 mt-10">
+						@Html.ActionLink("Probar otro método","SendCode","Account",
+											new
+											{
+												returnUrl = Model.ReturnUrl, 
+												rememberMe = Model.RememberMe,           
+												userId = Model.UserId 
+											},
+											new { @class = "link-primary fs-5 me-1" }
+										)
+					</div>
+					<!--end::Notice-->
+				</div>
+				<!--end::Wrapper-->
+			</div>
+			<!--end::Form-->
+			<!--begin::Footer-->
+			<div class="w-lg-500px d-flex flex-stack px-10 mx-auto"></div>
+			<!--end::Footer-->
+		</div>
+		<!--end::Body-->
+		<!--begin::Aside-->
+		<div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2" style="background-image: url(../Template/assets/media/misc/auth-bg.png)">
+			<!--begin::Content-->
+			<div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
+				<!--begin::Logo-->
+				<a href="index.html" class="mb-0 mb-lg-12">
+					<img alt="Logo" src="~/Template/assets/media/logos/custom-1.png" class="h-60px h-lg-75px" />
+				</a>
+				<!--end::Logo-->
+				<!--begin::Image-->
+				<img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20" src="~/Template/assets/media/misc/auth-screens.png" alt="" />
+				<!--end::Image-->
+				<!--begin::Title-->
+				<h1 class="d-none d-lg-block text-white fs-2qx fw-bolder text-center mb-7">Fast, Efficient and Productive</h1>
+				<!--end::Title-->
+				<!--begin::Text-->
+				<div class="d-none d-lg-block text-white fs-base text-center">
+					In this kind of post,
+					<a href="#" class="opacity-75-hover text-warning fw-bold me-1">the blogger</a>introduces a person they’ve interviewed
+					<br />and provides some background information about
+					<a href="#" class="opacity-75-hover text-warning fw-bold me-1">the interviewee</a>and their
+					<br />work following this is a transcript of the interview.
+				</div>
+				<!--end::Text-->
+			</div>
+			<!--end::Content-->
+		</div>
+		<!--end::Aside-->
+	</div>
+	<!--end::Authentication - Two-factor-->
+</div>
+<!--end::Root-->
+@section scripts {
+	<script>
+		// Define form element
+		const form = document.getElementById('myForm');
+
+		function validateInputs() {
+			// Recupera todos los inputs cuyo nombre empiece con "code_"
+			const inputs = document.querySelectorAll('input[name^="code_"]');
+
+			// Concatena los valores de los inputs
+			const code = Array.from(inputs).map(input => input.value).join('');
+			
+			// Retorna true si la longitud del código es exactamente 6
+			document.getElementById('Code').value = code;
+			return code.length === 6;
+		}
+
+
+		// Submit button handler
+		const submitButton = document.getElementById('kt_sing_in_two_factor_submit');
+		submitButton.addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			// Validate form 
+			if (!validateInputs())
+			{
+				ShowNotification(4,"Ingrese un código de seguridad válido e inténtelo nuevamente.")
+				return;
+			}
+
+			// Show loading indication
+			submitButton.setAttribute('data-kt-indicator', 'on');
+
+			// Disable button to avoid multiple click
+			submitButton.disabled = true;
+
+			form.submit(); 
+		});
+	</script>
+}

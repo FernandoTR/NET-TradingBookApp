@@ -7,6 +7,11 @@ using Web.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Application.Services;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using QRCoder;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Web.Controllers;
 
@@ -19,13 +24,15 @@ public class ManageController : Controller
     private readonly IMessageService _messageService;
     private readonly IUserEmailService _userEmailService;
     private readonly IUserService _userService;
+    private readonly IQrCodeGeneratorService _qrCodeGeneratorService;
 
     public ManageController(IIdentityService identityService, 
                             IEmployeeService employeeService,
                             ILogService logService,
                             IMessageService messageService,
                             IUserEmailService userEmailService,
-                            IUserService userService)
+                            IUserService userService,
+                            IQrCodeGeneratorService qrCodeGeneratorService)
     {
         _identityService = identityService;
         _employeeService = employeeService;
@@ -33,6 +40,7 @@ public class ManageController : Controller
         _messageService = messageService;
         _userEmailService = userEmailService;
         _userService = userService;
+        _qrCodeGeneratorService = qrCodeGeneratorService;
     }
 
     // GET: /Manage/Index
@@ -99,7 +107,8 @@ public class ManageController : Controller
 
         var model = new OverviewViewModel
         {
-            Email = account.Employee.Email
+            Email = account.Employee.Email,
+            TwoFactor = await _identityService.GetTwoFactorEnabledAsync(account.AspNetUser.Id)
         };
 
         return PartialView("_Settings", model);
@@ -114,18 +123,7 @@ public class ManageController : Controller
         return PartialView("_Logs");
     }
 
-    /// <summary>
-    /// Obtiene la información completa de la cuenta del usuario actual.
-    /// </summary>
-    /// <returns>Objeto de cuenta o null si no se encuentra.</returns>
-    private async Task<EmployeeDto?> GetUserAccountAsync()
-    {
-        var currentUser = _identityService.GetCurrentUserAsync();
-        if (currentUser == null) return null;
-
-        var accounts = await _employeeService.GetAllAsync();
-        return accounts.FirstOrDefault(x => x.AspNetUser.Id == currentUser.UserId);
-    }
+ 
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -287,7 +285,123 @@ public class ManageController : Controller
         }
         catch (Exception ex)
         {
-            _logService.ErrorLog($"Controller: Account, Action: {nameof(ResetPassword)}", ex);
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(ChangePassword)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+    }
+
+    /// <summary>
+    ///  Generar una clave única para vincular la cuenta con el autenticador.
+    /// </summary>
+    public async Task<IActionResult> EnableAuthenticator()
+    {
+        string sharedKey = string.Empty;
+        string authenticatorUri = string.Empty;
+
+        try
+        {
+            // Obtener la cuenta del usuario actual
+            var account = await GetUserAccountAsync();
+
+            var key = await _identityService.EnableAuthenticator(account.AspNetUser.Id);
+
+            sharedKey = FormatKey(key);
+            authenticatorUri = GenerateQrCodeUri(account.AspNetUser.Email,key);
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(EnableAuthenticator)}", ex);
+        }       
+
+        return View(new EnableAuthenticatorViewModel
+        {
+            SharedKey = sharedKey,
+            AuthenticatorUri = authenticatorUri
+        });
+    }
+
+    /// <summary>
+    ///  Generar la imagen del código QR en formato svg
+    /// </summary>
+    [HttpGet("Generate")]
+    public IActionResult Generate(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return BadRequest("El contenido no puede estar vacío.");
+        }
+
+        try
+        {
+            var qrCodeSvg = _qrCodeGeneratorService.GenerateQrCodeSvg(content);
+
+            // Devuelve el código QR como archivo SVG
+            return File(
+                System.Text.Encoding.UTF8.GetBytes(qrCodeSvg),
+                "image/svg+xml",
+                "QRCode.svg"
+            );
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(Generate)}", ex);
+            return StatusCode(500, new { message = "Ocurrió un error generando el código QR." });
+        }
+    }
+
+
+    /// <summary>
+    /// Verificar el Código del Autenticador
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VerifyAuthenticatorCode([FromBody] string code)
+    {    
+        try
+        {
+            // Validar que los parámetros no estén vacíos
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El código es obligatorio.",
+                    notificationType = NotificationType.Warning
+                });
+            }
+
+            // Obtener la cuenta del usuario actual
+            var account = await GetUserAccountAsync();
+
+            var isValid = await _identityService.VerifyTwoFactorTokenAsync(account.AspNetUser.Id, code);
+
+            if (!isValid)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El código no es válido.",
+                    notificationType = NotificationType.Warning
+                });
+            }
+
+            await _identityService.SetTwoFactorEnabledAsync(account.AspNetUser.Id);
+
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = "La autenticación de dos factores se habilitó correctamente.",
+                notificationType = NotificationType.Success
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(EnableAuthenticator)}", ex);
             return Json(new ResultBackViewModel
             {
                 Success = false,
@@ -298,5 +412,59 @@ public class ManageController : Controller
     }
 
 
+
+
+
+    #region Aplicaciones auxiliares
+
+    /// <summary>
+    /// Obtiene la información completa de la cuenta del usuario actual.
+    /// </summary>
+    /// <returns>Objeto de cuenta o null si no se encuentra.</returns>
+    private async Task<EmployeeDto?> GetUserAccountAsync()
+    {
+        var currentUser = _identityService.GetCurrentUserAsync();
+        if (currentUser == null) return null;
+
+        var accounts = await _employeeService.GetAllAsync();
+        return accounts.FirstOrDefault(x => x.AspNetUser.Id == currentUser.UserId);
+    }
+
+
+    /// <summary>
+    /// Da formato a la clave (authenticator key) que se genera para el usuario.
+    /// </summary>
+    private string FormatKey(string unformattedKey)
+    {
+        if (string.IsNullOrEmpty(unformattedKey))
+        {
+            return string.Empty;
+        }
+
+        // Divide la clave en bloques de 4 caracteres separados por un guion
+        var formattedKey = new StringBuilder();
+        int currentPosition = 0;
+        while (currentPosition + 4 < unformattedKey.Length)
+        {
+            formattedKey.Append(unformattedKey.Substring(currentPosition, 4)).Append("-");
+            currentPosition += 4;
+        }
+
+        // Añade los caracteres restantes (si los hay)
+        formattedKey.Append(unformattedKey.Substring(currentPosition));
+
+        return formattedKey.ToString().ToUpperInvariant(); // Opcional: convierte a mayúsculas
+    }
+    private string GenerateQrCodeUri(string email, string unformattedKey)
+    {
+        return string.Format(
+            "otpauth://totp/{0}?secret={1}&issuer={2}&digits=6",
+            Uri.EscapeDataString("WebAppBase"),
+            unformattedKey,
+            Uri.EscapeDataString(email)
+        );
+    }
+
+    #endregion
 
 }

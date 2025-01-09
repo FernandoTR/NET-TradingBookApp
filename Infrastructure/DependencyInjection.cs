@@ -5,6 +5,7 @@ using Infrastructure.Identity;
 using Infrastructure.Logging;
 using Infrastructure.Persistence.Data;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -55,10 +56,12 @@ public static class DependencyInjection
             // Registra y configura los proveedores necesarios (como correo electrónico o SMS)
             options.Tokens.ProviderMap.Add("Email", new TokenProviderDescriptor(typeof(EmailTokenProvider<ApplicationUser>)));
             options.Tokens.ProviderMap.Add("Phone", new TokenProviderDescriptor(typeof(PhoneNumberTokenProvider<ApplicationUser>)));
+            options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
 
             // Configuración de confirmación de cuenta
             options.SignIn.RequireConfirmedEmail = true;
             options.SignIn.RequireConfirmedPhoneNumber = false;
+
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
@@ -110,7 +113,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<IActivityLogsRepository, ActivityLogsRepository>();
         builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 
-       
+        // Servicio de Generación de códigos QR
+        builder.Services.AddTransient<IQrCodeGeneratorService, QrCodeGeneratorService>();
 
     }
 }
