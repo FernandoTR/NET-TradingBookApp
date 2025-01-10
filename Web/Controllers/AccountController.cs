@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using System.ComponentModel.Design;
 using Web.Models;
 using Web.Models.Enums;
@@ -87,7 +88,11 @@ public class AccountController : Controller
                 // Verifica si tiene 2FA habilitado
                 if (await _identityService.GetTwoFactorEnabledAsync(user.UserId))
                 {
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, model.RememberMe, user.UserId });
+                    var send2FACodeData = new Send2FACodeViewModel { Provider = "", UserId = user.UserId, ReturnUrl = returnUrl, RememberMe = model.RememberMe };
+                    TempData["Send2FACodeData"] = JsonConvert.SerializeObject(send2FACodeData);
+                    //return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, model.RememberMe, user.UserId });
+                    return RedirectToAction("SendCode");
+
                 }
 
                 // Inicia sesión
@@ -351,25 +356,34 @@ public class AccountController : Controller
 
     // GET: /Account/SendCode
     [AllowAnonymous]
-    public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe, string userId)
+    public async Task<ActionResult> SendCode()
     {
         try
         {
+            // Verificar que TempData contiene la clave
+            if (!TempData.ContainsKey("Send2FACodeData"))
+            {
+                ViewData[$"notifications.{NotificationType.Error}"] = "Datos no válidos o expirados.";
+                return View("SignIn");                
+            }
+
+            var model = JsonConvert.DeserializeObject<Send2FACodeViewModel>(TempData["Send2FACodeData"].ToString());
+
             // verificar si existe el usuario
-            var user = await _identityService.GetUserEmailAsync(userId);
+            var user = await _identityService.GetUserEmailAsync(model.UserId);
             if (user == null)
             {
                 ViewData[$"notifications.{NotificationType.Warning}"] = "Intento de inicio de sesión no válido.";
                 return View("SignIn");
             }
 
-            var twoFactorProviders = (await _identityService.GetValidTwoFactorProvidersAsync(userId)).OrderBy(name => name).ToList();
+            var twoFactorProviders = (await _identityService.GetValidTwoFactorProvidersAsync(model.UserId)).OrderBy(name => name).ToList();
             if (twoFactorProviders == null)
             {
                 return View("Error");
             }
                        
-            return View(new SendCodeViewModel { Providers = twoFactorProviders, ReturnUrl = returnUrl, RememberMe = rememberMe, UserId = userId });
+            return View(new SendCodeViewModel { Providers = twoFactorProviders, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe, UserId = model.UserId });
         }
         catch (Exception ex)
         {
@@ -416,8 +430,10 @@ public class AccountController : Controller
                 RememberMe = model.RememberMe,
                 SendTo = sendTo,
             };
+            
+            TempData["Send2FACodeData"] = JsonConvert.SerializeObject(send2FACodeViewModel);
 
-            return RedirectToAction("Send2FACode", send2FACodeViewModel);
+            return RedirectToAction("Send2FACode");
 
         }
         catch (Exception ex)
@@ -549,8 +565,17 @@ public class AccountController : Controller
 
     // GET: /Account/Send2FACode
     [AllowAnonymous]
-    public async Task<IActionResult> Send2FACode(Send2FACodeViewModel model)
+    public async Task<IActionResult> Send2FACode()
     {
+        // Verificar que TempData contiene la clave
+        if (!TempData.ContainsKey("Send2FACodeData"))
+        {
+            ViewData[$"notifications.{NotificationType.Error}"] = "Datos no válidos o expirados.";
+            return View("SignIn");
+        }
+
+        var model = JsonConvert.DeserializeObject<Send2FACodeViewModel>(TempData["Send2FACodeData"].ToString());
+
         // verificar si existe el usuario
         var user = await _identityService.GetUserEmailAsync(model.UserId);
         if (user == null)
@@ -625,6 +650,17 @@ public class AccountController : Controller
 
         return maskedPart + lastFourDigits;
     }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public IActionResult SetTempData([FromBody] Send2FACodeViewModel model)
+    {    
+        TempData["Send2FACodeData"] = JsonConvert.SerializeObject(model);
+        return Json(new { success = true, redirectUrl = Url.Action("SendCode") });
+    }
+
+
     #endregion
 
 }
