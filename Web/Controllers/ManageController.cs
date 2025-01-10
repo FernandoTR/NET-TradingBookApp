@@ -114,16 +114,7 @@ public class ManageController : Controller
         return PartialView("_Settings", model);
     }
 
-    /// <summary>
-    /// Muestra el registro de eventos de la cuenta.
-    /// </summary>
-    /// <returns>Vista parcial de los logs.</returns>
-    public async Task<PartialViewResult> Logs()
-    {
-        return PartialView("_Logs");
-    }
-
- 
+  
 
     [HttpPost]
     [ValidateAntiForgeryToken]
