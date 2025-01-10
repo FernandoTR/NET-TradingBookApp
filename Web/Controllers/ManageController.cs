@@ -392,6 +392,8 @@ public class ManageController : Controller
 
             await _identityService.SetTwoFactorEnabledAsync(account.AspNetUser.Id);
 
+            await _identityService.RefreshSignInAsync(account.AspNetUser.Email);
+
             return Json(new ResultBackViewModel
             {
                 Success = true,
@@ -409,6 +411,52 @@ public class ManageController : Controller
                 notificationType = NotificationType.Error
             });
         }
+    }
+
+    /// <summary>
+    ///  Funcion para desactivar 2FA
+    /// </summary>
+    public async Task<IActionResult> DisableTwoFactor()
+    {
+        try
+        {
+            // Obtener la cuenta del usuario actual
+            var account = await GetUserAccountAsync();
+
+            var result = await _identityService.DisableTwoFactorAsync(account.AspNetUser.Id);
+            
+            if (!result.Succeeded)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault().Description,
+                    notificationType = NotificationType.Error
+                });
+            }
+
+            await _identityService.RefreshSignInAsync(account.AspNetUser.Email);
+
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = "La autenticación de dos factores fue desabilitada correctamente.",
+                notificationType = NotificationType.Success
+            });
+
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(EnableAuthenticator)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+
+        
     }
 
 
@@ -455,14 +503,16 @@ public class ManageController : Controller
 
         return formattedKey.ToString().ToUpperInvariant(); // Opcional: convierte a mayúsculas
     }
+
+    /// <summary>
+    /// Da formato al enlace que se le asignara al QR para que pueda ser leido por las apps
+    /// </summary>
     private string GenerateQrCodeUri(string email, string unformattedKey)
     {
-        return string.Format(
-            "otpauth://totp/{0}?secret={1}&issuer={2}&digits=6",
-            Uri.EscapeDataString("WebAppBase"),
-            unformattedKey,
-            Uri.EscapeDataString(email)
-        );
+        return string.Format("otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
+                             Uri.EscapeDataString("WebAppBase"),
+                             email,
+                             unformattedKey);
     }
 
     #endregion

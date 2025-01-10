@@ -214,13 +214,13 @@
 						// Disable button to avoid multiple click
 						submitButton.disabled = true;
 
-						changeEmail();
+						EnableTwoFactor();
 					}
 				});
 			}
 		});
 
-		function changeEmail() {
+		function EnableTwoFactor() {
 			const code = document.querySelector('#codeAuthentication').value;
 			const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
@@ -242,16 +242,18 @@
 				// Disable button to avoid multiple click
 				submitButton.disabled = false;
 
-				
+				ShowNotification(data.notificationType, data.message);
 
 				if(data.success)
 				{
 					document.getElementById('codeAuthentication').value = '';
 
 					$("#kt_modal_two_factor_authentication").modal("hide");
+
+					LoadSettingsView();
 				}
 
-				ShowNotification(data.notificationType, data.message);
+				
 
 			});
 

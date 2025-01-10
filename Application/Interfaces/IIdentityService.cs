@@ -38,5 +38,7 @@ public interface IIdentityService
     Task<bool> VerifyTwoFactorTokenAsync(string userId, string code);
     Task SetTwoFactorEnabledAsync(string userId);
     Task<bool> VerifyTwoFactorTokenAsync(string userId, string provider, string code);
+    Task<IdentityResult> DisableTwoFactorAsync(string userId);
+
 }
 

@@ -672,7 +672,12 @@ public class IdentityService : IIdentityService
 
         return await _userManager.VerifyTwoFactorTokenAsync(user, provider, code);
     }
-    
 
+    public async Task<IdentityResult> DisableTwoFactorAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        return await _userManager.SetTwoFactorEnabledAsync(user, false);
+    }
 
 }

@@ -145,7 +145,8 @@
 					<!--end::Edit-->
 					<!--begin::Action-->
 					<div id="kt_signin_password_button" class="ms-auto">
-						<button class="btn btn-light btn-active-light-primary">Deshabilitar</button>
+						<a href="javascript:DisableTwoFactor()" class="btn btn-light btn-active-light-primary">Deshabilitar</a>
+
 					</div>
 					<!--end::Action-->
 				</div>
@@ -219,6 +220,36 @@
 	<!--end::Modal header-->
 </div>
 <!--end::Modal-->
+<!--begin::Modal-Confirmacion-->
+<div class="modal fade" tabindex="-1" id="confirmDialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="confirmTitle"></h5>
+
+				<!--begin::Close-->
+				<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+					<i class="ki-duotone ki-cross fs-1">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i>
+				</div>
+				<!--end::Close-->
+			</div>
+
+			<div class="modal-body">
+				<p id="confirmDialogContent"></p>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="confirmButtonYes">Si</button>
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">No</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!--end::Modal-Confirmacion-->
 <script>
 	$(document).ready(function () {
 		
@@ -513,9 +544,42 @@
 
 		}
 
-		
 
 	});
+
+
+	function DisableTwoFactor() {
+			$("#confirmButtonYes").bind('click', () => {
+				$("#confirmButtonYes").unbind('click');
+				$("#confirmDialog").modal("hide");
+				processingDisableTwoFactor();
+			});
+			$('#confirmDialogContent').html('¿Esta usted seguro de deshabilitar la autenticación de dos factores?')
+			$('#confirmTitle').html('Deshabilitar la autenticación de dos factores');
+			$("#confirmDialog").modal("show");
+	}
+
+	function processingDisableTwoFactor() {
+
+			var urlConfirmModal = "@Url.Content("~/Manage/DisableTwoFactor")";
+			fetch(urlConfirmModal, {
+				method: 'GET',
+				body: null,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(res => res.json())
+			.catch(error => console.error('Error:', error))
+			.then((data) => {
+
+				ShowNotification(data.notificationType, data.message);
+
+				if(data.success){
+					LoadSettingsView();					
+				}
+					
+			});
+	}
 
 	function showModal(urlContent, title) {
 			fetch(urlContent).then((response) => {

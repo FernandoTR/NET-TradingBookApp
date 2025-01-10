@@ -17,12 +17,10 @@
 					{
 						@Html.AntiForgeryToken()
 						@Html.Hidden("Code", @Model.Code)
-						@Html.Hidden("RememberMe", @Model.RememberMe)
-						@Html.Hidden("UserId", @Model.UserId)
 						@Html.Hidden("Provider", @Model.Provider)
-
-
-
+						@Html.Hidden("ReturnUrl", @Model.ReturnUrl)
+						@Html.Hidden("RememberMe", @Model.RememberMe)
+						@Html.Hidden("UserId", @Model.UserId)			
 
 						<!--begin::Icon-->
 						<div class="text-center mb-10">
@@ -48,7 +46,7 @@
 							<div class="fw-bold text-start text-gray-900 fs-6 mb-1 ms-1">Escribe tu código de seguridad de 6 dígitos</div>
 							<!--end::Label-->
 							<!--begin::Input group-->
-							<div class="d-flex flex-wrap flex-stack">
+							<div class="d-flex flex-wrap flex-stack" id="input-container">
 								<input type="text" name="code_1" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
 								<input type="text" name="code_2" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
 								<input type="text" name="code_3" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
@@ -74,15 +72,11 @@
 					<!--end::Form-->
 					<!--begin::Notice-->
 					<div class="text-center fw-semibold fs-5 mt-10">
-						@Html.ActionLink("Probar otro método","SendCode","Account",
-											new
-											{
-												returnUrl = Model.ReturnUrl, 
-												rememberMe = Model.RememberMe,           
-												userId = Model.UserId 
-											},
+						@* @Html.ActionLink("Probar otro método","SendCode","Account",
+															TempData["Send2FACodeData"].ToString(),
 											new { @class = "link-primary fs-5 me-1" }
-										)
+										) *@
+						<a href="javascript:setTempData()" class="link-primary fs-5 me-1">Probar otro método</a> 
 					</div>
 					<!--end::Notice-->
 				</div>
@@ -128,6 +122,36 @@
 <!--end::Root-->
 @section scripts {
 	<script>
+		$(document).ready(function() {
+			const inputs = document.querySelectorAll("#input-container input");
+
+			inputs.forEach((input, index) => {
+			  input.addEventListener("input", function () {
+				if (input.value.length === input.maxLength) {
+				  // Mueve el foco al siguiente input si existe
+				  const nextInput = inputs[index + 1];
+				  if (nextInput) {
+					nextInput.focus();
+				  }
+				}
+			  });
+
+			  // Permitir retroceso al input anterior
+			  input.addEventListener("keydown", function (e) {
+				if (e.key === "Backspace" && input.value === "") {
+				  const prevInput = inputs[index - 1];
+				  if (prevInput) {
+					prevInput.focus();
+				  }
+				}
+			  });
+			});
+
+			
+
+
+		});
+
 		// Define form element
 		const form = document.getElementById('myForm');
 
@@ -165,5 +189,40 @@
 
 			form.submit(); 
 		});
+
+		function setTempData() {
+			const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+			// Crear los datos a enviar
+			const model = {
+				Provider: document.querySelector('#Provider')?.value || "",
+				Code: "",
+				ReturnUrl: document.querySelector('#ReturnUrl')?.value || "",
+				RememberBrowser: document.querySelector('#RememberBrowser')?.value === "true",
+				RememberMe: document.querySelector('#RememberMe')?.value === "true",
+				UserId: document.querySelector('#UserId')?.value || "",
+				SendTo: ""
+			};
+
+			const url = "@Url.Content("~/Account/SetTempData")";
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
+				},
+				body: JSON.stringify(model)
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					window.location.href = data.redirectUrl;
+				} else {
+					console.error('Error al procesar la solicitud');
+				}
+			})
+			.catch(error => console.error('Error:', error));
+			
+		}
 	</script>
 }
