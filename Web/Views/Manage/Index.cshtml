@@ -55,7 +55,7 @@
 						<!--begin: Pic-->
 						<div class="me-7 mb-4">
 							<div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-								<img src="~/Template/assets/media/avatars/300-1.jpg" alt="image" />
+								<img src="~/Template/assets/media/avatars/blank.png" alt="image" />
 								<div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
 							</div>
 						</div>
@@ -121,12 +121,7 @@
 						<li class="nav-item mt-2">
 							<a class="nav-link text-active-primary ms-0 me-10 py-5" id="settings-tab" data-bs-toggle="tab" href="#settings">Ajustes</a>
 						</li>
-						<!--end::Nav item-->						
-						<!--begin::Nav item-->
-						<li class="nav-item mt-2">
-							<a class="nav-link text-active-primary ms-0 me-10 py-5" id="logs-tab" data-bs-toggle="tab" href="#logs">Logs</a>
-						</li>
-						<!--end::Nav item-->
+						<!--end::Nav item-->	
 					</ul>
 					<!--begin::Navs-->
 				</div>
@@ -137,7 +132,6 @@
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="overview"></div>
 				<div class="tab-pane fade" id="settings"></div>
-				<div class="tab-pane fade" id="logs"></div>
 			</div>
 			
 			
@@ -152,7 +146,6 @@
 		$(document).ready(function () {
 			LoadOverView();
 			LoadSettingsView();
-			LoadLogsView();
 		});
 
 		function LoadOverView(){
@@ -163,11 +156,6 @@
 		function LoadSettingsView(){
 			$.get('@Url.Action("Settings", "Manage")', function (data) {
 				$('#settings').html(data);
-			});
-		}
-		function LoadLogsView(){
-			$.get('@Url.Action("Logs", "Manage")', function (data) {
-				$('#logs').html(data);
 			});
 		}
 	</script>
