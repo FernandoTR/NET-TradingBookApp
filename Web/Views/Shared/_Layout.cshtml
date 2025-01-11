@@ -16,7 +16,7 @@
 	<meta property="og:url" content="https://keenthemes.com/metronic" />
 	<meta property="og:site_name" content="WebAppBase" />
 	<link rel="canonical" href="http://preview.keenthemes.comindex.html" />
-	<link rel="shortcut icon" href="~/wwwroot/favicon.ico" />
+	<link rel="shortcut icon" href="~/favicon.ico" />
 	<!--begin::Fonts(mandatory for all pages)-->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 	<!--end::Fonts-->
@@ -66,7 +66,7 @@
 						<!--end::Sidebar mobile toggle-->
 						<!--begin::Mobile logo-->
 						<div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-							<a href="index.html" class="d-lg-none">
+							<a href="@Url.Action("Index","Home")" class="d-lg-none">
 								<img alt="Logo" src="~/Template/assets/media/logos/default-small.svg" class="h-30px" />
 							</a>
 						</div>
@@ -78,9 +78,7 @@
 							</div>
 							<!--end::Menu wrapper-->
 							<!--begin::Navbar-->
-							<div class="app-navbar flex-shrink-0">
-
-								
+							<div class="app-navbar flex-shrink-0">								
 								<!--begin::Theme mode-->
 								<div class="app-navbar-item ms-1 ms-md-4">
 									<!--begin::Menu toggle-->
@@ -237,7 +235,7 @@
 						<!--begin::Logo-->
 						<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
 							<!--begin::Logo image-->
-							<a href="index.html">
+							<a href="@Url.Action("Index","Home")">
 								<img alt="Logo" src="~/Template/assets/media/logos/default-dark.svg" class="h-25px app-sidebar-logo-default" />
 								<img alt="Logo" src="~/Template/assets/media/logos/default-small.svg" class="h-20px app-sidebar-logo-minimize" />
 							</a>
@@ -296,16 +294,14 @@
 								<!--begin::Copyright-->
 								<div class="text-gray-900 order-2 order-md-1">
 									<span class="text-muted fw-semibold me-1">@DateTime.Now.Year &copy;</span>
-									<a href="https://keenthemes.com" target="_blank" class="text-gray-800 text-hover-primary">FTORRES</a>
+									<a href="#" target="_blank" class="text-gray-800 text-hover-primary">FTORRES</a>
 								</div>
 								<!--end::Copyright-->
 								<!--begin::Menu-->
 								<ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
+									
 									<li class="menu-item">
-										<a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
-									</li>
-									<li class="menu-item">
-										<a href="https://devs.keenthemes.com" target="_blank" class="menu-link px-2">Support</a>
+										<a href="#" target="_blank" class="menu-link px-2">Support</a>
 									</li>
 								</ul>
 								<!--end::Menu-->
