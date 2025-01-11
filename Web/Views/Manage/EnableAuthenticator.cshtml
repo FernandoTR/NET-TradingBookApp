@@ -25,7 +25,7 @@
 		</label>
 		<!--end::Option-->
 		<!--begin::Option-->
-		<input type="radio" class="btn-check" name="auth_option" value="sms" id="kt_modal_two_factor_authentication_option_2" />
+		<input type="radio" class="btn-check" name="auth_option" value="sms" id="kt_modal_two_factor_authentication_option_2" disabled />
 		<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center" for="kt_modal_two_factor_authentication_option_2">
 			<i class="ki-duotone ki-message-text-2 fs-4x me-4">
 				<span class="path1"></span>
@@ -99,7 +99,7 @@
 		<!--end::Input group-->
 		<!--begin::Actions-->
 		<div class="d-flex flex-center">
-			<button type="reset" id="apps-cancel" class="btn btn-light me-3">Cancelar</button>
+			<button type="button" id="apps-cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
 			<button type="button" id="apps-submit" class="btn btn-primary">
 				<span class="indicator-label">Enviar</span>
 				<span class="indicator-progress">
@@ -130,9 +130,9 @@
 		<!--end::Input group-->
 		<!--begin::Actions-->
 		<div class="d-flex flex-center">
-			<button type="reset" id="sms-cancel" class="btn btn-light me-3">Cancel</button>
+			<button type="button" id="sms-cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
 			<button type="button" id="sms-submit" class="btn btn-primary">
-				<span class="indicator-label">Submit</span>
+				<span class="indicator-label">Enviar</span>
 				<span class="indicator-progress">
 					Espere por favor...
 					<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
