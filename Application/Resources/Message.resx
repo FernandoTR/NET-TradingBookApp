@@ -132,6 +132,12 @@
   <data name="EmployeeSuccessfullyUpdated" xml:space="preserve">
     <value>El empleado {0} se actualizo correctamente.</value>
   </data>
+  <data name="FigureSuccessfullySaved" xml:space="preserve">
+    <value>La figura {0} se grabo correctamente.</value>
+  </data>
+  <data name="FigureSuccessfullyUpdated" xml:space="preserve">
+    <value>La figura {0} se actualizó correctamente.</value>
+  </data>
   <data name="RolSuccessfullySaved" xml:space="preserve">
     <value>El perfil {0} se grabo correctamente.</value>
   </data>

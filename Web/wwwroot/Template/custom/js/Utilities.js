@@ -21,6 +21,13 @@ var renderStatusEmployee = function (data) {
 }
 
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
+var renderStatus = function (data) {
+    return data ?
+        '<div class="badge py-3 px-4 fs-7 badge-light-success">Activo</div>' :
+        '<div class="badge py-3 px-4 fs-7 badge-light-danger">Inactivo</div>';
+}
+
+// Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderTrueFalse = function (data) {
     return data == true ?
         '<i class="ki-duotone ki-verify text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :

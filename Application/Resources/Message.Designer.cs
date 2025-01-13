@@ -106,6 +106,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a La figura {0} se grabo correctamente..
+        /// </summary>
+        internal static string FigureSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("FigureSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a La figura {0} se actualizó correctamente..
+        /// </summary>
+        internal static string FigureSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("FigureSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El perfil {0} se grabo correctamente..
         /// </summary>
         internal static string RolSuccessfullySaved {

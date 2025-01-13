@@ -23,7 +23,7 @@ public enum Permissions
     [Description("Categoria")]
     Category = 5,
     [Description("Figura")]
-    Figure = 6,
+    CatFigure = 6,
     [Description("TradingBook")]
     TradingBook = 7,
     [Description("TradingBookAnalyticsTrigger")]

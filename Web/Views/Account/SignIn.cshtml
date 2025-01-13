@@ -25,7 +25,7 @@
 							<h1 class="text-gray-900 fw-bolder mb-3">Iniciar Sesión</h1>
 							<!--end::Title-->
 							<!--begin::Subtitle-->
-							<div class="text-gray-500 fw-semibold fs-6">Web Template</div>
+							<div class="text-gray-500 fw-semibold fs-6">Trading Book</div>
 							<!--end::Subtitle=-->
 						</div>
 						<!--begin::Heading-->
@@ -35,14 +35,12 @@
 						<div class="fv-row mb-8">
 							<!--begin::Email-->
 							@Html.TextBoxFor(m => m.Email, new { @class = "form-control bg-transparent", autocomplete = "off", placeholder = "Correo Electrónico" })
-							@* @Html.ValidationMessageFor(m => m.Email, "", new { @class = "fv-plugins-message-container invalid-feedback" }) *@
 							<!--end::Email-->
 						</div>
 						<!--end::Input group=-->
 						<div class="fv-row mb-3">
 							<!--begin::Password-->
 							@Html.PasswordFor(m => m.Password, new { @class = "form-control bg-transparent", autocomplete = "off", placeholder = "Contraseña" })
-							@* @Html.ValidationMessageFor(m => m.Password, "", new { @class = "fv-plugins-message-container invalid-feedback" }) *@
 							<!--end::Password-->
 						</div>
 						<!--end::Input group=-->

@@ -1,6 +1,7 @@
 ﻿
 using Application.Interfaces;
 using Application.Services;
+using Infrastructure;
 using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
         builder.Services.AddScoped<IStringUtilitiesService, StringUtilitiesService>();
-
-
+        builder.Services.AddScoped<ICatFigureService, CatFigureService>();
 
 
 
