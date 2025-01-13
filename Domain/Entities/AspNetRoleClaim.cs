@@ -14,10 +14,8 @@ public partial class AspNetRoleClaim
     [StringLength(450)]
     public string RoleId { get; set; } = null!;
 
-    [StringLength(256)]
     public string? ClaimType { get; set; }
 
-    [StringLength(256)]
     public string? ClaimValue { get; set; }
 
     [ForeignKey("RoleId")]
