@@ -61,7 +61,7 @@ El comando `Scaffold-DbContext` se utiliza en proyectos basados en Entity Framew
 
 ### **Comando Utilizado**
 ```bash
-Scaffold-DbContext 'Name=DefaultConnection' Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force -Tables AspNetRoles,AspNetUsers,AspNetUserRoles,AspNetRoleClaims,AspNetUserClaims,AspNetUserLogins,AspNetUserTokens
+Scaffold-DbContext 'Name=DefaultConnection' Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force 
 ```
 
 ### **Descripción de los Parámetros**
