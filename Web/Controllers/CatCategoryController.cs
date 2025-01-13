@@ -2,36 +2,33 @@
 using Application.Services;
 using Domain.Enums;
 using Infrastructure;
-using Infrastructure.Logging;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.Design;
 using Web.Helpers;
-using Web.Models;
 using Web.Models.Enums;
+using Web.Models;
 
 namespace Web.Controllers;
 
-public class CatFigureController : Controller
+public class CatCategoryController : Controller
 {
     private readonly IIdentityService _identityService;
     private readonly ILogService _logService;
     private readonly IMessageService _messageService;
-    private readonly ICatFigureService _catFigureService;
+    private readonly ICatCategoryService _catCategoryService;
 
     // Identificador del permiso 
-    private static int permissionNumber = (int)Permissions.CatFigure;
+    private static int permissionNumber = (int)Permissions.CatCategory;
 
-    public CatFigureController(IIdentityService identityService,
+    public CatCategoryController(IIdentityService identityService,
                                ILogService logService,
                                IMessageService messageService,
-                               ICatFigureService catFigureService)
+                               ICatCategoryService catCategoryService)
     {
         _identityService = identityService;
         _logService = logService;
         _messageService = messageService;
-        _catFigureService = catFigureService;
+        _catCategoryService = catCategoryService;
     }
-
 
     #region Carga de datos en el DataTable
 
@@ -55,7 +52,7 @@ public class CatFigureController : Controller
     [HttpPost]
     public async Task<ActionResult> JsonDataTable()
     {
-        var data = new List<CatFigureViewModel>();
+        var data = new List<CatCategoryViewModel>();
 
         try
         {
@@ -76,15 +73,13 @@ public class CatFigureController : Controller
 
 
             // Obtención de la consulta inicial de logs dentro del rango de fechas
-            var query = (await _catFigureService
+            var query = (await _catCategoryService
                         .GetAllAsync())
-                        .Select(x => new CatFigureViewModel
+                        .Select(x => new CatCategoryViewModel
                         {
                             Id = x.Id,
-                            Code = x.Code,
-                            Description = x.Description,
-                            IsActived = x.IsActived,
-                            Task = ActionButtonHelper.GenerateActionMenu(new ActionMenuModel 
+                            Name = x.Name,
+                            Task = ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
                             {
                                 Id = x.Id.ToString(),
                                 ActionOptionMenus = new List<ActionOptionMenuModel>
@@ -98,17 +93,17 @@ public class CatFigureController : Controller
                                  {
                                      Title = "Eliminar",
                                      JavaScriptAction = "showModaltoDelete",
-                                 },                                 
+                                 },
                                 }
 
                             })
                         });
-           
+
 
             // Filtrado por búsqueda (si existe)
             if (!string.IsNullOrEmpty(searchValue))
             {
-                query = query.Where(x => (x.Id + x.Code + x.Description).Contains(searchValue));
+                query = query.Where(x => (x.Id + x.Name ).Contains(searchValue));
             }
 
             // Ordenación
@@ -119,11 +114,8 @@ public class CatFigureController : Controller
                     case "Id":
                         query = sortColumnDir == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id);
                         break;
-                    case "Code":
-                        query = sortColumnDir == "asc" ? query.OrderBy(x => x.Code) : query.OrderByDescending(x => x.Code);
-                        break;
-                    case "Description":
-                        query = sortColumnDir == "asc" ? query.OrderBy(x => x.Description) : query.OrderByDescending(x => x.Description);
+                    case "Name":
+                        query = sortColumnDir == "asc" ? query.OrderBy(x => x.Name) : query.OrderByDescending(x => x.Name);
                         break;
                 }
             }
@@ -140,7 +132,7 @@ public class CatFigureController : Controller
         {
             // Manejo de errores y registro de la excepción
             ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("GenericError");
-            _logService.ErrorLog($"Controller: CatFigure, Action: JsonDataTable", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: JsonDataTable", ex);
         }
 
         // Retornar los datos al DataTable en formato JSON
@@ -154,8 +146,6 @@ public class CatFigureController : Controller
     }
 
     #endregion
-
-
 
     public IActionResult Index(NotificationType? notification, string message)
     {
@@ -187,7 +177,7 @@ public class CatFigureController : Controller
         }
         catch (Exception ex)
         {
-            _logService.ErrorLog($"Controller: CatFigure, Action: {nameof(Index)}", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: {nameof(Index)}", ex);
             return RedirectToAction("index", "Home");
         }
 
@@ -210,7 +200,7 @@ public class CatFigureController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Save(CatFigureViewModel model)
+    public async Task<IActionResult> Save(CatCategoryViewModel model)
     {
         string message = string.Empty;
         NotificationType notification = NotificationType.Information;
@@ -226,17 +216,15 @@ public class CatFigureController : Controller
 
         try
         {
-            var figure = new CatFigure()
+            var figure = new CatCategory()
             {
-                Code = model.Code.Trim(),
-                Description = model.Description.Trim(),
-                IsActived = true
+                Name = model.Name.Trim()
             };
 
-            if (await _catFigureService.AddAsync(figure))
+            if (await _catCategoryService.AddAsync(figure))
             {
                 notification = NotificationType.Success;
-                message = string.Format(_messageService.GetResourceMessage("FigureSuccessfullySaved"), model.Description);
+                message = string.Format(_messageService.GetResourceMessage("CategorySuccessfullySaved"), model.Name);
             }
             else
             {
@@ -248,7 +236,7 @@ public class CatFigureController : Controller
         {
             message = _messageService.GetResourceError("GenericError");
             notification = NotificationType.Error;
-            _logService.ErrorLog($"Controller: CatFigure, Action: {nameof(Save)}", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: {nameof(Save)}", ex);
         }
 
         return RedirectToAction("Index", new { notification = notification, message = message });
@@ -266,30 +254,28 @@ public class CatFigureController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        CatFigureViewModel model = null;
+        CatCategoryViewModel model = null;
         try
         {
-            var figure = await _catFigureService.GetByIdAsync(id);
-            model = new CatFigureViewModel()
+            var category = await _catCategoryService.GetByIdAsync(id);
+            model = new CatCategoryViewModel()
             {
-                Id = figure.Id,
-                Code = figure.Code,
-                Description = figure.Description,
-                IsActived = (bool)figure.IsActived
+                Id = category.Id,
+                Name = category.Name
             };
 
         }
         catch (Exception ex)
         {
             ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("FailedToFindItem");
-            _logService.ErrorLog($"Controller: CatFigure, Action: {nameof(Edit)}", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: {nameof(Edit)}", ex);
         }
 
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(CatFigureViewModel model)
+    public async Task<IActionResult> Update(CatCategoryViewModel model)
     {
         // Recuperar el usuario logueado
         var currentUser = _identityService.GetCurrentUserAsync();
@@ -306,18 +292,16 @@ public class CatFigureController : Controller
 
         try
         {
-            var figure = new CatFigure()
+            var figure = new CatCategory()
             {
                 Id = model.Id,
-                Code = model.Code.Trim(),
-                Description = model.Description.Trim(),
-                IsActived = (bool)model.IsActived
+                Name = model.Name.Trim()
             };
 
-            if (await _catFigureService.UpdateAsync(figure))
+            if (await _catCategoryService.UpdateAsync(figure))
             {
                 notification = NotificationType.Success;
-                message = string.Format(_messageService.GetResourceMessage("FigureSuccessfullyUpdated"), model.Description);
+                message = string.Format(_messageService.GetResourceMessage("CategorySuccessfullyUpdated"), model.Name);
             }
             else
             {
@@ -329,7 +313,7 @@ public class CatFigureController : Controller
         {
             message = _messageService.GetResourceError("GenericError");
             notification = NotificationType.Error;
-            _logService.ErrorLog($"Controller: CatFigure, Action: {nameof(Update)}", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: {nameof(Update)}", ex);
         }
 
 
@@ -346,19 +330,18 @@ public class CatFigureController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        
+
         try
         {
-            bool isDeleted = await _catFigureService.DeleteAsync(id);
+            bool isDeleted = await _catCategoryService.DeleteAsync(id);
 
             // Devolver un resultado indicando si la eliminación fue exitosa
             return Content(isDeleted.ToString().ToLower());
         }
         catch (Exception ex)
         {
-            _logService.ErrorLog($"Controller: CatFigure, Action: {nameof(Delete)}", ex);
+            _logService.ErrorLog($"Controller: CatCategory, Action: {nameof(Delete)}", ex);
             return Content("false");
         }
     }
-
 }

@@ -21,6 +21,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
         builder.Services.AddScoped<IStringUtilitiesService, StringUtilitiesService>();
         builder.Services.AddScoped<ICatFigureService, CatFigureService>();
+        builder.Services.AddScoped<ICatCategoryService, CatCategoryService>();
 
 
 

@@ -21,7 +21,7 @@ public enum Permissions
     [Description("Eventos")]
     Logs = 4,
     [Description("Categoria")]
-    Category = 5,
+    CatCategory = 5,
     [Description("Figura")]
     CatFigure = 6,
     [Description("TradingBook")]
