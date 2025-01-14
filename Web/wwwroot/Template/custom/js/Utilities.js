@@ -40,3 +40,8 @@ var renderFlag = function (data) {
         '<i class="ki-duotone ki-flag text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
         '<i class="ki-duotone ki-flag text-danger fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 }
+
+// Funcion para colocar imagen dependiendo del valor del dato obtenido por el dataTable
+var renderIconCoin = function (data) {
+    return '<div class="symbol symbol-circle symbol-50px overflow-hidden me-3"><div class="symbol-label"><img src="' + data + '" alt="IconCoin" class="w-100"></div></div > ';
+}

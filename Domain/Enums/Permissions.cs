@@ -44,4 +44,6 @@ public enum Permissions
     CatAccountType = 15,
     [Description("Frame")]
     CatFrame = 16,
+    [Description("Instrumentos")]
+    CatInstruments = 17,
 }

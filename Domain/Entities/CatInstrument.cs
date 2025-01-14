@@ -37,6 +37,9 @@ public partial class CatInstrument
     [Column(TypeName = "datetime")]
     public DateTime UpdatedAt { get; set; }
 
+    [Unicode(false)]
+    public string? LinkIcon { get; set; }
+
     [InverseProperty("CatInstrument")]
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

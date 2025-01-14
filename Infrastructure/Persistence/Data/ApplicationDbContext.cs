@@ -1,4 +1,7 @@
-﻿using Infrastructure.Identity;
+﻿using System;
+using System.Collections.Generic;
+using Infrastructure;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +28,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Application> Applications { get; set; }
 
-    public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }  
+    public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }
 
     public virtual DbSet<CatAccountType> CatAccountTypes { get; set; }
 
@@ -67,8 +70,6 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<UserType> UserTypes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

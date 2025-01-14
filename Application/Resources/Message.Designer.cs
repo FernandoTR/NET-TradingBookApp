@@ -160,6 +160,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El instrumento {0} se grabo correctamente..
+        /// </summary>
+        internal static string InstrumentsSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("InstrumentsSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El instrumento {0} se actualizó correctamente..
+        /// </summary>
+        internal static string InstrumentsSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("InstrumentsSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El perfil {0} se grabo correctamente..
         /// </summary>
         internal static string RolSuccessfullySaved {

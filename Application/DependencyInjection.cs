@@ -24,6 +24,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICatCategoryService, CatCategoryService>();
         builder.Services.AddScoped<ICatAccountTypeService, CatAccountTypeService>();
         builder.Services.AddScoped<ICatFrameService, CatFrameService>();
+        builder.Services.AddScoped<ICatInstrumentsService, CatInstrumentsService>();
+
 
 
 

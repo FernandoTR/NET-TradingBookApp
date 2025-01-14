@@ -150,6 +150,12 @@
   <data name="FrameSuccessfullyUpdated" xml:space="preserve">
     <value>El frame {0} se actualizó correctamente.</value>
   </data>
+  <data name="InstrumentsSuccessfullySaved" xml:space="preserve">
+    <value>El instrumento {0} se grabo correctamente.</value>
+  </data>
+  <data name="InstrumentsSuccessfullyUpdated" xml:space="preserve">
+    <value>El instrumento {0} se actualizó correctamente.</value>
+  </data>
   <data name="RolSuccessfullySaved" xml:space="preserve">
     <value>El perfil {0} se grabo correctamente.</value>
   </data>
