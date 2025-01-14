@@ -61,7 +61,7 @@ El comando `Scaffold-DbContext` se utiliza en proyectos basados en Entity Framew
 
 ### **Comando Utilizado**
 ```bash
-Scaffold-DbContext 'Name=DefaultConnection' Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force -Tables AspNetRoles,AspNetUsers,AspNetUserRoles,AspNetRoleClaims,AspNetUserClaims,AspNetUserLogins,AspNetUserTokens
+Scaffold-DbContext 'Name=DefaultConnection' Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../Domain/Entities -ContextDir ../Infrastructure/Persistence/Data -Context ApplicationDbContext -DataAnnotations -Force 
 ```
 
 ### **Descripción de los Parámetros**
@@ -73,13 +73,13 @@ Scaffold-DbContext 'Name=DefaultConnection' Microsoft.EntityFrameworkCore.SqlSer
 - **-Context ApplicationDbContext**: Nombre que se asignará a la clase del contexto generado.
 - **-DataAnnotations**: Utiliza anotaciones de datos en las clases de entidad en lugar de solo la API fluida.
 - **-Force**: Sobrescribe cualquier archivo generado previamente.
-- **-Tables**: Excluir tablas de ASP.NET Identity del Scaffolding.
 
 ### Acciones Posteriores
 
 1. **Eliminar la Cadena de Conexión en el Contexto**.
 Una vez generado el contexto, es importante asegurar que la cadena de conexión no quede expuesta en el código fuente por motivos de seguridad.
 
+2. **Eliminar del contexto las tablas de identity** (por ejemplo, tablas AspNetUsers, AspNetRoles, etc.) ya que la implementación de IdentityDbContext ya las incluye.
 
 ## Configuración del archivo `appsettings.json`
 1. Copia el archivo `appsettings.json` del repositorio.

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccountTypeSuccessfullySaved" xml:space="preserve">
+    <value>El tipo de cuenta {0} se grabo correctamente.</value>
+  </data>
+  <data name="AccountTypeSuccessfullyUpdated" xml:space="preserve">
+    <value>El tipo de cuenta {0} se actualizó correctamente.</value>
+  </data>
   <data name="CategorySuccessfullySaved" xml:space="preserve">
     <value>La categoría {0} se grabo correctamente.</value>
   </data>
@@ -131,6 +137,24 @@
   </data>
   <data name="EmployeeSuccessfullyUpdated" xml:space="preserve">
     <value>El empleado {0} se actualizo correctamente.</value>
+  </data>
+  <data name="FigureSuccessfullySaved" xml:space="preserve">
+    <value>La figura {0} se grabo correctamente.</value>
+  </data>
+  <data name="FigureSuccessfullyUpdated" xml:space="preserve">
+    <value>La figura {0} se actualizó correctamente.</value>
+  </data>
+  <data name="FrameSuccessfullySaved" xml:space="preserve">
+    <value>El frame {0} se grabo correctamente.</value>
+  </data>
+  <data name="FrameSuccessfullyUpdated" xml:space="preserve">
+    <value>El frame {0} se actualizó correctamente.</value>
+  </data>
+  <data name="InstrumentsSuccessfullySaved" xml:space="preserve">
+    <value>El instrumento {0} se grabo correctamente.</value>
+  </data>
+  <data name="InstrumentsSuccessfullyUpdated" xml:space="preserve">
+    <value>El instrumento {0} se actualizó correctamente.</value>
   </data>
   <data name="RolSuccessfullySaved" xml:space="preserve">
     <value>El perfil {0} se grabo correctamente.</value>

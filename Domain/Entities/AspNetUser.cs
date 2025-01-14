@@ -51,13 +51,16 @@ public partial class AspNetUser
     [StringLength(256)]
     public string? ConcurrencyStamp { get; set; }
 
-    public DateTime? LockoutEnd { get; set; }
+    public DateTimeOffset? LockoutEnd { get; set; }
 
     [StringLength(256)]
     public string? NormalizedUserName { get; set; }
 
     [StringLength(256)]
     public string? NormalizedEmail { get; set; }
+
+    [InverseProperty("User")]
+    public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
 
     [InverseProperty("User")]
     public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
@@ -79,6 +82,9 @@ public partial class AspNetUser
 
     [InverseProperty("Author")]
     public virtual ICollection<Employee> EmployeeAuthors { get; set; } = new List<Employee>();
+
+    [InverseProperty("Author")]
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     [InverseProperty("User")]
     public virtual ICollection<PasswordHistory> PasswordHistories { get; set; } = new List<PasswordHistory>();

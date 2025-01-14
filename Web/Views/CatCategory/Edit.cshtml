@@ -1,0 +1,93 @@
+﻿@model Web.Models.CatCategoryViewModel
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("Update", "CatCategory", FormMethod.Post, new { id = "frmdata" }))
+{
+    @Html.AntiForgeryToken()
+
+
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Name, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Name, new { @class = "form-control form-control-solid" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Actions-->
+    <div class="text-center">
+        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnSave" class="btn btn-primary">
+            <span class="indicator-label">Guardar</span>
+            <span class="indicator-progress">
+                Espere por favor...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+    </div>
+    <!--end::Actions-->
+    <div hidden>
+        @Html.HiddenFor(d => d.Id)
+    </div>
+}
+<script type="text/javascript">
+     $(document).ready(function() {
+            // Define form element
+            let form = document.getElementById('frmdata');
+
+            // Init form validation rules.
+            var validator = FormValidation.formValidation(
+                form,
+                {
+                    fields: {
+                        'Name': {
+                            validators: {
+                                notEmpty: {
+                                    message: 'El nombre es obligatorio'
+                                },
+                                stringLength: {
+                                    min: 1,
+                                    max: 50,
+                                    message: 'Debe tener entre 1 y 50 caracteres'
+                                },
+                            }
+                        },
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap: new FormValidation.plugins.Bootstrap5({
+                            rowSelector: '.fv-row',
+                            eleInvalidClass: '',
+                            eleValidClass: ''
+                        }),
+                    }
+
+                }
+            );
+
+            // Submit button handler
+            const submitButton = document.getElementById('btnSave');
+            submitButton.addEventListener('click', function (e) {
+                // Prevent default button action
+                e.preventDefault();
+
+                // Validate form before submit
+                if (validator) {
+                    validator.validate().then(function (status) {
+                        if (status == 'Valid') {
+                            // Show loading indication
+                            submitButton.setAttribute('data-kt-indicator', 'on');
+
+                            // Disable button to avoid multiple click
+                            submitButton.disabled = true;
+
+                            form.submit(); // Submit form
+                        }
+                    });
+                }
+            });
+
+
+
+    });
+</script>

@@ -21,9 +21,9 @@ public enum Permissions
     [Description("Eventos")]
     Logs = 4,
     [Description("Categoria")]
-    Category = 5,
+    CatCategory = 5,
     [Description("Figura")]
-    Figure = 6,
+    CatFigure = 6,
     [Description("TradingBook")]
     TradingBook = 7,
     [Description("TradingBookAnalyticsTrigger")]
@@ -39,5 +39,11 @@ public enum Permissions
     [Description("TradingBookAnalyticsStage")]
     TradingBookAnalyticsStage = 13,
     [Description("TradingBookAnalyticsTime")]
-    TradingBookAnalyticsTime = 14
+    TradingBookAnalyticsTime = 14,
+    [Description("TipoCuenta")]
+    CatAccountType = 15,
+    [Description("Frame")]
+    CatFrame = 16,
+    [Description("Instrumentos")]
+    CatInstruments = 17,
 }

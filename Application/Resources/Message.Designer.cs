@@ -61,6 +61,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El tipo de cuenta {0} se grabo correctamente..
+        /// </summary>
+        internal static string AccountTypeSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("AccountTypeSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El tipo de cuenta {0} se actualizó correctamente..
+        /// </summary>
+        internal static string AccountTypeSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("AccountTypeSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a La categoría {0} se grabo correctamente..
         /// </summary>
         internal static string CategorySuccessfullySaved {
@@ -102,6 +120,60 @@ namespace Application.Resources {
         internal static string EmployeeSuccessfullyUpdated {
             get {
                 return ResourceManager.GetString("EmployeeSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a La figura {0} se grabo correctamente..
+        /// </summary>
+        internal static string FigureSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("FigureSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a La figura {0} se actualizó correctamente..
+        /// </summary>
+        internal static string FigureSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("FigureSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El frame {0} se grabo correctamente..
+        /// </summary>
+        internal static string FrameSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("FrameSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El frame {0} se actualizó correctamente..
+        /// </summary>
+        internal static string FrameSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("FrameSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El instrumento {0} se grabo correctamente..
+        /// </summary>
+        internal static string InstrumentsSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("InstrumentsSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El instrumento {0} se actualizó correctamente..
+        /// </summary>
+        internal static string InstrumentsSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("InstrumentsSuccessfullyUpdated", resourceCulture);
             }
         }
         

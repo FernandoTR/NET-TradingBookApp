@@ -1,8 +1,7 @@
-﻿@model List<Web.Models.UsersListViewModel>
+﻿@model List<Web.Models.CatAccountTypeViewModel>
 
 @{
-    ViewBag.Title = "Usuarios";
-
+	ViewData["Title"] = "Tipo de Cuenta";
 }
 
 <!--begin::Content wrapper-->
@@ -14,13 +13,13 @@
 			<!--begin::Page title-->
 			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 				<!--begin::Title-->
-				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Catálogo de Usuarios</h1>
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Catálogo de Tipo de Cuentas</h1>
 				<!--end::Title-->
 				<!--begin::Breadcrumb-->
 				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 					<!--begin::Item-->
 					<li class="breadcrumb-item text-muted">
-						<a href="index.html" class="text-muted text-hover-primary">Sistema</a>
+						<a href="index.html" class="text-muted text-hover-primary">Configuración</a>
 					</li>
 					<!--end::Item-->
 					<!--begin::Item-->
@@ -29,7 +28,17 @@
 					</li>
 					<!--end::Item-->
 					<!--begin::Item-->
-					<li class="breadcrumb-item text-muted">Usuarios</li>
+					<li class="breadcrumb-item text-muted">
+						<a href="index.html" class="text-muted text-hover-primary">Catálogos</a>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item">
+						<span class="bullet bg-gray-500 w-5px h-2px"></span>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item text-muted">Tipo Cuentas</li>
 					<!--end::Item-->
 				</ul>
 				<!--end::Breadcrumb-->
@@ -37,7 +46,9 @@
 			<!--end::Page title-->
 			<!--begin::Actions-->
 			<div class="d-flex align-items-center gap-2 gap-lg-3">
-				
+				<!--begin::Primary button-->
+				<a href="javascript:showModalForNew()" class="btn btn-sm fw-bold btn-primary" data-toggle='tooltip' data-placement='top' title='Agregar nuevo tipo de cuenta'>Nuevo</a>
+				<!--end::Primary button-->
 			</div>
 			<!--end::Actions-->
 		</div>
@@ -66,40 +77,25 @@
 	<!--end::Content-->
 </div>
 <!--end::Content wrapper-->
-
-
 @section scripts {
 	<script>
 		$(document).ready(function () {
+
 
 			// Función para cargar datos en la tabla
 			function loadTableDate() {
 				$('#dtTable').DataTable({
 					destroy: true, // Destruir instancia previa para evitar conflictos
 					ajax: {
-						url: "@Url.Content("~/Users/JsonDataTable")",
+						url: "@Url.Content("~/CatAccountType/JsonDataTable")",
 						type: "POST",
 						dataType: "json"
 					},
 					columns: [
-						{ name: "email", title: "Usuario", data: "email", autoWidth: true,  className: "min-w-100px " },
-						{ name: "emailConfirmed", title: "Correo Confirmado", data: "emailConfirmed", autoWidth: true,  className: "text-center min-w-100px ", render: renderTrueFalse },
-						{ name: "resetFlag", title: "Bandera Reseteo", data: "resetFlag", autoWidth: true,  className: "text-center min-w-100px ", render: renderFlag },
-						{ name: "name", title: "Rol", data: "name", autoWidth: true,  className: "text-center min-w-100px " },
-						{ name: "status", title: "Estatus", data: "status", autoWidth: true,  className: "text-center min-w-100px ", render: renderStatusEmployee },
-						{ name: "accesFailedCount", title: "Accesos Erroneos", data: "accesFailedCount", autoWidth: true,  className: "text-center min-w-100px " },
-						{ name: "passwordEndDate",
-						  title: "Fecha Fin Contraseña",
-						  data: "passwordEndDate",
-						  autoWidth: true,
-						  className: "text-center min-w-100px ",
-						  render: function (data, type, row) {
-								// Formatear la fecha solo en las celdas visibles
-								return type === 'display' || type === 'filter'
-									? moment(data).format("DD/MM/YYYY HH:mm:ss")
-									: data;
-							}
-						},
+						{ name: "id", title: "Número", data: "id", autoWidth: true,  className: "min-w-50px " },
+						{ name: "code", title: "Código", data: "code", autoWidth: true,  className: "min-w-100px " },
+						{ name: "description", title: "Descripción", data: "description", autoWidth: true,  className: "text-center min-w-200px " },
+						{ name: "isActived", title: "Estado", data: "isActived", autoWidth: true,  className: "text-center min-w-100px ", render: renderStatus },
 						{ name: "task", title: "Acciones", data: "task", autoWidth: true, orderable: false,  className: "text-end min-w-100px "  }
 					],
 					processing: true,
@@ -134,13 +130,14 @@
 					drawCallback: function () {
 						$('[data-toggle="tooltip"]').tooltip();
 						KTMenu.createInstances(); // Reinitialize Keenthemes menu
-					},					
+					},
 				});
 			}
 
 			// Recargar datos de la tabla
-			loadTableDate();			
+			loadTableDate();
 		});
+
 
 		function showModal(urlContent, title, subtitle) {
 			fetch(urlContent).then((response) => {
@@ -150,40 +147,39 @@
 				$('#title-modal').html(title);
 				$('#subtitle-modal').html(subtitle);
 				$("#vModal").modal("show");
-				$("#EmployeeNumber").focus();
 			});
 		}
 
-		//funcion para editar usuario
+
+		function showModalForNew() {
+			urlContentModal = "@Url.Content("~/CatAccountType/New")";
+			showModal(urlContentModal, 'Nuevo Tipo','');
+			$('[data-toggle="tooltip"]').tooltip()
+		}
+
+
 		function showModalForUpdate(id) {
-			urlContentModal = "@Url.Content("~/Users/Edit/?id=")" + id;
-			showModal(urlContentModal, 'Editar Usuario','')
+			urlContentModal = "@Url.Content("~/CatAccountType/Edit/?id=")" + id;
+			showModal(urlContentModal, 'Editar Tipo','')
 		}
 
-		//funcion para editar o asignar roles al usuario
-		function showModalForModifyRoles(id) {		
-			urlContentModal = "@Url.Content("~/Users/Edit/?id=")" + id;
-			showModal(urlContentModal, 'Modificar Perfil Para el Usuario','')
-		}
-
-		//funcion para dar de baja logica a un Usuario el proceso es por ID
-		function toDeleteUser(id) {		   
+		function showModaltoDelete(id) {
+			console.log(id)
 			$("#confirmButtonYes").bind('click', () => {
 				$("#confirmButtonYes").unbind('click');
 				$("#confirmDialog").modal("hide");
 				processingDelete(id);
 			});
-			$('#confirmDialogContent').html('¿Esta usted seguro de eliminar/activar Usuario?')
-			$('#confirmTitle').html('Cambiar estatus del usuario');
+			$('#confirmDialogContent').html('¿Esta usted seguro de eliminar el tipo de cuenta?')
+			$('#confirmTitle').html('Dar de baja el tipo de cuenta');
 			$("#confirmDialog").modal("show");
 		}
 
-		function processingDelete(id) {	
-			console.log("id eliminar" + id);
-			var urlConfirmModal = "@Url.Content("~/Users/Delete")";
+		function processingDelete(id) {
+			var urlConfirmModal = "@Url.Content("~/CatAccountType/Delete")";
 			fetch(urlConfirmModal, {
 				method: 'POST',
-				body: JSON.stringify(id), // data can be `string` or {object}!
+				body: JSON.stringify(id),
 				headers: {
 					'Content-Type': 'application/json'
 				}
@@ -191,16 +187,13 @@
 				.catch(error => console.error('Error:', error))
 				.then((data) => {
 					if (data === 'true') {
-						var urlIndex = "@Html.Raw(Url.Action("Index", "Users", new { message = "Se actualizo el estatus del usuario", notification = "Success" }))";
+						var urlIndex = "@Html.Raw(Url.Action("Index", "CatAccountType", new { message = "El tipo de cuenta fue eliminada correctamente.", notification = "Success" }))";
 					} else {
-						var urlIndex = "@Html.Raw(Url.Action("Index", "Users", new { message = "Ocurrio un problema", notification = Web.Models.Enums.NotificationType.Error }))";
+						var urlIndex = "@Html.Raw(Url.Action("Index", "CatAccountType", new { message = "Ocurrio un problema", notification = Web.Models.Enums.NotificationType.Error }))";
 					}
-				   
 					window.location.href = urlIndex;
 				});
 		}
 
 	</script>
-
-
 }
