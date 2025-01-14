@@ -3,15 +3,15 @@ using Infrastructure;
 
 namespace Application.Services;
 
-public class CatCategoryService : ICatCategoryService
+public class CatAccountTypeService : ICatAccountTypeService
 {
-    private readonly IGenericRepository<CatCategory> _repository;
-    public CatCategoryService(IGenericRepository<CatCategory> repository)
+    private readonly IGenericRepository<CatAccountType> _repository;
+    public CatAccountTypeService(IGenericRepository<CatAccountType> repository)
     {
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatCategory entity)
+    public Task<bool> AddAsync(CatAccountType entity)
     {
         return _repository.AddAsync(entity);
     }
@@ -21,17 +21,17 @@ public class CatCategoryService : ICatCategoryService
         return _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatCategory>> GetAllAsync()
+    public Task<IEnumerable<CatAccountType>> GetAllAsync()
     {
         return _repository.GetAllAsync();
     }
 
-    public Task<CatCategory?> GetByIdAsync(int id)
+    public Task<CatAccountType?> GetByIdAsync(int id)
     {
         return _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatCategory entity)
+    public Task<bool> UpdateAsync(CatAccountType entity)
     {
         return _repository.UpdateAsync(entity);
     }

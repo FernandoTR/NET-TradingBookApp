@@ -61,6 +61,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El tipo de cuenta {0} se grabo correctamente..
+        /// </summary>
+        internal static string AccountTypeSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("AccountTypeSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El tipo de cuenta {0} se actualizó correctamente..
+        /// </summary>
+        internal static string AccountTypeSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("AccountTypeSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a La categoría {0} se grabo correctamente..
         /// </summary>
         internal static string CategorySuccessfullySaved {

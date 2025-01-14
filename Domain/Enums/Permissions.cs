@@ -39,5 +39,7 @@ public enum Permissions
     [Description("TradingBookAnalyticsStage")]
     TradingBookAnalyticsStage = 13,
     [Description("TradingBookAnalyticsTime")]
-    TradingBookAnalyticsTime = 14
+    TradingBookAnalyticsTime = 14,
+    [Description("TipoCuenta")]
+    CatAccountType = 15,
 }
