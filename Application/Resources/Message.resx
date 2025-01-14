@@ -144,6 +144,12 @@
   <data name="FigureSuccessfullyUpdated" xml:space="preserve">
     <value>La figura {0} se actualizó correctamente.</value>
   </data>
+  <data name="FrameSuccessfullySaved" xml:space="preserve">
+    <value>El frame {0} se grabo correctamente.</value>
+  </data>
+  <data name="FrameSuccessfullyUpdated" xml:space="preserve">
+    <value>El frame {0} se actualizó correctamente.</value>
+  </data>
   <data name="RolSuccessfullySaved" xml:space="preserve">
     <value>El perfil {0} se grabo correctamente.</value>
   </data>

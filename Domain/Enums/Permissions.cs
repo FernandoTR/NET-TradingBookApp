@@ -42,4 +42,6 @@ public enum Permissions
     TradingBookAnalyticsTime = 14,
     [Description("TipoCuenta")]
     CatAccountType = 15,
+    [Description("Frame")]
+    CatFrame = 16,
 }

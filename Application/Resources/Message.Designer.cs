@@ -142,6 +142,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a El frame {0} se grabo correctamente..
+        /// </summary>
+        internal static string FrameSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("FrameSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El frame {0} se actualizó correctamente..
+        /// </summary>
+        internal static string FrameSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("FrameSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El perfil {0} se grabo correctamente..
         /// </summary>
         internal static string RolSuccessfullySaved {
