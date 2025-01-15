@@ -29,7 +29,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Application> Applications { get; set; }
 
     public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }
-
+   
     public virtual DbSet<CatAccountType> CatAccountTypes { get; set; }
 
     public virtual DbSet<CatCategory> CatCategories { get; set; }
@@ -103,9 +103,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AccountBalances_Accounts");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.AccountBalances)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AccountBalances_Orders");
+            entity.HasOne(d => d.Order).WithMany(p => p.AccountBalances).HasConstraintName("FK_AccountBalances_Orders");
         });
 
         modelBuilder.Entity<ActivityLog>(entity =>
@@ -134,7 +132,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasConstraintName("FK_ApplicationRoles_Roles");
         });
 
-       
+        
 
         modelBuilder.Entity<CatAccountType>(entity =>
         {

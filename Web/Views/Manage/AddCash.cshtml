@@ -1,0 +1,173 @@
+﻿@model Web.Models.AccountsViewModel
+
+@{
+    Layout = null;
+}
+
+
+
+<form id="frmdata">
+    @Html.AntiForgeryToken()
+
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.CurrentBalance, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 " })
+        @Html.TextBoxFor(d => d.CurrentBalance, new { @class = "form-control form-control-solid", disabled = true })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Input group-->
+    <div class="d-flex flex-column mb-8 fv-row">
+        @Html.LabelFor(d => d.Cash, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
+        @Html.TextBoxFor(d => d.Cash, new { @class = "form-control form-control-solid", Maxlength = 15, autocomplete="off" })
+    </div>
+    <!--end::Input group-->
+    <!--begin::Actions-->
+    <div class="text-center">
+        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnSave" class="btn btn-primary">
+            <span class="indicator-label">Guardar</span>
+            <span class="indicator-progress">
+                Espere por favor...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+    </div>
+    <!--end::Actions-->
+    <div hidden>
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.UserId)
+        @Html.HiddenFor(d => d.CatAccountTypeId)
+        @Html.HiddenFor(d => d.CatAccountTypeId)
+        @Html.HiddenFor(d => d.InitialBalance)
+        @Html.HiddenFor(d => d.Currency)
+    </div>
+</form>
+
+
+<script>
+    $(document).ready(function () {
+        Inputmask("decimal", {
+            groupSeparator: ",",         // Separador de miles
+            digits: 2,                   // Número de decimales
+            digitsOptional: false,       // Obliga a mostrar los decimales
+            prefix: "$ ",                // Prefijo de moneda
+            rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
+            allowMinus: false,           // No permitir números negativos
+            autoUnmask: true,            // Devuelve el valor sin formato al enviar
+        }).mask("#CurrentBalance");
+
+        Inputmask("decimal", {
+            groupSeparator: ",",         // Separador de miles
+            digits: 2,                   // Número de decimales
+            digitsOptional: false,       // Obliga a mostrar los decimales
+            prefix: "",                  // Prefijo de moneda
+            rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
+            allowMinus: false,           // No permitir números negativos
+            autoUnmask: true,            // Devuelve el valor sin formato al enviar
+        }).mask("#Cash");
+
+
+        // Define form element
+        let form = document.getElementById('frmdata');
+
+        // Init form validation rules.
+        var validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    'Cash': {
+                        validators: {
+                            notEmpty: {
+                                message: 'La cantidad es obligatoria'
+                            }, 
+                            callback: {
+                                message: 'El monto debe ser mayor a cero',
+                                callback: function (input) {
+                                    const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0; // Convierte a número
+
+                                    return cashValue > 0;
+                                },
+                            },
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: ''
+                    }),
+                }
+
+            }
+        );
+
+        // Submit button handler
+        const submitButton = document.getElementById('btnSave');
+        submitButton.addEventListener('click', function (e) {
+            // Prevent default button action
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validator) {
+                validator.validate().then(function (status) {
+                    if (status == 'Valid') {
+                        // Show loading indication
+                        submitButton.setAttribute('data-kt-indicator', 'on');
+
+                        // Disable button to avoid multiple click
+                        submitButton.disabled = true;
+
+
+                        AddCash();
+                    }
+                });
+            }
+        });
+
+         function AddCash() {
+            const id = parseInt(document.querySelector('#Id').value);
+            const cash = parseFloat(document.querySelector('#Cash').value);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            // Crear el objeto de datos para enviar
+            const data = {
+                Id: id,
+                Cash: cash.toFixed(2)
+            };
+
+            var url = "@Url.Content("~/Manage/AddCash")";
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                }
+            }).then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then((data) => {
+                // Show loading indication
+                submitButton.setAttribute('data-kt-indicator', 'off');
+
+                // Disable button to avoid multiple click
+                submitButton.disabled = false;
+
+                ShowNotification(data.notificationType, data.message);
+
+                if(data.success)
+                {
+                   $("#vModal").modal("hide");
+                   LoadBalanceView();
+                }
+
+
+            });
+
+
+        }
+
+
+    });
+</script>

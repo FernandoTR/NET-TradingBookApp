@@ -11,28 +11,28 @@ public class CatFrameService : ICatFrameService
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatFrame entity)
+    public async Task<bool> AddAsync(CatFrame entity)
     {
-        return _repository.AddAsync(entity);
+        return await _repository.AddAsync(entity);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatFrame>> GetAllAsync()
+    public async Task<IEnumerable<CatFrame>> GetAllAsync()
     {
-        return _repository.GetAllAsync();
+        return await _repository.GetAllAsync();
     }
 
-    public Task<CatFrame?> GetByIdAsync(int id)
+    public async Task<CatFrame?> GetByIdAsync(int id)
     {
-        return _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatFrame entity)
+    public async Task<bool> UpdateAsync(CatFrame entity)
     {
-        return _repository.UpdateAsync(entity);
+        return await _repository.UpdateAsync(entity);
     }
 }

@@ -13,28 +13,28 @@ public class CatFigureService : ICatFigureService
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatFigure entity)
+    public async Task<bool> AddAsync(CatFigure entity)
     {
-        return _repository.AddAsync(entity);
+        return await _repository.AddAsync(entity);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatFigure>> GetAllAsync()
+    public async Task<IEnumerable<CatFigure>> GetAllAsync()
     {
-        return _repository.GetAllAsync();
+        return await _repository.GetAllAsync();
     }
 
-    public Task<CatFigure?> GetByIdAsync(int id)
+    public async Task<CatFigure?> GetByIdAsync(int id)
     {
-        return _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatFigure entity)
+    public async Task<bool> UpdateAsync(CatFigure entity)
     {
-        return _repository.UpdateAsync(entity);
+        return await _repository.UpdateAsync(entity);
     }
 }

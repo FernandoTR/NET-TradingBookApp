@@ -112,6 +112,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IActivityLogsRepository, ActivityLogsRepository>();
         builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+        builder.Services.AddScoped<IAccountBalanceRepository, AccountBalanceRepository>();
+
 
         // Servicio de Generación de códigos QR
         builder.Services.AddTransient<IQrCodeGeneratorService, QrCodeGeneratorService>();

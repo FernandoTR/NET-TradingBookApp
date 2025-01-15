@@ -13,10 +13,14 @@ public partial class AccountBalance
 
     public int AccountId { get; set; }
 
-    public int OrderId { get; set; }
+    public int? OrderId { get; set; }
 
     [Column(TypeName = "decimal(18, 4)")]
     public decimal Balance { get; set; }
+
+    [StringLength(500)]
+    [Unicode(false)]
+    public string Reference { get; set; } = null!;
 
     [Column(TypeName = "datetime")]
     public DateTime UpdateAt { get; set; }
@@ -27,5 +31,5 @@ public partial class AccountBalance
 
     [ForeignKey("OrderId")]
     [InverseProperty("AccountBalances")]
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order? Order { get; set; }
 }

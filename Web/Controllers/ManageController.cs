@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Web.Models;
 using Web.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Application.Services;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
-using QRCoder;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Application.Common;
+using Infrastructure;
+using Application.Services;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using Web.Helpers;
+
 
 namespace Web.Controllers;
 
@@ -25,6 +25,8 @@ public class ManageController : Controller
     private readonly IUserEmailService _userEmailService;
     private readonly IUserService _userService;
     private readonly IQrCodeGeneratorService _qrCodeGeneratorService;
+    private readonly IAccountsService _accountsService;
+    private readonly IAccountBalancesService _accountBalancesService;
 
     public ManageController(IIdentityService identityService, 
                             IEmployeeService employeeService,
@@ -32,7 +34,9 @@ public class ManageController : Controller
                             IMessageService messageService,
                             IUserEmailService userEmailService,
                             IUserService userService,
-                            IQrCodeGeneratorService qrCodeGeneratorService)
+                            IQrCodeGeneratorService qrCodeGeneratorService,
+                            IAccountsService accountsService,
+                            IAccountBalancesService accountBalancesService)
     {
         _identityService = identityService;
         _employeeService = employeeService;
@@ -41,21 +45,13 @@ public class ManageController : Controller
         _userEmailService = userEmailService;
         _userService = userService;
         _qrCodeGeneratorService = qrCodeGeneratorService;
+        _accountsService = accountsService;
+        _accountBalancesService = accountBalancesService;
     }
 
     // GET: /Manage/Index
-    public async Task<ActionResult> Index(ManageMessageId? message)
-    {       
-
-        ViewBag.StatusMessage =
-            message == ManageMessageId.ChangePasswordSuccess ? "Su contraseña se ha cambiado."
-            : message == ManageMessageId.SetPasswordSuccess ? "Su contraseña se ha establecido."
-            : message == ManageMessageId.SetTwoFactorSuccess ? "Su proveedor de autenticación de dos factores se ha establecido."
-            : message == ManageMessageId.Error ? "Se ha producido un error."
-            : message == ManageMessageId.AddPhoneSuccess ? "Se ha agregado su número de teléfono."
-            : message == ManageMessageId.RemovePhoneSuccess ? "Se ha quitado su número de teléfono."
-            : "";
-
+    public async Task<ActionResult> Index()
+    {     
         var account = await GetUserAccountAsync();
         var userId = account.AspNetUser.Id;
         var model = new IndexViewModel
@@ -114,7 +110,31 @@ public class ManageController : Controller
         return PartialView("_Settings", model);
     }
 
-  
+    /// <summary>
+    /// Muestra el balance de la cuenta del usuario.
+    /// </summary>
+    /// <returns>Vista parcial con el balance de la cuenta del usuario.</returns>
+    public async Task<PartialViewResult> Balance()
+    {
+        var account = await GetUserAccountAsync();
+
+        // Recuperar las cuentas que están asociadas al usuario
+        var options = new QueryOptions<Account>
+        {
+            Where = o => o.UserId == account.AspNetUser.Id,
+            OrderBy = o => o.Id,
+            Includes = "CatAccountType"
+        };
+        var accounts = await _accountsService.GetAllAsync(options);
+
+        var model = new BalanceViewModel
+        {
+           Accounts = accounts.ToList()
+        };
+
+        return PartialView("_Balance",model);
+    }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -451,8 +471,301 @@ public class ManageController : Controller
     }
 
 
+    public async Task<IActionResult> WithdrawCash(int id)
+    {       
+        AccountsViewModel model = null;
+        try
+        {
+            var options = new QueryOptions<Account>
+            {
+                Includes = "CatAccountType"
+            };
+
+            var account = await _accountsService.GetByIdAsync(id, options);
+            model = new AccountsViewModel()
+            {
+                Id = account.Id,
+                UserId = account.UserId,
+                CatAccountTypeId = account.CatAccountTypeId,
+                InitialBalance = account.InitialBalance,
+                CurrentBalance = account.CurrentBalance,
+                Currency = account.Currency,
+                UpdatedAt = account.UpdatedAt,
+            };
+
+        }
+        catch (Exception ex)
+        {
+            ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("FailedToFindItem");
+            _logService.ErrorLog($"Controller: Manage , Action: {nameof(WithdrawCash)}", ex);
+        }
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> AddCash(int id)
+    {
+        AccountsViewModel model = null;
+        try
+        {
+            var options = new QueryOptions<Account>
+            {
+                Includes = "CatAccountType"
+            };
+
+            var account = await _accountsService.GetByIdAsync(id, options);
+            model = new AccountsViewModel()
+            {
+                Id = account.Id,
+                UserId = account.UserId,
+                CatAccountTypeId = account.CatAccountTypeId,
+                InitialBalance = account.InitialBalance,
+                CurrentBalance = account.CurrentBalance,
+                Currency = account.Currency,
+                UpdatedAt = account.UpdatedAt,
+            };
+
+        }
+        catch (Exception ex)
+        {
+            ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("FailedToFindItem");
+            _logService.ErrorLog($"Controller: Manage , Action: {nameof(WithdrawCash)}", ex);
+        }
+
+        return View(model);
+    }
+
+    /// <summary>
+    /// Realiza un retiro de saldo de una cuenta específica.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> WithdrawCash([FromBody] AccountsOperationsViewModel model)
+    {
+        try
+        {
+            
+            if (model.Id <= 0)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El identificador de la cuenta es obligatorio.",
+                    notificationType = NotificationType.Warning
+                });
+            }
+
+            var isValid = await _accountsService.WithDrawCashAsync(model.Id, Convert.ToDecimal(model.Cash));
+
+            if (!isValid)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El retiro de saldo no se pudo procesar exitosamente.",
+                    notificationType = NotificationType.Error
+                });
+            }
 
 
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = "El retiro de saldo se procesó correctamente.",
+                notificationType = NotificationType.Success
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(WithdrawCash)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+    }
+
+    /// <summary>
+    /// Realiza un abono de saldo de una cuenta específica.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddCash([FromBody] AccountsOperationsViewModel model)
+    {
+        try
+        {
+            if (model.Id <= 0)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El identificador de la cuenta es obligatorio.",
+                    notificationType = NotificationType.Warning
+                });
+            }
+
+            var isValid = await _accountsService.AddCashAsync(model.Id, Convert.ToDecimal(model.Cash));
+
+            if (!isValid)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El abono de saldo no se pudo procesar exitosamente.",
+                    notificationType = NotificationType.Error
+                });
+            }
+
+
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = "El abono de saldo se procesó correctamente.",
+                notificationType = NotificationType.Success
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Manage, Action: {nameof(AddCash)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+    }
+
+
+
+    #region Carga de datos en el DataTable
+
+    // Variables manejadas por DataTable
+    public string draw = string.Empty;
+    public string start = string.Empty;
+    public string length = string.Empty;
+    public string sortColumn = string.Empty;
+    public string sortColumnDir = string.Empty;
+    public string searchValue = string.Empty;
+
+    public int pageSize;
+    public int skip;
+    public int recordsTotal;
+
+    /// <summary>
+    /// Método para cargar los datos en el DataTable de la vista.
+    /// Este método maneja la paginación, ordenación y filtrado de los logs por fecha y búsqueda de texto.
+    /// </summary>
+    /// <param name="fecha1">Fecha de inicio para el filtro de búsqueda.</param>
+    /// <param name="fecha2">Fecha de fin para el filtro de búsqueda.</param>
+    /// <returns>Un objeto JSON que contiene los datos solicitados por el DataTable.</returns>
+    [HttpPost]
+    public async Task<ActionResult> JsonDataTable(string fecha1, string fecha2)
+    {
+        #region Aplicar filtros de búsqueda por fecha
+
+        // Fechas por defecto (últimos 7 días)
+        DateTime dateStart = DateTime.Now.AddDays(-7);
+        DateTime dateEnd = DateTime.Now;
+
+        // Si se proporcionan fechas, se parsean y se ajustan los valores de inicio y fin
+        if (!string.IsNullOrEmpty(fecha1) && !string.IsNullOrEmpty(fecha2))
+        {
+            fecha1 += " 00:00:00.000";
+            fecha2 += " 23:59:59.000";
+
+            // Establecer el rango de fechas
+            dateStart = DateTime.Parse(fecha1);
+            dateEnd = DateTime.Parse(fecha2);
+        }
+
+        #endregion
+
+        var data = new List<AccountBalancesViewModel>();
+
+        try
+        {
+            // Obtener los parámetros del DataTable enviados en la petición
+            var form = await Request.ReadFormAsync(); // Lee el contenido del formulario de la solicitud
+
+            draw = form["draw"].FirstOrDefault();
+            start = form["start"].FirstOrDefault();
+            length = form["length"].FirstOrDefault();
+            sortColumn = form[$"columns[{form["order[0][column]"].FirstOrDefault()}][name]"].FirstOrDefault();
+            sortColumnDir = form["order[0][dir]"].FirstOrDefault();
+            searchValue = form["search[value]"].FirstOrDefault();
+
+            // Configurar la paginación
+            pageSize = length != null ? Convert.ToInt32(length) : 0;
+            skip = start != null ? Convert.ToInt32(start) : 0;
+            recordsTotal = 0;
+
+            var userAccount = await GetUserAccountAsync();
+
+            // Obtención de la consulta inicial de logs dentro del rango de fechas
+            var query = (await _accountBalancesService
+                        .GetAllAccountBalanceByDateRangeAsync(userAccount.AspNetUser.Id, dateStart, dateEnd))
+                        .Select(x => new AccountBalancesViewModel
+                        {
+                            Id = x.Id,
+                            AccountId = x.AccountId,
+                            OrderId = x.OrderId,
+                            Balance = x.Balance,
+                            Reference = x.Reference,
+                            UpdateAt = x.UpdateAt,
+                            AccountTypeName = x.AccountTypeName,
+                        });
+
+            // Filtrado por búsqueda (si existe)
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                query = query.Where(x => (x.Id + x.AccountId.ToString() + x.OrderId + x.Balance + x.Reference + x.UpdateAt + x.AccountTypeName)
+                                          .Contains(searchValue));
+            }
+
+            // Ordenación
+            if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDir))
+            {
+                query = sortColumn switch
+                {
+                    "id" => sortColumnDir == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id),
+                    "accountId" => sortColumnDir == "asc" ? query.OrderBy(x => x.AccountId) : query.OrderByDescending(x => x.AccountId),
+                    "orderId" => sortColumnDir == "asc" ? query.OrderBy(x => x.OrderId) : query.OrderByDescending(x => x.OrderId),
+                    "balance" => sortColumnDir == "asc" ? query.OrderBy(x => x.Balance) : query.OrderByDescending(x => x.Balance),
+                    "updateAt" => sortColumnDir == "asc" ? query.OrderBy(x => x.UpdateAt) : query.OrderByDescending(x => x.UpdateAt),
+                    "accountTypeName" => sortColumnDir == "asc" ? query.OrderBy(x => x.AccountTypeName) : query.OrderByDescending(x => x.AccountTypeName),
+                    _ => query
+                };
+            }
+
+            // Obtener el total de registros
+            recordsTotal = query.Count();
+
+            // Paginación: saltar los registros ya mostrados y tomar el número de registros indicado
+            data = query.Skip(skip).Take(pageSize).ToList();
+
+
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores y registro de la excepción
+            ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("GenericError");
+            _logService.ErrorLog($"Controller: Manage, Action: JsonDataTable", ex);
+        }
+
+        // Retornar los datos al DataTable en formato JSON
+        return Json(new
+        {
+            draw = draw,
+            recordsFiltered = recordsTotal,
+            recordsTotal = recordsTotal,
+            data = data
+        });
+    }
+
+    #endregion
 
     #region Aplicaciones auxiliares
 

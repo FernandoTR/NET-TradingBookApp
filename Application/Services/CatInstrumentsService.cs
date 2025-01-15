@@ -11,28 +11,28 @@ public class CatInstrumentsService : ICatInstrumentsService
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatInstrument entity)
+    public async Task<bool> AddAsync(CatInstrument entity)
     {
-        return _repository.AddAsync(entity);
+        return await _repository.AddAsync(entity);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatInstrument>> GetAllAsync()
+    public async Task<IEnumerable<CatInstrument>> GetAllAsync()
     {
-        return _repository.GetAllAsync();
+        return await _repository.GetAllAsync();
     }
 
-    public Task<CatInstrument?> GetByIdAsync(int id)
+    public async Task<CatInstrument?> GetByIdAsync(int id)
     {
-        return _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatInstrument entity)
+    public async Task<bool> UpdateAsync(CatInstrument entity)
     {
-        return _repository.UpdateAsync(entity);
+        return await _repository.UpdateAsync(entity);
     }
 }
