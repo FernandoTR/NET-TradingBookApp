@@ -121,7 +121,12 @@
 						<li class="nav-item mt-2">
 							<a class="nav-link text-active-primary ms-0 me-10 py-5" id="settings-tab" data-bs-toggle="tab" href="#settings">Ajustes</a>
 						</li>
-						<!--end::Nav item-->	
+						<!--end::Nav item-->
+						<!--begin::Nav item-->
+						<li class="nav-item mt-2">
+							<a class="nav-link text-active-primary ms-0 me-10 py-5" id="settings-tab" data-bs-toggle="tab" href="#balance">Balance</a>
+						</li>
+						<!--end::Nav item-->
 					</ul>
 					<!--begin::Navs-->
 				</div>
@@ -132,6 +137,7 @@
 			<div class="tab-content">
 				<div class="tab-pane fade show active" id="overview"></div>
 				<div class="tab-pane fade" id="settings"></div>
+				<div class="tab-pane fade" id="balance"></div>
 			</div>
 			
 			
@@ -146,6 +152,7 @@
 		$(document).ready(function () {
 			LoadOverView();
 			LoadSettingsView();
+			LoadBalanceView();
 		});
 
 		function LoadOverView(){
@@ -157,6 +164,40 @@
 			$.get('@Url.Action("Settings", "Manage")', function (data) {
 				$('#settings').html(data);
 			});
+		}
+		function LoadBalanceView(){
+			$.get('@Url.Action("Balance", "Manage")', function (data) {
+				$('#balance').html(data);
+			});
+		}
+			
+
+		function showModal(urlContent, title, subtitle) {
+			fetch(urlContent).then((response) => {
+				if (!response.ok) {
+					throw new Error(`Error al cargar contenido: ${response.status}`);
+				}
+
+				return response.text();
+			}).then((data) => {
+				$("#contentvModal").html(data);
+				$('#title-modal').html(title);
+				$('#subtitle-modal').html(subtitle);
+				$("#vModal").modal("show");				
+			})
+			.catch((error) => {
+				console.error("Error al cargar el modal:", error);
+			});
+		}
+
+		function showModalForWithdrawCash(id,accountType) {
+			urlContentModal = "@Url.Content("~/Manage/WithdrawCash/?id=")"+ id;
+			showModal(urlContentModal, 'Retirar Saldo',accountType);
+		}
+
+		function showModalForAddCash(id,accountType) {
+			urlContentModal = "@Url.Content("~/Manage/AddCash/?id=")" + id;
+			showModal(urlContentModal, 'Agregar Saldo',accountType)
 		}
 	</script>
 }

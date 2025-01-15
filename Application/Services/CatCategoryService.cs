@@ -11,28 +11,28 @@ public class CatCategoryService : ICatCategoryService
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatCategory entity)
+    public async Task<bool> AddAsync(CatCategory entity)
     {
-        return _repository.AddAsync(entity);
+        return await _repository.AddAsync(entity);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatCategory>> GetAllAsync()
+    public async Task<IEnumerable<CatCategory>> GetAllAsync()
     {
-        return _repository.GetAllAsync();
+        return await _repository.GetAllAsync();
     }
 
-    public Task<CatCategory?> GetByIdAsync(int id)
+    public async Task<CatCategory?> GetByIdAsync(int id)
     {
-        return _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatCategory entity)
+    public async Task<bool> UpdateAsync(CatCategory entity)
     {
-        return _repository.UpdateAsync(entity);
+        return await _repository.UpdateAsync(entity);
     }
 }

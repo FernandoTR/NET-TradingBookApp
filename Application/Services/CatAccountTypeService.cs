@@ -11,28 +11,28 @@ public class CatAccountTypeService : ICatAccountTypeService
         _repository = repository;
     }
 
-    public Task<bool> AddAsync(CatAccountType entity)
+    public async Task<bool> AddAsync(CatAccountType entity)
     {
-        return _repository.AddAsync(entity);
+        return await _repository.AddAsync(entity);
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return _repository.DeleteAsync(id);
+        return await _repository.DeleteAsync(id);
     }
 
-    public Task<IEnumerable<CatAccountType>> GetAllAsync()
+    public async Task<IEnumerable<CatAccountType>> GetAllAsync()
     {
-        return _repository.GetAllAsync();
+        return await _repository.GetAllAsync();
     }
 
-    public Task<CatAccountType?> GetByIdAsync(int id)
+    public async Task<CatAccountType?> GetByIdAsync(int id)
     {
-        return _repository.GetByIdAsync(id);
+        return await _repository.GetByIdAsync(id);
     }
 
-    public Task<bool> UpdateAsync(CatAccountType entity)
+    public async Task<bool> UpdateAsync(CatAccountType entity)
     {
-        return _repository.UpdateAsync(entity);
+        return await _repository.UpdateAsync(entity);
     }
 }

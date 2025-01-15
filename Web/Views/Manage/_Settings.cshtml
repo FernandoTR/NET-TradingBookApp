@@ -197,7 +197,7 @@
 			<!--begin::Modal header-->
 			<div class="modal-header flex-stack">
 				<!--begin::Title-->
-				<h2 id="title-modal"></h2>
+				<h2 id="title-modal2"></h2>
 				<!--end::Title-->
 				<!--begin::Close-->
 				<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -210,7 +210,7 @@
 			</div>
 			<!--begin::Modal header-->
 			<!--begin::Modal body-->
-			<div class="modal-body scroll-y pt-10 pb-15 px-lg-17" id="contentvModal">
+			<div class="modal-body scroll-y pt-10 pb-15 px-lg-17" id="contentvModal2">
 				
 			</div>
 			<!--begin::Modal body-->
@@ -552,19 +552,19 @@
 			});
 	}
 
-	function showModal(urlContent, title) {
+	function showModalTwoFactor(urlContent, title) {
 			fetch(urlContent).then((response) => {
 				return response.text();
 			}).then((data) => {
-				$("#contentvModal").html(data);
-				$('#title-modal').html(title);
+				$("#contentvModal2").html(data);
+				$('#title-modal2').html(title);
 				$("#kt_modal_two_factor_authentication").modal("show");
 			});
 	}
 
 	function showModalForEnableAuthenticator() {
 		urlContentModal = "@Url.Content("~/Manage/EnableAuthenticator")";
-		showModal(urlContentModal, 'Elija un método de autenticación');
+		showModalTwoFactor(urlContentModal, 'Elija un método de autenticación');
 		$('[data-toggle="tooltip"]').tooltip()
 	}
 </script>

@@ -1,0 +1,233 @@
+﻿@model Web.Models.BalanceViewModel
+
+
+
+<!--begin::Payment methods-->
+<div class="card mb-5 mb-xl-10">
+	<!--begin::Card header-->
+	<div class="card-header card-header-stretch pb-0">
+		<!--begin::Title-->
+		<div class="card-title">
+			<h3 class="m-0">Mis Cuentas</h3>
+		</div>
+		<!--end::Title-->
+	</div>
+	<!--end::Card header-->
+	<!--begin::Tab content-->
+	<div id="kt_billing_payment_tab_content" class="card-body tab-content">
+		<!--begin::Row-->
+		<div class="row gx-9 gy-6">
+			@foreach (var account in Model.Accounts)
+			{
+                var color = account.CatAccountTypeId switch
+                {
+                    1 => "danger",
+                    2 => "warning",
+                    3 => "success",
+                    _ => "primary"
+                };
+				<!--begin::Col-->
+				<div class="col-xl-6" data-kt-billing-element="card">
+					<!--begin::Card-->
+					<div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
+						<!--begin::Info-->
+						<div class="d-flex flex-column py-2">
+							<!--begin::Owner-->
+							<div class="d-flex align-items-center fs-4 fw-bold mb-5 text-@color">
+								@account.CatAccountType.Description
+							</div>
+							<!--end::Owner-->
+							<!--begin::Wrapper-->
+							<div class="d-flex align-items-center">
+								<!--begin::Icon-->
+								<div class="d-flex flex-center w-45px h-45px rounded-3 bg-light-@color bg-opacity-90 me-4">
+									<i class="ki-duotone ki-dollar text-@color fs-2x">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+										<span class="path4"></span>
+									</i>
+								</div>
+								<!--end::Icon-->
+								<!--begin::Details-->
+								<div>
+									<div class="fs-4 fw-bold" >@account.CurrentBalance.ToString("c2") @account.Currency</div>
+									<div class="fs-6 fw-semibold text-gray-500">Última fecha de actualización: @account.UpdatedAt.ToString("d 'de' MMMM 'de' yyyy, 'a las' hh:mm tt")</div>
+								</div>
+								<!--end::Details-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Info-->
+						<!--begin::Actions-->
+						<div class="d-flex align-items-center py-2">
+							<a class="btn btn-sm btn-light btn-active-light-primary me-3" href="javascript:showModalForWithdrawCash('@account.Id','@account.CatAccountType.Description')">Retirar</a>
+							<a class="btn btn-sm btn-light btn-active-light-primary" href="javascript:showModalForAddCash('@account.Id','@account.CatAccountType.Description')">Agregar</a>
+						</div>
+						<!--end::Actions-->
+					</div>
+					<!--end::Card-->
+				</div>
+				<!--end::Col-->
+			}			
+			
+		</div>
+		<!--end::Row-->
+		
+	</div>
+	<!--end::Tab content-->
+</div>
+<!--end::Payment methods-->
+
+<!--begin::Balance History-->
+<div class="card">
+	<!--begin::Card header-->
+	<div class="card-header card-header-stretch border-bottom border-gray-200">
+		<!--begin::Title-->
+		<div class="card-title">
+			<h3 class="fw-bold m-0">Estado de Cuenta</h3>
+		</div>
+		<!--end::Title-->
+		<!--begin::Toolbar-->
+		<div class="card-toolbar m-0">
+			<!--begin::Input-->
+			<div class="my-4 me-4">
+				<input class="form-control form-control-solid" placeholder="Elegir rango de fechas" id="kt_daterangepicker_4" />
+			</div>
+			<!--end::Input-->
+		</div>
+		<!--end::Toolbar-->
+	</div>
+	<!--end::Card header-->
+	<!--begin::Card body-->
+	<div class="card-body pt-6">
+		<!--begin::Table-->
+		<table id="dtTable" class="table align-middle table-row-dashed fs-6 gy-5"></table>
+		<!--end::Table-->
+	</div>
+	<!--end::Card body-->
+</div>
+<!--end::Balance Address-->
+<script>
+	$(document).ready(function () {
+	// Inicialización de valores iniciales
+			const start = moment().subtract(29, "days");
+			const end = moment();
+			let fechaInicio = moment();
+			let fechaFin = moment();
+
+
+			// Función para actualizar el campo y cargar la tabla
+			function updateDateRange(start, end) {
+				const startDate = start.format("DD/MM/YYYY");
+				const endDate = end.format("DD/MM/YYYY");
+
+				// Actualizar el campo del selector de rango
+				$("#kt_daterangepicker_4").val(`${startDate} - ${endDate}`);
+
+				fechaInicio = startDate;
+				fechaFin = endDate;
+
+				// Recargar datos de la tabla
+			    loadTableDate();
+			}
+
+			// Inicializar el daterangepicker
+			$("#kt_daterangepicker_4").daterangepicker({
+				autoUpdateInput: false,
+				locale: {
+					format: "DD/MM/YYYY",
+					applyLabel: "Aplicar",
+					cancelLabel: "Cancelar",
+					fromLabel: "Desde",
+					toLabel: "Hasta",
+					customRangeLabel: "Personalizado",
+					daysOfWeek: moment.weekdaysShort(),
+					monthNames: moment.months(),
+					firstDay: 1
+				},
+				startDate: start,
+				endDate: end,
+				ranges: {
+					"Hoy": [moment(), moment()],
+					"Ayer": [moment().subtract(1, "days"), moment().subtract(1, "days")],
+					"Últimos 7 Días": [moment().subtract(6, "days"), moment()],
+					"Últimos 30 Días": [moment().subtract(29, "days"), moment()],
+					"Este Mes": [moment().startOf("month"), moment().endOf("month")],
+					"Último Mes": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
+				}
+			}).on('apply.daterangepicker', function (ev, picker) {
+				updateDateRange(picker.startDate, picker.endDate);
+			}).on('cancel.daterangepicker', function () {
+				$(this).val('');
+			});
+
+
+			// Función para cargar datos en la tabla
+			function loadTableDate() {
+				$('#dtTable').DataTable({
+					destroy: true, // Destruir instancia previa para evitar conflictos
+					ajax: {
+						url: "@Url.Content("~/Manage/JsonDataTable")",
+						type: "POST",
+						dataType: "json",
+						data: { fecha1: fechaInicio, fecha2: fechaFin }
+					},
+					columns: [
+						{ name: "id", title: "ID", data: "id", autoWidth: true,  className: "min-w-50px " },
+						{ name: "orderId", title: "ID Orden", data: "orderId", autoWidth: true,  className: "min-w-50px " },
+						{
+							name: "updateAt",
+							title: "Fecha",
+							data: "updateAt",
+							autoWidth: true,
+							className: "min-w-50px ",
+							render: function (data, type, row) {
+								// Formatear la fecha solo en las celdas visibles
+								return type === 'display' || type === 'filter'
+									? moment(data).format("DD/MM/YYYY HH:mm:ss")
+									: data;
+							}
+						},
+						{ name: "reference", title: "Detalle", data: "reference", autoWidth: true, className: "min-w-100px " },
+						{ name: "balance", title: "Cantidad", data: "balance", autoWidth: true, className: "text-end min-w-100px ", render: renderAccountBalance },
+						{ name: "accountTypeName", title: "Cuenta", data: "accountTypeName", autoWidth: false,  className: "text-end min-w-50px ", render: renderAccountType }
+					],
+					processing: true,
+					serverSide: true,
+					pageLength: 25,
+					filter: true,
+					language: {
+						sProcessing: "Procesando...",
+						sLengthMenu: "Mostrar _MENU_ registros",
+						sZeroRecords: "No se encontraron resultados",
+						sEmptyTable: "Ningún dato disponible en esta tabla",
+						sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+						sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+						sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+						sSearch: "Buscar:",
+						sLoadingRecords: "Cargando...",
+						oPaginate: {
+							sFirst: "Primero",
+							sLast: "Último",
+							sNext: "Siguiente",
+							sPrevious: "Anterior"
+						},
+						buttons: {
+							copy: "Copiar",
+							colvis: "Visibilidad"
+						}
+					},
+					drawCallback: function () {
+						$('[data-toggle="tooltip"]').tooltip();
+					},
+					order: [[0, "desc"]]
+				});
+			}
+
+
+
+			// Llamar a la función inicial con valores predeterminados
+			updateDateRange(start, end);			
+	});
+</script>
