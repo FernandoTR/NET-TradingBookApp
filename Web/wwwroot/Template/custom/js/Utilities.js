@@ -76,10 +76,51 @@ var renderAccountBalance= function (data) {
     }).format(parseFloat(data));
 
     if (parseFloat(data) >= 0) {
-        badge = '<span class="text-success min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount +'</span>';
+        badge = '<span class="text-white min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount +'</span>';
     } else {
-        badge = '<span class="text-danger min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount + '</span>';
+        badge = '<span class="text-white min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount + '</span>';
     }
     
     return badge;
 };
+
+// Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
+var renderStatusAnalytics = function (data) {
+    return data ?
+        '<div class="badge py-3 px-4 fs-7 badge-light-success">Válido</div>' :
+        '<div class="badge py-3 px-4 fs-7 badge-light-warning">Pausa</div>';
+}
+
+
+
+/**
+ * Función para generar una barra de progreso con porcentaje.
+ * @param {number|string} data - El valor del porcentaje a mostrar.
+ * @param {string} progressBarColor - Clase CSS para el color de la barra de progreso.
+ * @param {string} backgroundColor - Clase CSS para el color de fondo de la barra.
+ * @returns {string} - HTML de la barra de progreso.
+ */
+const renderProgressBar = (data, progressBarColor, backgroundColor) => {
+    const value = parseFloat(data).toFixed(0);
+    return `
+        <div class="d-flex align-items-center w-100">
+            <div class="progress h-6px w-100 me-2 ${backgroundColor}">
+                <div 
+                    class="progress-bar ${progressBarColor}" 
+                    role="progressbar" 
+                    style="width: ${value}%" 
+                    aria-valuenow="${value}" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+                </div>
+            </div>
+            <span class="text-gray-500 fw-semibold">${value}%</span>
+        </div>
+    `;
+};
+
+// Funciones específicas para diferentes tipos de barras de progreso dependiendo del valor del dato obtenido por el dataTable
+const renderSLPChart = (data) => renderProgressBar(data, 'bg-danger', 'bg-light-danger');
+const renderTP1PChart = (data) => renderProgressBar(data, 'bg-primary', 'bg-light-primary');
+const renderTP2PChart = (data) => renderProgressBar(data, 'bg-warning', 'bg-light-warning');
+const renderTP3PChart = (data) => renderProgressBar(data, 'bg-success', 'bg-light-success');

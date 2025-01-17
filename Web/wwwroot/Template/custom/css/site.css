@@ -27,3 +27,10 @@ li.jstree-node > a.jstree-anchor:hover {
     color: inherit !important; /* Mantiene el color de texto original */
     border: none !important;
 }
+
+/* Se utiliza para cambiar el color, tamaño y grosor de las letras de las tablas */
+tbody, thead {
+    color: var(--bs-text-muted) !important;
+    font-size: 1.075rem !important;
+    font-weight: 500 !important;
+}

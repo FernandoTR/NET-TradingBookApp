@@ -10,5 +10,7 @@ public partial class ApplicationDbContext
     {
         // Configurar la clase como entidad sin clave
         modelBuilder.Entity<GetMenuByUserIdDto>().HasNoKey();
+        modelBuilder.Entity<GetTBAnalyticsTriggerDto>().HasNoKey();
+
     }
 }
