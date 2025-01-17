@@ -135,10 +135,7 @@
 			<!--begin::Row-->
 			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
-				<!--end::Col-->
-				<!--begin::Col-->
-				<div class="col-xl-8">
+				<div class="col-xl-4">
 					<!--begin::Engage widget 10-->
 					<div class="card card-flush h-md-100">
 						<!--begin::Body-->
@@ -171,6 +168,36 @@
 					<!--end::Engage widget 10-->
 				</div>
 				<!--end::Col-->
+				<!--begin::Col-->
+				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
+				<!--end::Col-->
+				<!--begin::Col-->
+				<div class="col-xl-4 mb-5 mb-xl-0">
+					<!--begin::Chart widget 14-->
+					<div class="card card-flush h-xl-100">
+						<!--begin::Header-->
+						<div class="card-header pt-7">
+							<!--begin::Title-->
+							<h3 class="card-title align-items-start flex-column">
+								<span class="card-label fw-bold text-gray-900" id="lblNumEfectividad"></span>
+								<span class="text-gray-500 pt-2 fw-semibold fs-6">Efectividad solo con gatillos</span>
+							</h3>
+							<!--end::Title-->
+							
+						</div>
+						<!--end::Header-->
+						<!--begin::Body-->
+						<div class="card-body pt-5">
+							<!--begin::Chart container-->
+							<div id="chartTriggerdiv" style="width: 100%; height: 400px;"></div>
+							<!--end::Chart container-->
+						</div>
+						<!--end::Body-->
+					</div>
+					<!--end::Chart widget 14-->
+				</div>
+				<!--end::Col-->
+				
 			</div>
 			<!--end::Row-->
 
@@ -183,9 +210,15 @@
 	<!--end::Content-->
 </div>
 @section scripts{
+	<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 	<script>
 		$(document).ready(function () {
 			LoadAnalyticsTriggerView();
+			LoadAnalyticsTriggerChart();
 		});
 
 		function ClearFilterData() {
@@ -195,10 +228,12 @@
 			$('#FrameId').val(null).trigger('change');
 
 			LoadAnalyticsTriggerView();
+			LoadAnalyticsTriggerChart();
 		}
 
 		function SearchData() {
 			LoadAnalyticsTriggerView();
+			LoadAnalyticsTriggerChart();
 		}
 
 		function LoadAnalyticsTriggerView(){
@@ -215,7 +250,6 @@
 				frameId: frameId
 			};
 
-			console.log("valores a enviar: ",data)
 
 			// Realizar la petición POST
 			fetch('/Home/AnalyticsTrigger', {
@@ -240,5 +274,243 @@
 				console.error('Error:', error);
 			});
 		}
+		function LoadAnalyticsTriggerChart(){
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const frameId = document.querySelector('#FrameId').value || 0;
+
+
+			var data = {
+				categoryId: categoryId,
+				accountTypeId: accountTypeId,
+				instrumentId: instrumentId,
+				frameId: frameId
+			};
+
+
+			// Realizar la petición POST
+			fetch('/Home/AnalyticsTriggerChart', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data)       // Convierte los datos a JSON para enviarlos
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Error en la petición: ${response.status}`);
+				}
+				return response.json();            
+			})
+			.then(data => {
+
+				// Declaración de variables con inicialización
+				let quantity = 0;
+				let sl = 0;
+				let tp1 = 0;
+				let tp2 = 0;
+				let tp3 = 0;
+
+				// Iteración y acumulación de datos
+				data.forEach(item => {
+
+					// Sumar valores numéricos a las variables acumulativas
+					quantity += parseInt(item.quantity, 10) || 0; // Asegurarse de que sea un número
+					sl += parseInt(item.sl, 10) || 0;
+					tp1 += parseInt(item.tP1, 10) || 0;
+					tp2 += parseInt(item.tP2, 10) || 0;
+					tp3 += parseInt(item.tP3, 10) || 0;
+				});
+
+				// Calcular la efectividad
+				const slEffectiveness = quantity > 0 ? Math.round((sl * 100) / quantity) : 0;
+				const tp1Effectiveness = quantity > 0 ? Math.round((tp1 * 100) / quantity) : 0;
+				const tp2Effectiveness = quantity > 0 ? Math.round((tp2 * 100) / quantity) : 0;
+				const tp3Effectiveness = quantity > 0 ? Math.round((tp3 * 100) / quantity) : 0;
+
+				$('#lblNumEfectividad').text(tp1Effectiveness + '%');
+
+
+
+
+				// Data
+				var data = [{
+					category: "Stop Lost",
+					value: slEffectiveness,
+					full: 100,
+					columnSettings: {
+						fill: am5.color("#67B7DC")
+					}
+				}, {
+					category: "Take Profit 1",
+					value: tp1Effectiveness,
+					full: 100,
+					columnSettings: {
+						fill: am5.color("#6794DC")
+					}
+				}, {
+					category: "Take Profit 2",
+					value: tp2Effectiveness,
+					full: 100,
+					columnSettings: {
+						fill: am5.color("#6771DC")
+					}
+				}, {
+					category: "Take Profit 3",
+					value: tp3Effectiveness,
+					full: 100,
+					columnSettings: {
+						fill: am5.color("#8067DC")
+					}
+				}];
+
+
+				LoadChartTrigger(data);
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+
+		function LoadChartTrigger(data){
+				am5.ready(function () {
+					// Create root element
+					// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+					var root = am5.Root.new("chartTriggerdiv");
+
+					// Destruye el grafico anterior
+					// if (am5.registry.rootElements.length > 0) {
+					// 	am5.registry.rootElements.forEach(function (element) {
+					// 		element.dispose();
+					// 	});
+					// }
+
+					var myTheme = am5.Theme.new(root);
+
+					myTheme.rule("Label").setAll({
+					  fill: am5.color("#FFFFFF"),
+					});
+
+					// Set themes
+					// https://www.amcharts.com/docs/v5/concepts/themes/
+					root.setThemes([
+						am5themes_Animated.new(root),
+						myTheme
+					]);
+
+					// Create chart
+					// https://www.amcharts.com/docs/v5/charts/radar-chart/
+					var chart = root.container.children.push(am5radar.RadarChart.new(root, {
+						panX: false,
+						panY: false,
+						wheelX: "panX",
+						wheelY: "zoomX",
+						innerRadius: am5.percent(20),
+						startAngle: -90,
+						endAngle: 180
+					}));
+										
+
+					// Add cursor
+					// https://www.amcharts.com/docs/v5/charts/radar-chart/#Cursor
+					var cursor = chart.set("cursor", am5radar.RadarCursor.new(root, {
+						behavior: "zoomX"
+					}));
+
+					cursor.lineY.set("visible", false);
+
+					// Create axes and their renderers
+					// https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_axes
+					var xRenderer = am5radar.AxisRendererCircular.new(root, {
+						//minGridDistance: 50
+					});
+
+					xRenderer.labels.template.setAll({
+						radius: 10
+					});
+
+					xRenderer.grid.template.setAll({
+						forceHidden: true
+					});
+
+					var xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
+						renderer: xRenderer,
+						min: 0,
+						max: 100,
+						strictMinMax: true,
+						numberFormat: "#'%'",
+						tooltip: am5.Tooltip.new(root, {})
+					}));
+
+					var yRenderer = am5radar.AxisRendererRadial.new(root, {
+						minGridDistance: 20
+					});
+
+					yRenderer.labels.template.setAll({
+						centerX: am5.p100,
+						fontWeight: "500",
+						fontSize: 18,
+						templateField: "columnSettings"
+					});
+
+					yRenderer.grid.template.setAll({
+						forceHidden: true
+					});
+
+					var yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+						categoryField: "category",
+						renderer: yRenderer
+					}));
+
+					yAxis.data.setAll(data);
+
+					// Create series
+					// https://www.amcharts.com/docs/v5/charts/radar-chart/#Adding_series
+					var series1 = chart.series.push(am5radar.RadarColumnSeries.new(root, {
+						xAxis: xAxis,
+						yAxis: yAxis,
+						clustered: false,
+						valueXField: "full",
+						categoryYField: "category",
+						fill: root.interfaceColors.get("alternativeBackground")
+					}));
+
+					series1.columns.template.setAll({
+						width: am5.p100,
+						fillOpacity: 0.08,
+						strokeOpacity: 0,
+						cornerRadius: 20
+					});
+
+					series1.data.setAll(data);
+
+					var series2 = chart.series.push(am5radar.RadarColumnSeries.new(root, {
+						xAxis: xAxis,
+						yAxis: yAxis,
+						clustered: false,
+						valueXField: "value",
+						categoryYField: "category"
+					}));
+
+					series2.columns.template.setAll({
+						width: am5.p100,
+						strokeOpacity: 0,
+						tooltipText: "{category}: {valueX}%",
+						cornerRadius: 20,
+						templateField: "columnSettings"
+					});
+
+					series2.data.setAll(data);
+
+					// Animate chart and series in
+					// https://www.amcharts.com/docs/v5/concepts/animations/#Initial_animation
+					series1.appear(1000);
+					series2.appear(1000);
+					chart.appear(1000, 100);
+				}); // end am5.ready()
+		}
+
+
 	</script>
 }

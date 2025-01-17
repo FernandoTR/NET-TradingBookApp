@@ -277,4 +277,36 @@ public class HomeController : Controller
     }
 
 
+    /// <summary>
+    /// Muestra un resumen general de las estadisticas de gatillos para grafico.
+    /// </summary>
+    /// <returns>Vista parcial con los datos del resumen.</returns>
+    [HttpPost]
+    public async Task<List<GetTBAnalyticsTriggerDto>> AnalyticsTriggerChart([FromBody] ParametersAnalyticsDto parameters)
+    {
+        var query = await _catTriggerService.GetTBAnalyticsTriggerAsync(new ParametersTBAnalyticsDto
+        {
+            CategoryId = parameters.CategoryId,
+            AccountTypeId = parameters.AccountTypeId,
+            InstrumentId = parameters.InstrumentId,
+            FrameId = parameters.FrameId,
+            SearchValue = "",
+            OrderByColumn = "Id",
+            SortColumnDir = "ASC",
+            Skip = 0,
+            Take = 10
+        });
+
+        //var model = new AnalyticsTriggerViewModel
+        //{
+        //    AnalyticsTriggerList = query.ToList(),
+        //    TotalRecords = query.Count(),
+        //    TotalValidRecords = query.Where(x => x.TP1P >= 70).Count(),
+
+        //};
+
+        return query.ToList();
+
+    }
+
 }
