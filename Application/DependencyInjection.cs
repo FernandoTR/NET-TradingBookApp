@@ -25,6 +25,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICatAccountTypeService, CatAccountTypeService>();
         builder.Services.AddScoped<ICatFrameService, CatFrameService>();
         builder.Services.AddScoped<ICatInstrumentsService, CatInstrumentsService>();
+        builder.Services.AddScoped<ICatTriggerService, CatTriggerService>();
         builder.Services.AddScoped<IAccountsService, AccountsService>();
         builder.Services.AddScoped<IAccountBalancesService, AccountBalancesService>();
 

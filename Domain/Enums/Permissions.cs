@@ -26,20 +26,20 @@ public enum Permissions
     CatFigure = 6,
     [Description("TradingBook")]
     TradingBook = 7,
-    [Description("TradingBookAnalyticsTrigger")]
-    TradingBookAnalyticsTrigger = 8,
-    [Description("TradingBookAnalyticsScenery")]
-    TradingBookAnalyticsScenery = 9,
-    [Description("TradingBookAnalyticsFigure")]
-    TradingBookAnalyticsFigure = 10,
-    [Description("TradingBookAnalyticsDay")]
-    TradingBookAnalyticsDay = 11,
-    [Description("TradingBookAnalyticsDirection")]
-    TradingBookAnalyticsDirection = 12,
-    [Description("TradingBookAnalyticsStage")]
-    TradingBookAnalyticsStage = 13,
-    [Description("TradingBookAnalyticsTime")]
-    TradingBookAnalyticsTime = 14,
+    [Description("AnalyticsTrigger")]
+    AnalyticsTrigger = 8,
+    [Description("AnalyticsScenery")]
+    AnalyticsScenery = 9,
+    [Description("AnalyticsFigure")]
+    AnalyticsFigure = 10,
+    [Description("AnalyticsDay")]
+    AnalyticsDay = 11,
+    [Description("AnalyticsDirection")]
+    AnalyticsDirection = 12,
+    [Description("AnalyticsStage")]
+    AnalyticsStage = 13,
+    [Description("AnalyticsTime")]
+    AnalyticsTime = 14,
     [Description("TipoCuenta")]
     CatAccountType = 15,
     [Description("Frame")]
