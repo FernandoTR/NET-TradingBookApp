@@ -1,5 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+
+	var categoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
 }
 
 <div class="d-flex flex-column flex-column-fluid">
@@ -31,6 +36,92 @@
 				<!--end::Breadcrumb-->
 			</div>
 			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<!--begin::Filter menu-->
+				<div class="m-0">
+					<!--begin::Menu toggle-->
+					<a href="#" class="btn btn-sm btn-flex btn-secondary fw-bold" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+						<i class="ki-duotone ki-filter fs-6 text-muted me-1">
+							<span class="path1"></span>
+							<span class="path2"></span>
+						</i>Filtro
+					</a>
+					<!--end::Menu toggle-->
+					<!--begin::Menu 1-->
+					<div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_filter">
+						<!--begin::Header-->
+						<div class="px-7 py-5">
+							<div class="fs-5 text-gray-900 fw-bold">Opciones de Filtro</div>
+						</div>
+						<!--end::Header-->
+						<!--begin::Menu separator-->
+						<div class="separator border-gray-200"></div>
+						<!--end::Menu separator-->
+						<!--begin::Form-->
+						<div class="px-7 py-5">
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Categoría:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("CategoryId", categoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Tipo de Cuenta:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("AccountTypeId", accountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Instrumento:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("InstrumentId", instrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Frame:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("FrameId", frameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Actions-->
+							<div class="d-flex justify-content-end">
+								<a href="javascript:ClearFilterData()" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reiniciar</a>
+								<a href="javascript:SearchData()" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true" id="btn_AplicarFiltro">Aplicar</a>
+							</div>
+							<!--end::Actions-->
+						</div>
+						<!--end::Form-->
+					</div>
+					<!--end::Menu 1-->
+				</div>
+				<!--end::Filter menu-->
+			</div>
+			<!--end::Actions-->
 		</div>
 		<!--end::Toolbar container-->
 	</div>
@@ -42,9 +133,12 @@
 
 
 			<!--begin::Row-->
-			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">				
+			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
-				<div class="col-xxl-12">
+				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
+				<!--end::Col-->
+				<!--begin::Col-->
+				<div class="col-xl-8">
 					<!--begin::Engage widget 10-->
 					<div class="card card-flush h-md-100">
 						<!--begin::Body-->
@@ -88,3 +182,63 @@
 	</div>
 	<!--end::Content-->
 </div>
+@section scripts{
+	<script>
+		$(document).ready(function () {
+			LoadAnalyticsTriggerView();
+		});
+
+		function ClearFilterData() {
+			$('#CategoryId').val(1).trigger('change');
+			$('#AccountTypeId').val(null).trigger('change');
+			$('#InstrumentId').val(null).trigger('change');
+			$('#FrameId').val(null).trigger('change');
+
+			LoadAnalyticsTriggerView();
+		}
+
+		function SearchData() {
+			LoadAnalyticsTriggerView();
+		}
+
+		function LoadAnalyticsTriggerView(){
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const frameId = document.querySelector('#FrameId').value || 0;
+
+			
+			var data = {
+				categoryId: categoryId,
+				accountTypeId: accountTypeId,
+				instrumentId: instrumentId,
+				frameId: frameId
+			};
+
+			console.log("valores a enviar: ",data)
+
+			// Realizar la petición POST
+			fetch('/Home/AnalyticsTrigger', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json', 
+					'Accept': 'text/html'               // Especifica que esperas una vista parcial como respuesta
+				},
+				body: JSON.stringify(data)       // Convierte los datos a JSON para enviarlos
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Error en la petición: ${response.status}`);
+				}
+				return response.text();             // La respuesta es texto HTML
+			})
+			.then(html => {
+				// Actualizar la interfaz con la vista parcial recibida
+				document.getElementById('analyticsTriggersContainer').innerHTML = html;
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+	</script>
+}

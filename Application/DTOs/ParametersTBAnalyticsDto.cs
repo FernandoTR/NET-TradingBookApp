@@ -2,12 +2,8 @@
 
 namespace Application.DTOs;
 
-public class ParametersTBAnalyticsDto
-{
-    public int? CategoryId { get; set; }
-    public int? AccountTypeId { get; set; }
-    public int? InstrumentId { get; set; }
-    public int? FrameId { get; set; }
+public class ParametersTBAnalyticsDto : ParametersAnalyticsDto
+{   
     public string? SearchValue { get; set; }
     public string? OrderByColumn { get; set; }
     public string? SortColumnDir { get; set; }

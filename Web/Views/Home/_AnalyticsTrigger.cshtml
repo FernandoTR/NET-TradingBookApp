@@ -1,0 +1,92 @@
+﻿@model Web.Models.AnalyticsTriggerViewModel
+
+
+<!--begin::List widget 12-->
+<div class="card card-flush h-xl-100">
+	<!--begin::Header-->
+	<div class="card-header pt-7">
+		<!--begin::Title-->
+		<h3 class="card-title align-items-start flex-column">
+			<span class="card-label fw-bold text-gray-800">Efectividad Gatillos</span>
+			<span class="text-gray-500 mt-1 fw-semibold fs-6">@Model.TotalValidRecords gatillos con una efectividad superior al 70%</span>
+		</h3>
+		<!--end::Title-->
+
+	</div>
+	<!--end::Header-->
+	<!--begin::Body-->
+	<div class="card-body d-flex align-items-end">
+		<!--begin::Wrapper-->
+		<div class="w-100">
+			@{
+				int index = 1;                  
+					
+
+				foreach (var trigger in Model.AnalyticsTriggerList)
+				{
+					string color = (trigger.TP1P >= 70) ? "success" : "danger";
+					string icon = (trigger.TP1P >= 70) ? "up" : "down";
+
+
+					<!--begin::Item-->
+					<div class="d-flex align-items-center">
+						<!--begin::Symbol-->
+						<div class="symbol symbol-30px me-5">
+							<span class="symbol-label">
+								<i class="ki-duotone ki-black-right fs-3 text-gray-600">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</span>
+						</div>
+						<!--end::Symbol-->
+						<!--begin::Container-->
+						<div class="d-flex align-items-center flex-stack flex-wrap d-grid gap-1 flex-row-fluid">
+							<!--begin::Content-->
+							<div class="me-5">
+								<!--begin::Title-->
+								<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">@trigger.Code</a>
+								<!--end::Title-->
+								<!--begin::Desc-->
+								<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">@trigger.Description</span>
+								<!--end::Desc-->
+							</div>
+							<!--end::Content-->
+							<!--begin::Wrapper-->
+							<div class="d-flex align-items-center">
+								<!--begin::Number-->
+								<span class="text-gray-800 fw-bold fs-4 me-3">@trigger.Quantity</span>
+								<!--end::Number-->
+								<!--begin::Info-->
+								<!--begin::label-->
+								<span class="badge badge-light-@color fs-base">
+									<i class="ki-duotone ki-arrow-@icon fs-5 text-@color ms-n1">
+										<span class="path1"></span>
+										<span class="path2"></span>
+									</i>@trigger.TP1P.ToString("0")%
+								</span>
+								<!--end::label-->
+								<!--end::Info-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Container-->
+					</div>
+					<!--end::Item-->
+					if (index != Model.TotalRecords)
+					{
+						<!--begin::Separator-->
+						<div class="separator separator-dashed my-3"></div>
+						<!--end::Separator-->
+					}
+					index++;
+				}
+			}
+
+				
+		</div>
+		<!--end::Wrapper-->
+	</div>
+	<!--end::Body-->
+</div>
+<!--end::List widget 12-->

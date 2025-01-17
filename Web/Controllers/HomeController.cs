@@ -1,9 +1,15 @@
+using Application.DTOs;
 using Application.Interfaces;
+using Application.Services;
 using Infrastructure.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
+using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Drawing.Printing;
 using Web.Models;
 using Web.Models.Enums;
 
@@ -14,14 +20,185 @@ public class HomeController : Controller
 {
     private readonly IIdentityService _identityService;
     private readonly ILogService _logService;
+    private readonly ICatTriggerService _catTriggerService;
+    private readonly ICatCategoryService _catCategoryService;
+    private readonly ICatAccountTypeService _catAccountTypeService;
+    private readonly ICatInstrumentsService _catInstrumentsService;
+    private readonly ICatFrameService _catFrameService;
 
-    public HomeController(IIdentityService identityService, ILogService logService)
+    public HomeController(IIdentityService identityService,
+                          ILogService logService,
+                          ICatTriggerService catTriggerService,
+                          ICatCategoryService catCategoryService,
+                          ICatAccountTypeService catAccountTypeService,
+                          ICatInstrumentsService catInstrumentsService,
+                          ICatFrameService catFrameService)
     {
         _identityService = identityService;
         _logService = logService;
+        _catTriggerService = catTriggerService;
+        _catCategoryService = catCategoryService;
+        _catAccountTypeService = catAccountTypeService;
+        _catInstrumentsService = catInstrumentsService;
+        _catFrameService = catFrameService;
     }
 
-    public IActionResult Index(NotificationType? notification, string message)
+    #region Métodos para obtener listados para los listBox
+    /// <summary>
+    /// Obtiene una lista de categorías en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la categoría que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las categorías disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetCategoryListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catCategoryService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Name,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de tipo de cuenta en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID del tipo que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los tipos de cuenta disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetAccountTypeListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catAccountTypeService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de instrumentos en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID del instrumento que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los instrumentos disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetInstrumentsListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catInstrumentsService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.OrderBy(o => o.Ticker).Select(x => new SelectListItem
+        {
+            Text = x.Ticker,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide            
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de frames en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID del frame que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los frames disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetFrameListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catFrameService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+    #endregion
+
+
+    public async Task<IActionResult> Index(NotificationType? notification, string message)
     {
         try
         {
@@ -49,6 +226,10 @@ public class HomeController : Controller
             return RedirectToAction("Error", "Home");
         }
 
+        ViewBag.CategoryItems = await GetCategoryListSelect(1);
+        ViewBag.AccountTypeItems = await GetAccountTypeListSelect(null);
+        ViewBag.InstrumentItems = await GetInstrumentsListSelect(null);
+        ViewBag.FrameItems = await GetFrameListSelect(null);
 
         return View();
     }
@@ -63,4 +244,37 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    /// <summary>
+    /// Muestra un resumen general de las estadisticas de gatillos.
+    /// </summary>
+    /// <returns>Vista parcial con los datos del resumen.</returns>
+    [HttpPost]
+    public async Task<PartialViewResult> AnalyticsTrigger([FromBody] ParametersAnalyticsDto parameters)
+    {
+        var query = await _catTriggerService.GetTBAnalyticsTriggerAsync(new ParametersTBAnalyticsDto
+        {
+            CategoryId = parameters.CategoryId,
+            AccountTypeId = parameters.AccountTypeId,
+            InstrumentId = parameters.InstrumentId,
+            FrameId = parameters.FrameId,
+            SearchValue = "",
+            OrderByColumn = "Id",
+            SortColumnDir = "ASC",
+            Skip = 0,
+            Take = 10
+        });
+
+        var model = new AnalyticsTriggerViewModel
+        {
+            AnalyticsTriggerList = query.ToList(),
+            TotalRecords = query.Count(),
+            TotalValidRecords = query.Where(x => x.TP1P >= 70).Count(),
+
+        };
+
+        return PartialView("_AnalyticsTrigger", model);
+    }
+
+
 }
