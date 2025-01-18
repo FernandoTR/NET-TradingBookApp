@@ -135,6 +135,36 @@
 			<!--begin::Row-->
 			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
+				<div class="col-xl-4 mb-5 mb-xl-0">
+					<!--begin::Chart widget 14-->
+					<div class="card card-flush h-xl-100">
+						<!--begin::Header-->
+						<div class="card-header pt-7">
+							<!--begin::Title-->
+							<h3 class="card-title align-items-start flex-column">
+								<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumEfectividad"></span>
+								<span class="text-gray-500 pt-2 fw-semibold fs-6">Efectividad solo con gatillos</span>
+							</h3>
+							<!--end::Title-->
+
+						</div>
+						<!--end::Header-->
+						<!--begin::Body-->
+						<div class="card-body pt-5">
+							<!--begin::Chart container-->
+							<div id="chartTriggerdiv" style="width: 100%; height: 400px;"></div>
+							<!--end::Chart container-->
+						</div>
+						<!--end::Body-->
+					</div>
+					<!--end::Chart widget 14-->
+				</div>
+				<!--end::Col-->
+				<!--begin::Col-->
+				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
+				<!--end::Col-->
+				
+				<!--begin::Col-->
 				<div class="col-xl-4">
 					<!--begin::Engage widget 10-->
 					<div class="card card-flush h-md-100">
@@ -159,8 +189,8 @@
 							</div>
 							<!--begin::Wrapper-->
 							<!--begin::Illustration-->
-							<img class="mx-auto h-150px h-lg-200px theme-light-show" src="~/Template/assets/media/illustrations/misc/upgrade.svg" alt="" />
-							<img class="mx-auto h-150px h-lg-200px theme-dark-show" src="~/Template/assets/media/illustrations/misc/upgrade-dark.svg" alt="" />
+							<img class="mx-auto h-150px h-lg-300px theme-light-show" src="~/Template/assets/media/illustrations/unitedpalms-1/19.png" alt="" />
+							<img class="mx-auto h-250px h-lg-300px theme-dark-show" src="~/Template/assets/media/illustrations/unitedpalms-1/19-dark.png" alt="" />
 							<!--end::Illustration-->
 						</div>
 						<!--end::Body-->
@@ -168,39 +198,38 @@
 					<!--end::Engage widget 10-->
 				</div>
 				<!--end::Col-->
+			</div>
+			<!--end::Row-->
+			<!--begin::Row-->
+			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
-				<!--end::Col-->
-				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0">
-					<!--begin::Chart widget 14-->
+				<div class="col-xxl-12 mb-5 mb-xl-10">
+					<!--begin::Chart widget 28-->
 					<div class="card card-flush h-xl-100">
 						<!--begin::Header-->
 						<div class="card-header pt-7">
 							<!--begin::Title-->
 							<h3 class="card-title align-items-start flex-column">
-								<span class="card-label fw-bold text-gray-900" id="lblNumEfectividad"></span>
-								<span class="text-gray-500 pt-2 fw-semibold fs-6">Efectividad solo con gatillos</span>
+								<span class="card-label fw-bold text-gray-800">Efectividad últimos bloques</span>
+								<span class="text-gray-500 mt-1 fw-semibold fs-6">Muestra los últimos 100 bloques</span>
 							</h3>
 							<!--end::Title-->
-							
+
 						</div>
 						<!--end::Header-->
 						<!--begin::Body-->
-						<div class="card-body pt-5">
-							<!--begin::Chart container-->
-							<div id="chartTriggerdiv" style="width: 100%; height: 400px;"></div>
-							<!--end::Chart container-->
+						<div class="card-body d-flex align-items-end ps-4 pe-0 pb-4">
+							<!--begin::Chart-->
+							<div id="kt_charts_bloques" class="h-500px w-100 min-h-auto" style="min-height: 315px;"></div>
+							<!--end::Chart-->
 						</div>
 						<!--end::Body-->
 					</div>
-					<!--end::Chart widget 14-->
+					<!--end::Chart widget 28-->
 				</div>
 				<!--end::Col-->
-				
 			</div>
 			<!--end::Row-->
-
 
 
 			
@@ -216,9 +245,16 @@
 	<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
 	<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 	<script>
+		//--begin::variables para grafico de bloques
+		var chartCategories = new Array();
+		var chartSeries = new Array();
+		var chart;
+		//--end::variables para grafico de bloques
+
 		$(document).ready(function () {
-			LoadAnalyticsTriggerView();
-			LoadAnalyticsTriggerChart();
+			LoadChartBlocks(); //inicializa grafico bloques
+
+			SearchData();
 		});
 
 		function ClearFilterData() {
@@ -229,11 +265,13 @@
 
 			LoadAnalyticsTriggerView();
 			LoadAnalyticsTriggerChart();
+			LoadAnalyticsLastBlocks();
 		}
 
 		function SearchData() {
 			LoadAnalyticsTriggerView();
 			LoadAnalyticsTriggerChart();
+			LoadAnalyticsLastBlocks();
 		}
 
 		function LoadAnalyticsTriggerView(){
@@ -274,6 +312,7 @@
 				console.error('Error:', error);
 			});
 		}
+		
 		function LoadAnalyticsTriggerChart(){
 			const categoryId = document.querySelector('#CategoryId').value || 0;
 			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
@@ -372,7 +411,7 @@
 				console.error('Error:', error);
 			});
 		}
-
+		
 		function LoadChartTrigger(data){
 				am5.ready(function () {
 					// Create root element
@@ -511,6 +550,213 @@
 				}); // end am5.ready()
 		}
 
+		function LoadChartBlocks() {
+			var element = document.getElementById('kt_charts_bloques');
+
+			var height = parseInt(KTUtil.css(element, 'height'));
+			var labelColor = KTUtil.getCssVariableValue('--bs-gray-500');
+			var borderColor = KTUtil.getCssVariableValue('--bs-gray-200');
+			var baseColor = KTUtil.getCssVariableValue('--bs-warning');
+			var lightColor = KTUtil.getCssVariableValue('--bs-warning-light');
+
+			if (!element) {
+				return;
+			}
+
+			var options = {
+				series: [{
+					name: 'Efectividad',
+					data: chartSeries
+				}],
+				chart: {
+					fontFamily: 'inherit',
+					type: 'area',
+					height: height,
+					toolbar: {
+						show: false
+					},
+				},
+				plotOptions: {
+
+				},
+				legend: {
+					show: false
+				},
+				dataLabels: {
+					enabled: false
+				},
+				fill: {
+					type: 'gradient',
+					gradient: {
+						shadeIntensity: 0.01,
+						opacityFrom: 0.7,
+						opacityTo: 0.1,
+						stops: [0, 100]
+					}
+
+				},
+				stroke: {
+					curve: 'smooth',
+					show: true,
+					width: 3,
+					colors: [baseColor]
+				},
+				xaxis: {
+					categories: chartCategories,
+					axisBorder: {
+						show: false,
+					},
+					axisTicks: {
+						show: false
+					},
+					labels: {
+						style: {
+							colors: labelColor,
+							fontSize: '12px'
+						}
+					},
+					crosshairs: {
+						position: 'front',
+						stroke: {
+							color: baseColor,
+							width: 1,
+							dashArray: 3
+						}
+					},
+					tooltip: {
+						enabled: true,
+						formatter: undefined,
+						offsetY: 0,
+						style: {
+							fontSize: '12px'
+						}
+					}
+				},
+				yaxis: {
+					min:0,
+					max: 100,
+					labels: {
+						style: {
+							colors: labelColor,
+							fontSize: '12px'
+						}
+					}
+				},
+				states: {
+					normal: {
+						filter: {
+							type: 'none',
+							value: 0
+						}
+					},
+					hover: {
+						filter: {
+							type: 'none',
+							value: 0
+						}
+					},
+					active: {
+						allowMultipleDataPointsSelection: false,
+						filter: {
+							type: 'none',
+							value: 0
+						}
+					}
+				},
+				tooltip: {
+					style: {
+						fontSize: '12px'
+					},
+					y: {
+						formatter: function (val) {
+							return  val + '%'
+						}
+					}
+				},
+				colors: [lightColor],
+				grid: {
+					borderColor: borderColor,
+					strokeDashArray: 4,
+					yaxis: {
+						lines: {
+							show: true
+						}
+					}
+				},
+				markers: {
+					strokeColor: baseColor,
+					strokeWidth: 3
+				}
+			};
+
+			chart = new ApexCharts(element, options);
+			chart.render();
+		}
+
+		function LoadAnalyticsLastBlocks(){
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const frameId = document.querySelector('#FrameId').value || 0;
+
+
+			var data = {
+				categoryId: categoryId,
+				accountTypeId: accountTypeId,
+				instrumentId: instrumentId,
+				frameId: frameId
+			};
+
+
+			// Realizar la petición POST
+			fetch('/Home/AnalyticsLastBlocks', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data)       // Convierte los datos a JSON para enviarlos
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Error en la petición: ${response.status}`);
+				}
+				return response.json();             
+			})
+			.then(data => {
+				    //limpiar arreglos del grafico de bloques
+					chartCategories.splice(0);
+					chartSeries.splice(0);
+
+					console.log("datos: ",data)
+					if (data.result)
+					{
+						var porcentaje = new Array();
+
+						$.each(data.list, function (i, item) {
+							console.log("datos row: ",item)
+							chartCategories.push(item.blockName);
+							porcentaje.push(item.percentage);
+						});
+
+						chartSeries.push({
+							name: 'Efectividad',
+							data: porcentaje
+						});
+
+						//actualiza la información del grafico
+						chart.updateSeries(chartSeries);
+						chart.updateOptions({
+							xaxis: {
+								categories: chartCategories,
+							},
+						});
+
+					}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
 
 	</script>
 }

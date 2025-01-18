@@ -44,4 +44,9 @@ public class CatTriggerService : ICatTriggerService
     {
         return await _catTriggerRepository.GetTBAnalyticsTriggerAsync(parameters);
     }
+
+    public async Task<List<GetTBAnalyticsLastBlockDto>> GetTBAnalyticsLastBlockAsync(ParametersAnalyticsDto parameters)
+    {
+        return await _catTriggerRepository.GetTBAnalyticsLastBlockAsync(parameters);
+    }
 }

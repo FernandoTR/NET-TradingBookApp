@@ -11,4 +11,5 @@ public interface ICatTriggerService
     Task<CatTrigger?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatTrigger entity);
     Task<List<GetTBAnalyticsTriggerDto>> GetTBAnalyticsTriggerAsync(ParametersTBAnalyticsDto parameters);
+    Task<List<GetTBAnalyticsLastBlockDto>> GetTBAnalyticsLastBlockAsync(ParametersAnalyticsDto parameters);
 }

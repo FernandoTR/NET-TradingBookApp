@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Interfaces;
+using Application.Models;
 using Application.Services;
 using Infrastructure.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,8 @@ using System.Diagnostics.Metrics;
 using System.Drawing.Printing;
 using Web.Models;
 using Web.Models.Enums;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Web.Controllers;
 
@@ -278,7 +281,7 @@ public class HomeController : Controller
 
 
     /// <summary>
-    /// Muestra un resumen general de las estadisticas de gatillos para grafico.
+    /// Obtiene la lista de gatillos para cargar en la grafica.
     /// </summary>
     /// <returns>Vista parcial con los datos del resumen.</returns>
     [HttpPost]
@@ -297,16 +300,36 @@ public class HomeController : Controller
             Take = 10
         });
 
-        //var model = new AnalyticsTriggerViewModel
-        //{
-        //    AnalyticsTriggerList = query.ToList(),
-        //    TotalRecords = query.Count(),
-        //    TotalValidRecords = query.Where(x => x.TP1P >= 70).Count(),
-
-        //};
-
         return query.ToList();
 
+    }
+
+    /// <summary>
+    /// Obtiene la lista de efectividad por bloque para cargar en la grafica.
+    /// </summary>
+    /// <returns>Vista parcial con los datos del resumen.</returns>
+    [HttpPost]
+    public async Task<IActionResult> AnalyticsLastBlocks([FromBody] ParametersAnalyticsDto parameters)
+    {
+        try
+        {
+            var query = await _catTriggerService.GetTBAnalyticsLastBlockAsync(parameters);
+
+            return Json(new
+            {
+                result = true,
+                List = query.ToList()
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Home, Action: {nameof(AnalyticsLastBlocks)}", ex);
+            return Json(new
+            {
+                result = false
+            });
+        }
+       
     }
 
 }

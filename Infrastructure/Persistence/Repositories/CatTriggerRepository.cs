@@ -57,4 +57,40 @@ public class CatTriggerRepository : ICatTriggerRepository
 
     }
 
+    /// <summary>
+    /// Obtiene la lista de efectividad por bloque para cargar en la grafica.
+    /// </summary>
+    /// <param name="parameters">Modelo con los parámetros necesarios para ejecutar el procedimiento almacenado.</param>
+    /// <returns>Una lista de objetos <see cref="GetTBAnalyticsLastBlockDto"/> correspondientes a los ultimos bloques.</returns>
+    public async Task<List<GetTBAnalyticsLastBlockDto>> GetTBAnalyticsLastBlockAsync(ParametersAnalyticsDto parameters)
+    {
+        try
+        {
+            // Crear los parámetros para el procedimiento almacenado
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@CategoryId", SqlDbType.Int) { Value = parameters.CategoryId },
+                new SqlParameter("@AccountTypeId", SqlDbType.Int) { Value = parameters.AccountTypeId },
+                new SqlParameter("@InstrumentId", SqlDbType.Int) { Value = parameters.InstrumentId },
+                new SqlParameter("@FrameId", SqlDbType.Int) { Value = parameters.FrameId },
+
+            };
+
+            // Ejecutar el procedimiento almacenado y obtener los resultados
+            var result = await _context.Set<GetTBAnalyticsLastBlockDto>()
+                .FromSqlRaw("EXEC usp_GetTBAnalyticsLastBlock @CategoryId, @AccountTypeId, @InstrumentId, @FrameId", sqlParameters)
+                .ToListAsync();
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog(nameof(GetTBAnalyticsTriggerAsync), ex);
+            return new List<GetTBAnalyticsLastBlockDto>();
+        }
+
+    }
+
+
+
 }
