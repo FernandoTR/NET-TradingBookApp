@@ -1,4 +1,5 @@
-﻿using Infrastructure;
+﻿using Application.DTOs;
+using Infrastructure;
 
 namespace Application.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ICatDayService
     Task<IEnumerable<CatDay>> GetAllAsync();
     Task<CatDay?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatDay entity);
+    Task<List<GetTBAnalyticsDayDto>> GetTBAnalyticsDayAsync(ParametersTBAnalyticsDto parameters);
 }

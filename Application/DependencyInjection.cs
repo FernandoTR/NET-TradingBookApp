@@ -18,11 +18,10 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAccountsService, AccountsService>();
         builder.Services.AddScoped<IAccountBalancesService, AccountBalancesService>();
         builder.Services.AddScoped<ICatAccountTypeService, CatAccountTypeService>();
-        builder.Services.AddScoped<ICatFigureService, CatFigureService>();
         builder.Services.AddScoped<ICatCategoryService, CatCategoryService>();
         builder.Services.AddScoped<ICatDayService, CatDayService>();
         builder.Services.AddScoped<ICatDirectionService, CatDirectionService>();
-        builder.Services.AddScoped<ICanFigureService, CanFigureService>();
+        builder.Services.AddScoped<ICatFigureService, CatFigureService>();
         builder.Services.AddScoped<ICatFrameService, CatFrameService>();
         builder.Services.AddScoped<ICatInstrumentsService, CatInstrumentsService>();
         builder.Services.AddScoped<ICatSceneryService, CatSceneryService>();

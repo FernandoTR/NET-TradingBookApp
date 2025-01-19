@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
@@ -6,9 +7,12 @@ namespace Application.Services;
 public class CatDayService : ICatDayService
 {
     private readonly IGenericRepository<CatDay> _repository;
-    public CatDayService(IGenericRepository<CatDay> repository)
+    private readonly ICatDayRepository _catDayRepository;
+
+    public CatDayService(IGenericRepository<CatDay> repository, ICatDayRepository catDayRepository)
     {
         _repository = repository;
+        _catDayRepository = catDayRepository;
     }
 
     public async Task<bool> AddAsync(CatDay entity)
@@ -34,5 +38,10 @@ public class CatDayService : ICatDayService
     public async Task<bool> UpdateAsync(CatDay entity)
     {
         return await _repository.UpdateAsync(entity);
+    }
+
+    public async Task<List<GetTBAnalyticsDayDto>> GetTBAnalyticsDayAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catDayRepository.GetTBAnalyticsDayAsync(parameters);
     }
 }

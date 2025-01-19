@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Gatillos";
+	ViewData["Title"] = "Días";
 
 	var categoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
 	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
@@ -16,7 +16,7 @@
 			<!--begin::Page title-->
 			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 				<!--begin::Title-->
-				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Análisis de Gatillos</h1>
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Análisis de Días</h1>
 				<!--end::Title-->
 				<!--begin::Breadcrumb-->
 				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -41,7 +41,7 @@
 					</li>
 					<!--end::Item-->
 					<!--begin::Item-->
-					<li class="breadcrumb-item text-muted">Gatillos</li>
+					<li class="breadcrumb-item text-muted">Días</li>
 					<!--end::Item-->
 				</ul>
 				<!--end::Breadcrumb-->
@@ -70,7 +70,7 @@
 						<div class="separator border-gray-200"></div>
 						<!--end::Menu separator-->
 						<!--begin::Form-->
-						<div class="px-7 py-5">							
+						<div class="px-7 py-5">
 							<!--begin::Input group-->
 							<div class="mb-10">
 								<!--begin::Label-->
@@ -142,7 +142,7 @@
 		<!--begin::Content container-->
 		<div id="kt_app_content_container" class="app-container container-fluid">
 			<!--begin::Card-->
-			<div class="card">				
+			<div class="card">
 				<!--begin::Card body-->
 				<div class="card-body pt-6">
 					<!--begin::Table-->
@@ -159,7 +159,7 @@
 	<!--end::Content-->
 </div>
 <!--end::Content wrapper-->
-@section scripts{
+@section scripts {
 	<script>
 		$(document).ready(function () {
 			// Recargar datos de la tabla
@@ -199,14 +199,14 @@
 			$('#dtTable').DataTable({
 				destroy: true, // Destruir instancia previa para evitar conflictos
 				ajax: {
-					url: "@Url.Content("~/AnalyticsTrigger/JsonDataTable")",
+					url: "@Url.Content("~/AnalyticsDay/JsonDataTable")",
 					type: "POST",
 					dataType: "json",
 					data: data
 				},
 				columns: [
 					{ name: "code", title: "Código", data: "code", autoWidth: true,  className: "min-w-50px " },
-					{ name: "description", title: "Descripción", data: "description", autoWidth: true,  className: "text-center min-w-200px " },
+					{ name: "description", title: "Nombre", data: "description", autoWidth: true,  className: "text-center min-w-100px " },
 					{ name: "quantity", title: "Cantidad", data: "quantity", autoWidth: true,  className: "text-center min-w-50px " },
 					{ name: "sl", title: "SL", data: "sl", autoWidth: true,  className: "text-center min-w-30px " },
 					{ name: "tP1", title: "TP1", data: "tP1", autoWidth: true,  className: "text-center min-w-30px " },
@@ -217,7 +217,7 @@
 					{ name: "tP2P", title: "TP2 %", data: "tP2P", autoWidth: true,  className: "text-center min-w-100px ", render: renderTP2PChart },
 					{ name: "tP3P", title: "TP3 %", data: "tP3P", autoWidth: true,  className: "text-center min-w-100px ", render: renderTP3PChart },
 					{ name: "valid", title: "Estatus", data: "valid", autoWidth: true, orderable: false,  className: "text-end min-w-30px ", render: renderStatusAnalytics  }
-				],				
+				],
 				processing: true,
 				serverSide: true,
 				pageLength: 10,

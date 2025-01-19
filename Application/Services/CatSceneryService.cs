@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
@@ -6,9 +7,12 @@ namespace Application.Services;
 public class CatSceneryService : ICatSceneryService
 {
     private readonly IGenericRepository<CatScenery> _repository;
-    public CatSceneryService(IGenericRepository<CatScenery> repository)
+    private readonly ICatSceneryRepository _catSceneryRepository;
+
+    public CatSceneryService(IGenericRepository<CatScenery> repository, ICatSceneryRepository catSceneryRepository)
     {
         _repository = repository;
+        _catSceneryRepository = catSceneryRepository;
     }
 
     public async Task<bool> AddAsync(CatScenery entity)
@@ -35,4 +39,10 @@ public class CatSceneryService : ICatSceneryService
     {
         return await _repository.UpdateAsync(entity);
     }
+
+    public async Task<List<GetTBAnalyticsSceneryDto>> GetTBAnalyticsSceneryAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catSceneryRepository.GetTBAnalyticsSceneryAsync(parameters);
+    }
+
 }

@@ -10,24 +10,24 @@ using Web.Models.Enums;
 namespace Web.Controllers;
 
 [Authorize]
-public class AnalyticsTriggerController : Controller
+public class AnalyticsFigureController : Controller
 {
     private readonly IIdentityService _identityService;
     private readonly ILogService _logService;
     private readonly IMessageService _messageService;
-    private readonly ICatTriggerService _catTriggerService;
+    private readonly ICatFigureService _catFigureService;
     private readonly ICatCategoryService _catCategoryService;
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatFrameService _catFrameService;
 
     // Identificador del permiso 
-    private static int permissionNumber = (int)Permissions.AnalyticsTrigger;
+    private static int permissionNumber = (int)Permissions.AnalyticsFigure;
 
-    public AnalyticsTriggerController(IIdentityService identityService,
+    public AnalyticsFigureController(IIdentityService identityService,
                                     ILogService logService,
                                     IMessageService messageService,
-                                    ICatTriggerService catTriggerService,
+                                    ICatFigureService catFigureService,
                                     ICatCategoryService catCategoryService,
                                     ICatAccountTypeService catAccountTypeService,
                                     ICatInstrumentsService catInstrumentsService,
@@ -36,7 +36,7 @@ public class AnalyticsTriggerController : Controller
         _identityService = identityService;
         _logService = logService;
         _messageService = messageService;
-        _catTriggerService = catTriggerService;
+        _catFigureService = catFigureService;
         _catCategoryService = catCategoryService;
         _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
@@ -65,7 +65,7 @@ public class AnalyticsTriggerController : Controller
     [HttpPost]
     public async Task<ActionResult> JsonDataTable(int categoryId, int accountTypeId, int instrumentId, int frameId)
     {
-        var data = new List<GetTBAnalyticsTriggerDto>();
+        var data = new List<GetTBAnalyticsFigureDto>();
 
         try
         {
@@ -84,23 +84,18 @@ public class AnalyticsTriggerController : Controller
             skip = start != null ? Convert.ToInt32(start) : 0;
             recordsTotal = 0;
 
-
-            
-            var query = await _catTriggerService.GetTBAnalyticsTriggerAsync(new ParametersTBAnalyticsDto
-                        {
-                            CategoryId = categoryId,
-                            AccountTypeId = accountTypeId,
-                            InstrumentId = instrumentId,
-                            FrameId = frameId,
-                            SearchValue = searchValue,
-                            OrderByColumn = "Id",
-                            SortColumnDir = "ASC",
-                            Skip = skip,
-                            Take = pageSize
-                        });
-                       
-                     
-           
+            var query = await _catFigureService.GetTBAnalyticsFigureAsync(new ParametersTBAnalyticsDto
+            {
+                CategoryId = categoryId,
+                AccountTypeId = accountTypeId,
+                InstrumentId = instrumentId,
+                FrameId = frameId,
+                SearchValue = searchValue,
+                OrderByColumn = "Id",
+                SortColumnDir = "ASC",
+                Skip = skip,
+                Take = pageSize
+            });
 
             // Obtener el total de registros
             recordsTotal = query.Count();
@@ -114,7 +109,7 @@ public class AnalyticsTriggerController : Controller
         {
             // Manejo de errores y registro de la excepción
             ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("GenericError");
-            _logService.ErrorLog($"Controller: CatFigure, Action: JsonDataTable", ex);
+            _logService.ErrorLog($"Controller: AnalyticsFigure, Action: JsonDataTable", ex);
         }
 
         // Retornar los datos al DataTable en formato JSON
@@ -241,7 +236,7 @@ public class AnalyticsTriggerController : Controller
             Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide            
         }));
 
-        return selectItems;       
+        return selectItems;
     }
 
     /// <summary>
@@ -325,7 +320,4 @@ public class AnalyticsTriggerController : Controller
 
         return View();
     }
-
-
-
 }

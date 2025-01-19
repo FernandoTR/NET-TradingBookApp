@@ -1,5 +1,6 @@
 ﻿
 
+using Application.DTOs;
 using Application.Interfaces;
 using Infrastructure;
 
@@ -8,9 +9,12 @@ namespace Application.Services;
 public class CatFigureService : ICatFigureService
 {
     private readonly IGenericRepository<CatFigure> _repository;
-    public CatFigureService(IGenericRepository<CatFigure> repository)
+    private readonly ICatFigureRepository _catFigureRepository;
+
+    public CatFigureService(IGenericRepository<CatFigure> repository, ICatFigureRepository catFigureRepository)
     {
         _repository = repository;
+        _catFigureRepository = catFigureRepository;
     }
 
     public async Task<bool> AddAsync(CatFigure entity)
@@ -37,4 +41,11 @@ public class CatFigureService : ICatFigureService
     {
         return await _repository.UpdateAsync(entity);
     }
+
+    public async Task<List<GetTBAnalyticsFigureDto>> GetTBAnalyticsFigureAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catFigureRepository.GetTBAnalyticsFigureAsync(parameters);
+    }
+
+
 }

@@ -1,4 +1,5 @@
 ﻿
+using Application.DTOs;
 using Infrastructure;
 
 namespace Application.Interfaces;
@@ -10,4 +11,5 @@ public interface ICatFigureService
     Task<IEnumerable<CatFigure>> GetAllAsync();
     Task<CatFigure?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatFigure entity);
+    Task<List<GetTBAnalyticsFigureDto>> GetTBAnalyticsFigureAsync(ParametersTBAnalyticsDto parameters);
 }

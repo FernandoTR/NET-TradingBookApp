@@ -1,4 +1,5 @@
-﻿using Infrastructure;
+﻿using Application.DTOs;
+using Infrastructure;
 
 namespace Application.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ICatSceneryService
     Task<IEnumerable<CatScenery>> GetAllAsync();
     Task<CatScenery?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatScenery entity);
+    Task<List<GetTBAnalyticsSceneryDto>> GetTBAnalyticsSceneryAsync(ParametersTBAnalyticsDto parameters);
 }
