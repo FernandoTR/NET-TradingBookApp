@@ -12,7 +12,9 @@ public partial class ApplicationDbContext
         modelBuilder.Entity<GetMenuByUserIdDto>().HasNoKey();
         modelBuilder.Entity<GetTBAnalyticsTriggerDto>().HasNoKey();
         modelBuilder.Entity<GetTBAnalyticsLastBlockDto>().HasNoKey();
+        modelBuilder.Entity<GetOrdersDataTableDto>().HasNoKey();
 
+        
 
     }
 }

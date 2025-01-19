@@ -1,0 +1,261 @@
+﻿@{
+	ViewData["Title"] = "Ordenes";
+
+	var categoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+}
+
+
+<!--begin::Content wrapper-->
+<div class="d-flex flex-column flex-column-fluid">
+	<!--begin::Toolbar-->
+	<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+		<!--begin::Toolbar container-->
+		<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+			<!--begin::Page title-->
+			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+				<!--begin::Title-->
+				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Ordenes</h1>
+				<!--end::Title-->
+				<!--begin::Breadcrumb-->
+				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+					<!--begin::Item-->
+					<li class="breadcrumb-item text-muted">
+						<a href="index.html" class="text-muted text-hover-primary">TradingBook</a>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item">
+						<span class="bullet bg-gray-500 w-5px h-2px"></span>
+					</li>
+					<!--end::Item-->
+					<!--begin::Item-->
+					<li class="breadcrumb-item text-muted">Ordenes</li>
+					<!--end::Item-->
+				</ul>
+				<!--end::Breadcrumb-->
+			</div>
+			<!--end::Page title-->
+			<!--begin::Actions-->
+			<div class="d-flex align-items-center gap-2 gap-lg-3">
+				<!--begin::Filter menu-->
+				<div class="m-0">
+					<!--begin::Menu toggle-->
+					<a href="#" class="btn btn-sm btn-flex btn-secondary fw-bold" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+						<i class="ki-duotone ki-filter fs-6 text-muted me-1">
+							<span class="path1"></span>
+							<span class="path2"></span>
+						</i>Filtro
+					</a>
+					<!--end::Menu toggle-->
+					<!--begin::Menu 1-->
+					<div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true" id="kt_menu_filter">
+						<!--begin::Header-->
+						<div class="px-7 py-5">
+							<div class="fs-5 text-gray-900 fw-bold">Opciones de Filtro</div>
+						</div>
+						<!--end::Header-->
+						<!--begin::Menu separator-->
+						<div class="separator border-gray-200"></div>
+						<!--end::Menu separator-->
+						<!--begin::Form-->
+						<div class="px-7 py-5">
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Categoría:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("CategoryId", categoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Tipo de Cuenta:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("AccountTypeId", accountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Instrumento:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("InstrumentId", instrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Frame:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("FrameId", frameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Actions-->
+							<div class="d-flex justify-content-end">
+								<a href="javascript:ClearFilterData()" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reiniciar</a>
+								<a href="javascript:SearchData()" class="btn btn-sm btn-primary" data-kt-menu-dismiss="true" id="btn_AplicarFiltro">Aplicar</a>
+							</div>
+							<!--end::Actions-->
+						</div>
+						<!--end::Form-->
+					</div>
+					<!--end::Menu 1-->
+				</div>
+				<!--end::Filter menu-->
+			</div>
+			<!--end::Actions-->
+		</div>
+		<!--end::Toolbar container-->
+	</div>
+	<!--end::Toolbar-->
+	<!--begin::Content-->
+	<div id="kt_app_content" class="app-content flex-column-fluid">
+		<!--begin::Content container-->
+		<div id="kt_app_content_container" class="app-container container-fluid">
+			<!--begin::Card-->
+			<div class="card">
+				<!--begin::Card body-->
+				<div class="card-body pt-6">
+					<!--begin::Table-->
+					<table id="dtTable" class="table align-middle table-row-dashed fs-6 gy-5"></table>
+					<!--end::Table-->
+				</div>
+				<!--end::Card body-->
+			</div>
+			<!--end::Card-->
+
+		</div>
+		<!--end::Content container-->
+	</div>
+	<!--end::Content-->
+</div>
+<!--end::Content wrapper-->
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			// Recargar datos de la tabla
+			LoadDataTable();
+
+		});
+
+		function ClearFilterData() {
+			$('#CategoryId').val(1).trigger('change');
+			$('#AccountTypeId').val(null).trigger('change');
+			$('#InstrumentId').val(null).trigger('change');
+			$('#FrameId').val(null).trigger('change');
+
+			LoadDataTable();
+		}
+
+		function SearchData() {
+			LoadDataTable();
+		}
+
+		// Función para cargar datos en la tabla
+		function LoadDataTable() {
+			 const categoryId = document.querySelector('#CategoryId').value || 0;
+			 const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			 const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			 const frameId = document.querySelector('#FrameId').value || 0;
+
+			 var data = {
+				  categoryId: categoryId,
+				  accountTypeId: accountTypeId,
+				  instrumentId: instrumentId,
+				  frameId: frameId
+			 };
+
+			 console.log("valores:", data)
+
+			$('#dtTable').DataTable({
+				destroy: true, // Destruir instancia previa para evitar conflictos
+				ajax: {
+					url: "@Url.Content("~/Orders/JsonDataTable")",
+					type: "POST",
+					dataType: "json",
+					data: data
+				},
+				columns: [
+					{ name: "id", title: "ID", data: "id", autoWidth: true,  className: "min-w-50px " },
+					{ name: "accountTypeName", title: "Tipo", data: "accountTypeName", autoWidth: true,  className: "min-w-20px " },
+					{ name: "symbolName", title: "Instrumento", data: "symbolName", autoWidth: true,  className: "text-center min-w-100px " },
+					{ name: "creationDate", title: "Fecha", data: "creationDate", autoWidth: true,  className: "text-center min-w-30px ", render: function (data, type, row) {
+								// Formatear la fecha solo en las celdas visibles
+								return type === 'display' || type === 'filter'
+									? moment(data).format("DD/MM/YYYY")
+									: data;
+							} },
+					{ name: "timeFormat", title: "Tiempo", data: "timeFormat", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "dayName", title: "Día", data: "dayName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "stageName", title: "Etapa", data: "stageName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "figureName", title: "Figura", data: "figureName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "frameName", title: "Frame", data: "frameName", autoWidth: true,  className: "text-center min-w-30px "  },
+					{ name: "triggerName", title: "Gatillo", data: "triggerName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "directionName", title: "Dirección", data: "directionName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "slStyle", title: "SL", data: "slStyle", autoWidth: true,  className: "text-center min-w-20px " },
+					{ name: "tP1Style", title: "TP1", data: "tP1Style", autoWidth: true,  className: "text-center min-w-20px " },
+					{ name: "tP2Style", title: "TP2", data: "tP2Style", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "tP3Style", title: "TP3", data: "tP3Style", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "chart", title: "Chart", data: "chart", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "statusStyleName", title: "Estatus", data: "statusStyleName", autoWidth: true,  className: "text-center min-w-100px " },
+					{ name: "task", title: "Acciones", data: "task", autoWidth: true, orderable: false,  className: "text-end min-w-30px "  }
+				],
+				processing: true,
+				serverSide: true,
+				pageLength: 100,
+				searching: false,
+				filter: false,
+				info: false,
+				language: {
+					sProcessing: "Procesando...",
+					sLengthMenu: "Mostrar _MENU_ registros",
+					sZeroRecords: "No se encontraron resultados",
+					sEmptyTable: "Ningún dato disponible en esta tabla",
+					sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+					sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+					sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+					sSearch: "Buscar:",
+					sLoadingRecords: "Cargando...",
+					oPaginate: {
+						sFirst: "Primero",
+						sLast: "Último",
+						sNext: "Siguiente",
+						sPrevious: "Anterior"
+					},
+					oAria: {
+						sSortAscending: ": Activar para ordenar la columna de manera ascendente",
+						sSortDescending: ": Activar para ordenar la columna de manera descendente"
+					},
+					buttons: {
+						copy: "Copiar",
+						colvis: "Visibilidad"
+					}
+				},
+				drawCallback: function () {
+					$('[data-toggle="tooltip"]').tooltip();
+					KTMenu.createInstances(); // Reinitialize Keenthemes menu
+				},
+			});
+		}
+	</script>
+}

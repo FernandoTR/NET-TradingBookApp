@@ -24,8 +24,8 @@ public enum Permissions
     CatCategory = 5,
     [Description("Figura")]
     CatFigure = 6,
-    [Description("TradingBook")]
-    TradingBook = 7,
+    [Description("Orders")]
+    Orders = 7,
     [Description("AnalyticsTrigger")]
     AnalyticsTrigger = 8,
     [Description("AnalyticsScenery")]
