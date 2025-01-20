@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
@@ -6,9 +7,12 @@ namespace Application.Services;
 public class CatDirectionService : ICatDirectionService
 {
     private readonly IGenericRepository<CatDirection> _repository;
-    public CatDirectionService(IGenericRepository<CatDirection> repository)
+    private readonly ICatDirectionRepository _catDirectionRepository;
+
+    public CatDirectionService(IGenericRepository<CatDirection> repository, ICatDirectionRepository catDirectionRepository)
     {
         _repository = repository;
+        _catDirectionRepository = catDirectionRepository;
     }
 
     public async Task<bool> AddAsync(CatDirection entity)
@@ -34,5 +38,10 @@ public class CatDirectionService : ICatDirectionService
     public async Task<bool> UpdateAsync(CatDirection entity)
     {
         return await _repository.UpdateAsync(entity);
+    }
+
+    public async Task<List<GetTBAnalyticsDirectionDto>> GetTBAnalyticsDirectionAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catDirectionRepository.GetTBAnalyticsDirectionAsync(parameters);
     }
 }

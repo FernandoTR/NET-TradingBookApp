@@ -1,4 +1,5 @@
-﻿using Infrastructure;
+﻿using Application.DTOs;
+using Infrastructure;
 
 namespace Application.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ICatDirectionService
     Task<IEnumerable<CatDirection>> GetAllAsync();
     Task<CatDirection?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatDirection entity);
+    Task<List<GetTBAnalyticsDirectionDto>> GetTBAnalyticsDirectionAsync(ParametersTBAnalyticsDto parameters);
 }
