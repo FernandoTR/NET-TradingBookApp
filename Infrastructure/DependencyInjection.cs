@@ -115,10 +115,9 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAccountBalanceRepository, AccountBalanceRepository>();
         builder.Services.AddScoped<ICatDayRepository, CatDayRepository>();
         builder.Services.AddScoped<ICatDirectionRepository, CatDirectionRepository>();
-
         builder.Services.AddScoped<ICatFigureRepository, CatFigureRepository>();
-
         builder.Services.AddScoped<ICatSceneryRepository, CatSceneryRepository>();
+        builder.Services.AddScoped<ICatStageRepository, CatStageRepository>();
 
         builder.Services.AddScoped<ICatTriggerRepository, CatTriggerRepository>();
         builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();

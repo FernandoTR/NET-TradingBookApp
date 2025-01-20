@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
@@ -6,9 +7,12 @@ namespace Application.Services;
 public class CatStageService : ICatStageService
 {
     private readonly IGenericRepository<CatStage> _repository;
-    public CatStageService(IGenericRepository<CatStage> repository)
+    private readonly ICatStageRepository _catStageRepository;
+
+    public CatStageService(IGenericRepository<CatStage> repository, ICatStageRepository catStageRepository)
     {
         _repository = repository;
+        _catStageRepository = catStageRepository;
     }
 
     public async Task<bool> AddAsync(CatStage entity)
@@ -35,4 +39,12 @@ public class CatStageService : ICatStageService
     {
         return await _repository.UpdateAsync(entity);
     }
+
+    public async Task<List<GetTBAnalyticsStageDto>> GetTBAnalyticsStageAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catStageRepository.GetTBAnalyticsStageAsync(parameters);
+    }
+
+
+
 }
