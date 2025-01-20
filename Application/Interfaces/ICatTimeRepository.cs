@@ -2,8 +2,7 @@
 
 namespace Application.Interfaces;
 
-public interface IOrdersService
-{    
-    Task<List<GetOrdersDataTableDto>> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters);
+public interface ICatTimeRepository
+{
     Task<List<GetTBAnalyticsTimeDto>> GetTBAnalyticsTimeAsync(ParametersTBAnalyticsDto parameters);
 }

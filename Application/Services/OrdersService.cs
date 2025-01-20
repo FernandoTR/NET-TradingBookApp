@@ -1,25 +1,26 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services;
 
 public class OrdersService : IOrdersService
 {
     private readonly IOrdersRepository _ordersRepository;
-    public OrdersService(IOrdersRepository ordersRepository)
+    private readonly ICatTimeRepository _catTimeRepository;
+
+    public OrdersService(IOrdersRepository ordersRepository, ICatTimeRepository catTimeRepository)
     {
         _ordersRepository = ordersRepository;
+        _catTimeRepository = catTimeRepository;
     }
     public async Task<List<GetOrdersDataTableDto>> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
     {
         return await _ordersRepository.GetOrdersDataTableAsync(parameters);
     }
 
-
+    public async Task<List<GetTBAnalyticsTimeDto>> GetTBAnalyticsTimeAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catTimeRepository.GetTBAnalyticsTimeAsync(parameters);
+    }
 
 }
