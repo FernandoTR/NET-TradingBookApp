@@ -1,0 +1,623 @@
+﻿@{
+	Layout = null;
+
+	var CategoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+	var AccountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+	var InstrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+	var DayItems = (List<SelectListItem>)ViewBag.DayItems;
+	var StageItems = (List<SelectListItem>)ViewBag.StageItems;
+	var FigureItems = (List<SelectListItem>)ViewBag.FigureItems;
+	var FrameItems = (List<SelectListItem>)ViewBag.FrameItems;
+	var TriggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+	var DirectionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+	var SceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+	var OrderTypeItems = (List<SelectListItem>)ViewBag.OrderTypeItems;
+
+}
+
+
+<!--begin::Stepper-->
+<div class="stepper stepper-links d-flex flex-column gap-5" id="kt_modal_top_up_wallet_stepper">
+	<!--begin::Nav-->
+	<div class="stepper-nav justify-content-center py-2">
+		<!--begin::Step 1-->
+		<div class="stepper-item current" data-kt-stepper-element="nav">
+			<h3 class="stepper-title">Información General</h3>
+		</div>
+		<!--end::Step 1-->
+		<!--begin::Step 2-->
+		<div class="stepper-item" data-kt-stepper-element="nav">
+			<h3 class="stepper-title">Información Compra</h3>
+		</div>
+		<!--end::Step 2-->
+	</div>
+	<!--end::Nav-->
+	<!--begin::Form-->
+	<form class="mx-auto w-100 mw-600px pt-2 pb-10" novalidate="novalidate" id="kt_modal_top_up_wallet_stepper_form">
+		<!--begin::Step 1-->
+		<div class="current" data-kt-stepper-element="content">
+			<!--begin::Wrapper-->
+			<div class="w-100">
+				<div class="row">
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Categoría:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("CategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-5">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Cuenta:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("AccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-4">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Instrumento:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("InstrumentId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+				<div class="row pt-2">					
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Fecha:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="CreationDate" name="CreationDate" class="form-control form-control-solid" />
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tiempo:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="Time" name="Time" class="form-control form-control-solid" />
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Día:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("DayId", DayItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+				<div class="row pt-2">
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Etapa:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("StageId", StageItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->			
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("FrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->					
+				</div>
+				<div class="row pt-2">					
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					
+					
+				</div>
+			</div>
+			<!--end::Wrapper-->
+		</div>
+		<!--end::Step 1-->
+		<!--begin::Step 2-->
+		<div data-kt-stepper-element="content">
+			<!--begin::Wrapper-->
+			<div class="w-100">
+				<div class="row">
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Orden:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("OrderTypeId", OrderTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Trade:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="TradeTypeId" name="TradeTypeId">
+									<option value=""></option>
+									<option selected="selected"  value="Buy">Compra</option>
+									<option value="Sell">Venta</option>
+								</select>
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					
+				</div>
+				<div class="row">
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Cantidad:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="Quantity" name="Quantity" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0"  />
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Precio:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="Price" name="Price" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Comisión:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="CommissionRate" name="CommissionRate" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0.001" />
+							</div>
+							<!--end::Col-->
+						</div>
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Total:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" id="Total" name="Total" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+							</div>
+							<!--end::Col-->
+						</div>
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+			</div>
+			<!--end::Wrapper-->
+		</div>
+		<!--end::Step 2-->
+		<!--begin::Actions-->
+		<div class="d-flex flex-stack pt-10">
+			<!--begin::Wrapper-->
+			<div class="me-2">
+				<button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
+					<i class="ki-duotone ki-arrow-left fs-3 me-1">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i>Atrás
+				</button>
+			</div>
+			<!--end::Wrapper-->
+			<!--begin::Wrapper-->
+			<div>
+				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit">
+					<span class="indicator-label">
+						Guardar
+						<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
+							<span class="path1"></span>
+							<span class="path2"></span>
+						</i>
+					</span>
+					<span class="indicator-progress">
+						Espere por favor...
+						<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+					</span>
+				</button>
+				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="next">
+					Continuar
+					<i class="ki-duotone ki-arrow-right fs-3 ms-1 me-0">
+						<span class="path1"></span>
+						<span class="path2"></span>
+					</i>
+				</button>
+			</div>
+			<!--end::Wrapper-->
+		</div>
+		<!--end::Actions-->
+	</form>
+	<!--end::Form-->
+</div>
+<!--end::Stepper-->
+<script>
+    $(document).ready(function () {
+		// Define form element
+		let form = document.getElementById('kt_modal_top_up_wallet_stepper_form');
+
+		 // Init form validation rules.
+		var validatorStep1 = FormValidation.formValidation(
+			form,
+			{
+				fields: {
+					'CategoryId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'AccountTypeId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'InstrumentId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'DayId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'StageId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'FigureId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'FrameId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'TriggerId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'DirectionId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'SceneryId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+				},
+				plugins: {
+					trigger: new FormValidation.plugins.Trigger(),
+					bootstrap: new FormValidation.plugins.Bootstrap5({
+						rowSelector: '.fv-row',
+						eleInvalidClass: '',
+						eleValidClass: ''
+					}),
+				}
+
+			}
+		);
+
+		// Init form validation rules.
+		var validatorStep2 = FormValidation.formValidation(
+			form,
+			{
+				fields: {
+					'Total': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+							callback: {
+								message: 'Obligatorio',
+								callback: function (input) {
+									const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0; // Convierte a número
+
+									return cashValue > 0;
+								},
+							},
+						}
+					},
+				},
+				plugins: {
+					trigger: new FormValidation.plugins.Trigger(),
+					bootstrap: new FormValidation.plugins.Bootstrap5({
+						rowSelector: '.fv-row',
+						eleInvalidClass: '',
+						eleValidClass: ''
+					}),
+				}
+
+			}
+		);
+
+		// Stepper lement
+		var element = document.querySelector("#kt_modal_top_up_wallet_stepper");
+
+		// Initialize Stepper
+		var stepper = new KTStepper(element);
+
+		// Handle next step
+		stepper.on("kt.stepper.next", function (stepper) {			
+			if (validatorStep1) {
+				validatorStep1.validate().then(function (status) {
+					if (status == 'Valid') {
+						stepper.goNext(); // go next step
+					}
+				});
+			}
+		});
+
+		// Handle previous step
+		stepper.on("kt.stepper.previous", function (stepper) {
+			stepper.goPrevious(); // go previous step
+		});
+
+
+	   
+
+	});
+
+	 //Script para que funcione el select2 en el modal
+	$('#CategoryId, #AccountTypeId, #InstrumentId, #DayId, #DayId, #StageId, #FigureId, #FrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
+	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
+
+	$("#Time").flatpickr({
+		enableTime: true,
+		noCalendar: true,
+		dateFormat: "H:00",
+		defaultDate: new Date()
+	});
+
+	$("#CreationDate").flatpickr({
+		enableTime: false,
+		noCalendar: false,
+		locale: "es",
+		defaultDate: new Date(),
+		onReady: function(selectedDates, dateStr, instance) {
+			if (selectedDates.length > 0) {
+				// Obtén la fecha seleccionada como objeto Date
+				const selectedDate = selectedDates[0];
+
+				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
+				const dayOfWeek = selectedDate.getDay();
+
+				// Establece el valor del día de la semana en el select
+				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
+			}
+		},
+		onChange: function(selectedDates, dateStr, instance) {
+			if (selectedDates.length > 0) {
+				// Obtén la fecha seleccionada como objeto Date
+				const selectedDate = selectedDates[0];
+
+				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
+				const dayOfWeek = selectedDate.getDay();
+
+                // Establece el valor del día de la semana en el select
+				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
+			}
+		}
+	});
+
+	Inputmask("decimal", {
+		groupSeparator: ",",         // Separador de miles
+		digits: 4,                   // Número de decimales
+		digitsOptional: false,       // Obliga a mostrar los decimales
+		prefix: "",                  // Prefijo de moneda
+		rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
+		allowMinus: false,           // No permitir números negativos
+		autoUnmask: true,            // Devuelve el valor sin formato al enviar
+	}).mask("#Quantity, #Price, #CommissionRate, #Total");
+	
+</script>

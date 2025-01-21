@@ -22,6 +22,12 @@ public class OrdersController : Controller
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatFrameService _catFrameService;
+    private readonly ICatDayService _catDayService;
+    private readonly ICatStageService _catStageService;
+    private readonly ICatFigureService _catFigureService;
+    private readonly ICatTriggerService _catTriggerService;
+    private readonly ICatDirectionService _catDirectionService;
+    private readonly ICatSceneryService _catSceneryService;
 
     // Identificador del permiso 
     private static int permissionNumber = (int)Permissions.Orders;
@@ -33,7 +39,13 @@ public class OrdersController : Controller
                                     ICatCategoryService catCategoryService,
                                     ICatAccountTypeService catAccountTypeService,
                                     ICatInstrumentsService catInstrumentsService,
-                                    ICatFrameService catFrameService)
+                                    ICatFrameService catFrameService,
+                                    ICatDayService catDayService,
+                                    ICatStageService catStageService,
+                                    ICatFigureService catFigureService,
+                                    ICatTriggerService catTriggerService,
+                                    ICatDirectionService catDirectionService,
+                                    ICatSceneryService catSceneryService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -43,6 +55,12 @@ public class OrdersController : Controller
         _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
         _catFrameService = catFrameService;
+        _catDayService = catDayService;
+        _catStageService = catStageService;
+        _catFigureService = catFigureService;
+        _catTriggerService = catTriggerService;
+        _catDirectionService = catDirectionService;
+        _catSceneryService = catSceneryService;
     }
 
 
@@ -87,9 +105,7 @@ public class OrdersController : Controller
             skip = start != null ? Convert.ToInt32(start) : 0;
             recordsTotal = 0;
 
-
-
-            var query = (await _ordersService.GetOrdersDataTableAsync(new ParametersTBAnalyticsDto
+            var result = await _ordersService.GetOrdersDataTableAsync(new ParametersTBAnalyticsDto
                         {
                             CategoryId = categoryId,
                             AccountTypeId = accountTypeId,
@@ -100,8 +116,9 @@ public class OrdersController : Controller
                             SortColumnDir = "DESC",
                             Skip = skip,
                             Take = pageSize
-                        }))
-                        .Select(x => new GetOrdersDataTableDto
+                        });
+
+            data = result.Item1.Select(x => new GetOrdersDataTableDto
                         {
                             Id = x.Id,
                             StatusId = x.StatusId,
@@ -145,17 +162,10 @@ public class OrdersController : Controller
                                  },
                                 }
                             })
-                        });
-
-
-
+                        }).ToList();
 
             // Obtener el total de registros
-            recordsTotal = query.Count();
-
-            // Paginación: saltar los registros ya mostrados y tomar el número de registros indicado
-            data = query.Skip(skip).Take(pageSize).ToList();
-
+            recordsTotal = result.count;
 
         }
         catch (Exception ex)
@@ -329,6 +339,255 @@ public class OrdersController : Controller
 
         return selectItems;
     }
+
+    /// <summary>
+    /// Obtiene una lista de frames en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID del dia que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los días disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetDayListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catDayService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de etapas en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la etapa que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las etapas disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetStageListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catStageService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de figuras en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la figura que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las figuras disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetFigureListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catFigureService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de gatillos en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de los gatillos que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los gatillos disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetTriggerListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catTriggerService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de direciones en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la direccion que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las direcciones disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetDirectionListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catDirectionService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de escenarios en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID del escenarios que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los escenarios disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetSceneryListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catSceneryService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
+
+    /// <summary>
+    /// Obtiene una lista de tipos de ordenes en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con los tipos de ordenes disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetOrderTypeListSelect()
+    {     
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" }, // Placeholder inicial
+            new SelectListItem { Text = "Market", Value = "Market" },
+            new SelectListItem { Text = "Limit", Value = "Limit", Selected = true},
+            new SelectListItem { Text = "Stop", Value = "Stop" },
+        };
+
+        return selectItems;
+    }
     #endregion
 
 
@@ -375,7 +634,73 @@ public class OrdersController : Controller
         return View();
     }
 
+    public async Task<IActionResult> New()
+    {
+        ViewBag.CategoryItems = await GetCategoryListSelect(1);
+        ViewBag.AccountTypeItems = await GetAccountTypeListSelect(null);
+        ViewBag.InstrumentItems = await GetInstrumentsListSelect(null);
+        ViewBag.DayItems = await GetDayListSelect(null);
+        ViewBag.StageItems = await GetStageListSelect(null);
+        ViewBag.FigureItems = await GetFigureListSelect(null);
+        ViewBag.FrameItems = await GetFrameListSelect(null);
+        ViewBag.TriggerItems = await GetTriggerListSelect(null);
+        ViewBag.DirectionItems = await GetDirectionListSelect(null);
+        ViewBag.SceneryItems = await GetSceneryListSelect(null);
+        ViewBag.OrderTypeItems = await GetOrderTypeListSelect();
 
+        return View();
+    }
+
+    /// <summary>
+    /// Guarda una nueva orden.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddOrder([FromBody] OrdersViewModel model)
+    {
+        try
+        {
+            if (model.Id <= 0)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "El identificador de la cuenta es obligatorio.",
+                    notificationType = NotificationType.Warning
+                });
+            }
+
+            //var isValid = await _accountsService.AddCashAsync(model.Id, Convert.ToDecimal(model.Cash));
+
+            //if (!isValid)
+            //{
+            //    return Json(new ResultBackViewModel
+            //    {
+            //        Success = false,
+            //        Message = "El abono de saldo no se pudo procesar exitosamente.",
+            //        notificationType = NotificationType.Error
+            //    });
+            //}
+
+
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = "El abono de saldo se procesó correctamente.",
+                notificationType = NotificationType.Success
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Orders, Action: {nameof(AddOrder)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+    }
 
 
 }

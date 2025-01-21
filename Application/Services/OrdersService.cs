@@ -13,7 +13,8 @@ public class OrdersService : IOrdersService
         _ordersRepository = ordersRepository;
         _catTimeRepository = catTimeRepository;
     }
-    public async Task<List<GetOrdersDataTableDto>> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
+
+    public async Task<(List<GetOrdersDataTableDto>, int count)> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
     {
         return await _ordersRepository.GetOrdersDataTableAsync(parameters);
     }

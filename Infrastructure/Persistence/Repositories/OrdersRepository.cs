@@ -23,7 +23,7 @@ public class OrdersRepository : IOrdersRepository
     /// </summary>
     /// <param name="parameters">Modelo con los parámetros necesarios para ejecutar el procedimiento almacenado.</param>
     /// <returns>Una lista de objetos <see cref="GetOrdersDataTableDto"/> correspondientes a las ultimas ordenes.</returns>
-    public async Task<List<GetOrdersDataTableDto>> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
+    public async Task<(List<GetOrdersDataTableDto>, int count)> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
     {
         try
         {
@@ -46,12 +46,15 @@ public class OrdersRepository : IOrdersRepository
                 .FromSqlRaw("EXEC usp_GetOrdersDataTable @CategoryId, @AccountTypeId, @InstrumentId, @FrameId, @Skip, @Take, @Count OUTPUT", sqlParameters)
                 .ToListAsync();
 
-            return result;
+            // Recuperar el valor del parámetro de salida después de la ejecución
+            int totalCount = (int)(sqlParameters[6].Value ?? 0);
+
+            return (result, totalCount);
         }
         catch (Exception ex)
         {
             _logService.ErrorLog(nameof(GetOrdersDataTableAsync), ex);
-            return new List<GetOrdersDataTableDto>();
+            return (new List<GetOrdersDataTableDto>(),0);
         }
 
     }
