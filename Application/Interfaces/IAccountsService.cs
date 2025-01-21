@@ -10,6 +10,6 @@ public interface IAccountsService
     Task<IEnumerable<Account>> GetAllAsync(QueryOptions<Account>? options = null);
     Task<Account?> GetByIdAsync(int id, QueryOptions<Account>? options = null);
     Task<bool> UpdateAsync(Account entity);
-    Task<bool> WithDrawCashAsync(int accountId, decimal cashAmount);
-    Task<bool> AddCashAsync(int accountId, decimal cashAmount);
+    Task<bool> WithDrawCashAsync(AccountBalance model);
+    Task<bool> AddCashAsync(AccountBalance model);
 }

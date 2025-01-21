@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Domain.Enums;
+using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,6 +29,7 @@ public class OrdersController : Controller
     private readonly ICatTriggerService _catTriggerService;
     private readonly ICatDirectionService _catDirectionService;
     private readonly ICatSceneryService _catSceneryService;
+    private readonly IAccountsService _accountsService;
 
     // Identificador del permiso 
     private static int permissionNumber = (int)Permissions.Orders;
@@ -45,7 +47,8 @@ public class OrdersController : Controller
                                     ICatFigureService catFigureService,
                                     ICatTriggerService catTriggerService,
                                     ICatDirectionService catDirectionService,
-                                    ICatSceneryService catSceneryService)
+                                    ICatSceneryService catSceneryService,
+                                    IAccountsService accountsService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -61,6 +64,7 @@ public class OrdersController : Controller
         _catTriggerService = catTriggerService;
         _catDirectionService = catDirectionService;
         _catSceneryService = catSceneryService;
+        _accountsService = accountsService;
     }
 
 
@@ -588,6 +592,9 @@ public class OrdersController : Controller
 
         return selectItems;
     }
+
+ 
+
     #endregion
 
 
@@ -655,38 +662,89 @@ public class OrdersController : Controller
     /// Guarda una nueva orden.
     /// </summary>
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddOrder([FromBody] OrdersViewModel model)
+    public async Task<IActionResult> AddOrder([FromBody] OrdersCreateViewModel model)
     {
         try
         {
-            if (model.Id <= 0)
+            var accounts = (await _accountsService.GetAllAsync())
+                .Where(o => o.UserId == _identityService.GetCurrentUserId() && o.CatAccountTypeId == model.AccountTypeId).FirstOrDefault();
+
+            if (accounts.CurrentBalance < Convert.ToDecimal(model.Total))
             {
                 return Json(new ResultBackViewModel
                 {
                     Success = false,
-                    Message = "El identificador de la cuenta es obligatorio.",
-                    notificationType = NotificationType.Warning
+                    Message = "La cuenta seleccionada no tiene saldo suficiente para procesar la orden.",
+                    notificationType = NotificationType.Error
                 });
             }
 
-            //var isValid = await _accountsService.AddCashAsync(model.Id, Convert.ToDecimal(model.Cash));
 
-            //if (!isValid)
-            //{
-            //    return Json(new ResultBackViewModel
-            //    {
-            //        Success = false,
-            //        Message = "El abono de saldo no se pudo procesar exitosamente.",
-            //        notificationType = NotificationType.Error
-            //    });
-            //}
 
+            var order = new Order
+            {
+                AlterDate = DateTime.Now,
+                AuthorId = _identityService.GetCurrentUserId(),
+                CatCategoryId = model.CategoryId,
+                AccountId = accounts.Id,
+                CatInstrumentId = model.InstrumentsId,
+                Date = DateOnly.FromDateTime(model.CreationDate),
+                Time = TimeOnly.FromTimeSpan(model.Time),
+                CatDayId = model.DayId,
+                CatStageId = model.StageId,
+                CatFigureId = model.FigureId,
+                CatFrameId = model.FrameId,
+                CatTriggerId = model.TriggerId,
+                CatDirectionId = model.DirectionId,
+                CatSceneryId = model.SceneryId,
+                CatStatusId = 1,
+                Sl = false,
+                Tp1 = false,
+                Tp2 = false,
+                Tp3 = false,
+                Target = 0m,
+                Chart = "",
+            };
+
+            var trade = new Trade
+            {
+                OrderType = model.OrderTypeId,
+                TradeType = model.TradeTypeId,
+                Quantity = Convert.ToDecimal(model.Quantity),
+                Price = Convert.ToDecimal(model.Price),
+                CommissionRate = Convert.ToDecimal(model.CommissionRate),
+                Total = Convert.ToDecimal(model.Total),
+                TradeDate = DateTime.Now,
+            };
+
+            var result = await _ordersService.AddOrderAsync(order, trade);
+
+            if (!result.Item1)
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "La nueva orden no se procesó correctamente.",
+                    notificationType = NotificationType.Error
+                });
+            }
+
+            var accountBalance = new AccountBalance
+            {
+                AccountId = accounts.Id,
+                OrderId = result.Item2,
+                Balance = Convert.ToDecimal(model.Total),
+                Reference = $"Tipo: {model.OrderTypeId}, Acción: {model.TradeTypeId}"
+            };
+
+
+            // Descuenta el monto de la cuenta seleccionada
+            await _accountsService.WithDrawCashAsync(accountBalance);
 
             return Json(new ResultBackViewModel
             {
                 Success = true,
-                Message = "El abono de saldo se procesó correctamente.",
+                Message = "La orden se guardo correctamente.",
                 notificationType = NotificationType.Success
             });
         }

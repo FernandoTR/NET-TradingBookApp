@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Application.Common;
 using Infrastructure;
+using Application.Models;
 
 
 namespace Web.Controllers;
@@ -552,7 +553,14 @@ public class ManageController : Controller
                 });
             }
 
-            var isValid = await _accountsService.WithDrawCashAsync(model.Id, Convert.ToDecimal(model.Cash));
+            var accountBalance = new AccountBalance
+            {
+                AccountId = model.Id,
+                Balance = Convert.ToDecimal(model.Cash),
+                Reference = "Retiro de saldo"
+            };
+
+            var isValid = await _accountsService.WithDrawCashAsync(accountBalance);
 
             if (!isValid)
             {
@@ -603,7 +611,14 @@ public class ManageController : Controller
                 });
             }
 
-            var isValid = await _accountsService.AddCashAsync(model.Id, Convert.ToDecimal(model.Cash));
+            var accountBalance = new AccountBalance
+            {
+                AccountId = model.Id,
+                Balance = Convert.ToDecimal(model.Cash),
+                Reference = "Abono de saldo"
+            };
+
+            var isValid = await _accountsService.AddCashAsync(accountBalance);
 
             if (!isValid)
             {

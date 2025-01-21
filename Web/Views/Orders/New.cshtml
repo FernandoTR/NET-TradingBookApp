@@ -34,6 +34,7 @@
 	<!--end::Nav-->
 	<!--begin::Form-->
 	<form class="mx-auto w-100 mw-600px pt-2 pb-10" novalidate="novalidate" id="kt_modal_top_up_wallet_stepper_form">
+		
 		<!--begin::Step 1-->
 		<div class="current" data-kt-stepper-element="content">
 			<!--begin::Wrapper-->
@@ -48,7 +49,7 @@
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("CategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								@Html.DropDownList("OrderCategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
 							</div>
 							<!--end::Col-->
 						</div>
@@ -65,7 +66,7 @@
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("AccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								@Html.DropDownList("OrderAccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
 							</div>
 							<!--end::Col-->
 						</div>
@@ -82,7 +83,7 @@
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("InstrumentId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								@Html.DropDownList("OrderInstrumentId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
 							</div>
 							<!--end::Col-->
 						</div>
@@ -205,7 +206,7 @@
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("FrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								@Html.DropDownList("OrderFrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
 							</div>
 							<!--end::Col-->
 						</div>
@@ -387,7 +388,7 @@
 			<!--end::Wrapper-->
 			<!--begin::Wrapper-->
 			<div>
-				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit">
+				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit" id="submitButton">
 					<span class="indicator-label">
 						Guardar
 						<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
@@ -564,12 +565,93 @@
 		});
 
 
-	   
+		document.getElementById("submitButton").addEventListener("click", function () {
+			// Prevent default button action
+			// e.preventDefault();
+
+			// Validate form before submit
+			if (validatorStep2) {
+				validatorStep2.validate().then(function (status) {
+					if (status == 'Valid') {
+						// Show loading indication
+						submitButton.setAttribute('data-kt-indicator', 'on');
+
+						// Disable button to avoid multiple click
+						submitButton.disabled = true;
+
+						AddOrder();
+					}
+				});
+			}
+
+		});
+
+
+
+		function AddOrder() {
+			// Helper para obtener valores de los inputs con conversión segura
+			const getValue = (selector, parser = (val) => val, defaultValue = null) => {
+				const element = document.querySelector(selector);
+				return element ? parser(element.value || defaultValue) : defaultValue;
+			};
+
+			// Obtener los valores del formulario
+			const data = {
+				CategoryId: getValue('#OrderCategoryId', parseInt, 0),
+				AccountTypeId: getValue('#OrderAccountTypeId', parseInt, 0),
+				InstrumentsId: getValue('#OrderInstrumentId', parseInt, 0),
+				CreationDate: getValue('#CreationDate'),
+				Time: `${getValue('#Time', (val) => val, '00:00')}:00`,
+				DayId: getValue('#DayId', parseInt, 0),
+				StageId: getValue('#StageId', parseInt, 0),
+				FigureId: getValue('#FigureId', parseInt, 0),
+				FrameId: getValue('#OrderFrameId', parseInt, 0),
+				TriggerId: getValue('#TriggerId', parseInt, 0),
+				DirectionId: getValue('#DirectionId', parseInt, 0),
+				SceneryId: getValue('#SceneryId', parseInt, 0),
+				OrderTypeId: getValue('#OrderTypeId', String, ''),
+				TradeTypeId: getValue('#TradeTypeId', String, ''),
+				Quantity: getValue('#Quantity', parseFloat, 0),
+				Price: getValue('#Price', parseFloat, 0),
+				CommissionRate: getValue('#CommissionRate', parseFloat, 0),
+				Total: getValue('#Total', parseFloat, 0),
+			};
+
+
+			var url = "@Url.Content("~/Orders/AddOrder")";
+			fetch(url, {
+				method: 'POST',
+				body: JSON.stringify(data),
+				headers: {
+					'Content-Type': 'application/json',
+				}
+			}).then(res => res.json())
+			.catch(error => console.error('Error:', error))
+			.then((data) => {
+				// Show loading indication
+				submitButton.setAttribute('data-kt-indicator', 'off');
+
+				// Disable button to avoid multiple click
+				submitButton.disabled = false;
+
+				ShowNotification(data.notificationType, data.message);
+
+				if(data.success)
+				{
+				   $("#vModal").modal("hide");
+				   LoadDataTable();
+				}
+
+
+			});
+
+
+		}
 
 	});
 
 	 //Script para que funcione el select2 en el modal
-	$('#CategoryId, #AccountTypeId, #InstrumentId, #DayId, #DayId, #StageId, #FigureId, #FrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
+	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
 	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
 
 	$("#Time").flatpickr({

@@ -33,6 +33,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IOrdersService, OrdersService>();
         builder.Services.AddScoped<IRolesService, RolesService>();
         builder.Services.AddScoped<IStringUtilitiesService, StringUtilitiesService>();
+        builder.Services.AddScoped<ITradesService, TradesService>();
         builder.Services.AddScoped<IUserService, UserService>();
 
 

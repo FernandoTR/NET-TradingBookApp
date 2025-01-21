@@ -8,7 +8,6 @@ public class OrdersViewModel
     public int CategoryId { get; set; }
     public int AccountTypeId { get; set; }
     public int InstrumentsId { get; set; }
-    public int SymbolId { get; set; }
     public DateTime CreationDate { get; set; }
     public TimeSpan Time { get; set; }
     public int DayId { get; set; }
@@ -26,8 +25,8 @@ public class OrdersViewModel
     public decimal? Target { get; set; }
     public string? Chart { get; set; }
     public string? Comments { get; set; }
-    public string? OrderType { get; set; }
-    public string? TradeType { get; set; }
+    public string? OrderTypeId { get; set; }
+    public string? TradeTypeId { get; set; }
     public decimal? Quantity { get; set; }
     public decimal? Price { get; set; }
     public decimal? CommissionRate { get; set; }
@@ -35,3 +34,28 @@ public class OrdersViewModel
 
 
 }
+
+public class OrdersCreateViewModel
+{   
+    public int CategoryId { get; set; }
+    public int AccountTypeId { get; set; }
+    public int InstrumentsId { get; set; }
+    public DateTime CreationDate { get; set; }
+    public TimeSpan Time { get; set; }
+    public int DayId { get; set; }
+    public int StageId { get; set; }
+    public int FigureId { get; set; }
+    public int FrameId { get; set; }
+    public int TriggerId { get; set; }
+    public int DirectionId { get; set; }
+    public int SceneryId { get; set; }
+    public string? OrderTypeId { get; set; }
+    public string? TradeTypeId { get; set; }
+    public decimal? Quantity { get; set; }
+    public decimal? Price { get; set; }
+    public decimal? CommissionRate { get; set; }
+    public decimal? Total { get; set; }
+
+
+}
+

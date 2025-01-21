@@ -43,16 +43,15 @@ public class AccountsService : IAccountsService
     /// <summary>
     /// Realiza un retiro de saldo de una cuenta específica.
     /// </summary>
-    /// <param name="accountId">Identificador único de la cuenta.</param>
-    /// <param name="cashAmount">Monto de saldo a retirar.</param>
+    /// <param name="model">modelo del balance de la cuenta</param>
     /// <returns>
     /// Retorna <c>true</c> si el retiro se realizó correctamente; 
     /// de lo contrario, <c>false</c>.
     /// </returns>
-    public async Task<bool> WithDrawCashAsync(int accountId, decimal cashAmount)
+    public async Task<bool> WithDrawCashAsync(AccountBalance model)
     {
         // Obtener la cuenta por su ID.
-        var account = await _repository.GetByIdAsync(accountId);
+        var account = await _repository.GetByIdAsync(model.AccountId);
         if (account == null)
         {
             // Retorna false si la cuenta no existe.
@@ -63,9 +62,9 @@ public class AccountsService : IAccountsService
         var accountBalance = new AccountBalance
         {
             AccountId = account.Id,
-            OrderId = null,
-            Balance = -cashAmount,
-            Reference = "Retiro de saldo",
+            OrderId = model.OrderId == 0 ? null : model.OrderId,
+            Balance = -model.Balance,
+            Reference = model.Reference,
             UpdateAt = DateTime.Now 
         };
 
@@ -78,7 +77,7 @@ public class AccountsService : IAccountsService
         }
 
         // Actualizar el saldo y la fecha de modificación de la cuenta.
-        account.CurrentBalance -= cashAmount;
+        account.CurrentBalance -= model.Balance;
         account.UpdatedAt = DateTime.UtcNow;
 
         // Guardar los cambios en la base de datos.
@@ -96,16 +95,15 @@ public class AccountsService : IAccountsService
     /// <summary>
     /// Realiza un abono de saldo de una cuenta específica.
     /// </summary>
-    /// <param name="accountId">Identificador único de la cuenta.</param>
-    /// <param name="cashAmount">Monto de saldo a abonar.</param>
+    /// <param name="model">modelo del balance de la cuenta</param>
     /// <returns>
     /// Retorna <c>true</c> si el retiro se realizó correctamente; 
     /// de lo contrario, <c>false</c>.
     /// </returns>
-    public async Task<bool> AddCashAsync(int accountId, decimal cashAmount)
+    public async Task<bool> AddCashAsync(AccountBalance model)
     {
         // Obtener la cuenta por su ID.
-        var account = await _repository.GetByIdAsync(accountId);
+        var account = await _repository.GetByIdAsync(model.AccountId);
         if (account == null)
         {
             // Retorna false si la cuenta no existe.
@@ -116,9 +114,9 @@ public class AccountsService : IAccountsService
         var accountBalance = new AccountBalance
         {
             AccountId = account.Id,
-            OrderId = null,
-            Balance = cashAmount,
-            Reference = "Abono de saldo",
+            OrderId = model.OrderId == 0 ? null : model.OrderId,
+            Balance = model.Balance,
+            Reference = model.Reference,
             UpdateAt = DateTime.Now
         };
 
@@ -131,7 +129,7 @@ public class AccountsService : IAccountsService
         }
 
         // Actualizar el saldo y la fecha de modificación de la cuenta.
-        account.CurrentBalance += cashAmount;
+        account.CurrentBalance += model.Balance;
         account.UpdatedAt = DateTime.UtcNow;
 
         // Guardar los cambios en la base de datos.
