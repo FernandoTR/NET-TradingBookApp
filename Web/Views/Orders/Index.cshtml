@@ -282,5 +282,36 @@
 			showModal(urlContentModal, 'Editar orden','')
 		}
 
+		 function toDeleteOrder(id) {
+			$("#confirmButtonYes").bind('click', () => {
+				$("#confirmButtonYes").unbind('click');
+				$("#confirmDialog").modal("hide");
+				processingDelete(id);
+			});
+			$('#confirmDialogContent').html('¿Está seguro de que desea eliminar la orden? Esta acción no se puede deshacer.')
+			$('#confirmTitle').html('Eliminar la orden');
+			$("#confirmDialog").modal("show");
+		}
+
+		function processingDelete(id) {
+			var urlConfirmModal = "@Url.Content("~/Orders/Delete")";
+			fetch(urlConfirmModal, {
+				method: 'POST',
+				body: JSON.stringify(id), // data can be `string` or {object}!
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(res => res.text())
+				.catch(error => console.error('Error:', error))
+				.then((data) => {
+					if (data === 'true') {
+						var urlIndex = "@Html.Raw(Url.Action("Index", "Orders", new { message = "La orden ha sido eliminada con éxito.", notification = "Success" }))";
+					} else {
+						var urlIndex = "@Html.Raw(Url.Action("Index", "Orders", new { message = "Ocurrio un problema", notification = Web.Models.Enums.NotificationType.Error }))";
+					}
+				   
+					window.location.href = urlIndex;
+				});
+		}
 	</script>
 }

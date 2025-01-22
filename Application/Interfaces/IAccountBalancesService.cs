@@ -12,4 +12,5 @@ public interface IAccountBalancesService
     Task<AccountBalance?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(AccountBalance entity);
     Task<IEnumerable<AccountBalanceDto>> GetAllAccountBalanceByDateRangeAsync(string userId, DateTime dateStart, DateTime dateEnd);
+    Task<AccountBalance?> GetByOrderIdAsync(int orderId);
 }

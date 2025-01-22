@@ -45,4 +45,9 @@ public class AccountBalancesService : IAccountBalancesService
         return await _accountBalanceRepository.GetAllAccountBalanceByDateRangeAsync(userId, dateStart, dateEnd);
     }
 
+    public async Task<AccountBalance?> GetByOrderIdAsync(int orderId)
+    {
+        return await _accountBalanceRepository.GetByOrderIdAsync(orderId);
+    }
+
 }

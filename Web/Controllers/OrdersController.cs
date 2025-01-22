@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Application.Models;
 using Application.Services;
 using Domain.Enums;
 using Infrastructure;
@@ -905,6 +906,34 @@ public class OrdersController : Controller
        
     }
 
+    public async Task<IActionResult> Delete([FromBody] int id)
+    {
+        // Recuperar el usuario logueado
+        var currentUser = _identityService.GetCurrentUserAsync();
+
+        // Validar permisos del usuario.
+        if (currentUser.PermissionNumberList == null || !currentUser.PermissionNumberList.Any(x => x.Equals(permissionNumber)))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+       
+        try
+        {
+            if (await _ordersService.DeleteOrderAsync(id))
+            {
+                return Content("true");
+            }
+
+            return Content("false");
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Employees, Action: {nameof(Delete)}", ex);
+            return Content("false");
+        }
+        
+    }
 
 
 

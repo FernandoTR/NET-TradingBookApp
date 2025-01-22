@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Common;
+using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
@@ -21,9 +22,9 @@ public class TradesService : ITradesService
         return await _repository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<Trade>> GetAllAsync()
+    public async Task<IEnumerable<Trade>> GetAllAsync(QueryOptions<Trade>? options = null)
     {
-        return await _repository.GetAllAsync();
+        return await _repository.GetAllAsync(options);
     }
 
     public async Task<Trade?> GetByIdAsync(int id)

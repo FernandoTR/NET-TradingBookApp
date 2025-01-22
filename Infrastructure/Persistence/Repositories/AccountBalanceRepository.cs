@@ -58,5 +58,8 @@ public class AccountBalanceRepository : IAccountBalanceRepository
         }
     }
 
-
+    public Task<AccountBalance?> GetByOrderIdAsync(int orderId)
+    {
+        return _context.AccountBalances.Where(o => o.OrderId == orderId).FirstOrDefaultAsync();
+    }
 }

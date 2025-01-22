@@ -13,4 +13,5 @@ public interface IOrdersService
     Task<(List<GetOrdersDataTableDto>, int count)> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters);
     Task<List<GetTBAnalyticsTimeDto>> GetTBAnalyticsTimeAsync(ParametersTBAnalyticsDto parameters);
     Task<(bool, int)> AddOrderAsync(Order entity, Trade trade);
+    Task<bool> DeleteOrderAsync(int id);
 }
