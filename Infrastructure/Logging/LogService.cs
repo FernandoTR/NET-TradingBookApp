@@ -8,9 +8,12 @@ namespace Infrastructure.Logging;
 public class LogService : ILogService
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly LoggingDbContext _loggingDbContext;
 
-    public LogService(ApplicationDbContext dbContext)
+
+    public LogService(LoggingDbContext loggingDbContext, ApplicationDbContext dbContext)
     {
+        _loggingDbContext = loggingDbContext;
         _dbContext = dbContext;
     }
 
@@ -47,8 +50,8 @@ public class LogService : ILogService
                 ApplicationId = (int)Domain.Enums.Application.WebAppBase
             };
 
-            _dbContext.ErrorLogs.Add(log);
-            _dbContext.SaveChanges();
+            _loggingDbContext.ErrorLogs.Add(log);
+            _loggingDbContext.SaveChanges();
         }
         catch
         {
@@ -73,8 +76,8 @@ public class LogService : ILogService
                 ApplicationId = (int)Domain.Enums.Application.WebAppBase
             };
 
-            _dbContext.ErrorLogs.Add(log);
-            _dbContext.SaveChanges();
+            _loggingDbContext.ErrorLogs.Add(log);
+            _loggingDbContext.SaveChanges();
         }
         catch
         {

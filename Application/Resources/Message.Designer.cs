@@ -178,6 +178,24 @@ namespace Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a La orden {0} se grabo correctamente..
+        /// </summary>
+        internal static string OrderSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("OrderSuccessfullySaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a La orden {0} se actualizó correctamente..
+        /// </summary>
+        internal static string OrderSuccessfullyUpdated {
+            get {
+                return ResourceManager.GetString("OrderSuccessfullyUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El perfil {0} se grabo correctamente..
         /// </summary>
         internal static string RolSuccessfullySaved {

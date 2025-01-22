@@ -69,7 +69,7 @@
 								<!--end::Label-->
 								<!--begin::Input-->
 								<div data-select2-id="select2-data-134-peu1">
-									@Html.DropDownList("CategoryId", categoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+									@Html.DropDownList("FilterCategoryId", categoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
 								</div>
 								<!--end::Input-->
 							</div>
@@ -81,7 +81,7 @@
 								<!--end::Label-->
 								<!--begin::Input-->
 								<div data-select2-id="select2-data-134-peu1">
-									@Html.DropDownList("AccountTypeId", accountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+									@Html.DropDownList("FilterAccountTypeId", accountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
 								</div>
 								<!--end::Input-->
 							</div>
@@ -93,7 +93,7 @@
 								<!--end::Label-->
 								<!--begin::Input-->
 								<div data-select2-id="select2-data-134-peu1">
-									@Html.DropDownList("InstrumentId", instrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+									@Html.DropDownList("FilterInstrumentId", instrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
 								</div>
 								<!--end::Input-->
 							</div>
@@ -105,7 +105,7 @@
 								<!--end::Label-->
 								<!--begin::Input-->
 								<div data-select2-id="select2-data-134-peu1">
-									@Html.DropDownList("FrameId", frameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+									@Html.DropDownList("FilterFrameId", frameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
 								</div>
 								<!--end::Input-->
 							</div>
@@ -162,10 +162,10 @@
 		});
 
 		function ClearFilterData() {
-			$('#CategoryId').val(1).trigger('change');
-			$('#AccountTypeId').val(null).trigger('change');
-			$('#InstrumentId').val(null).trigger('change');
-			$('#FrameId').val(null).trigger('change');
+			$('#FilterCategoryId').val(1).trigger('change');
+			$('#FilterAccountTypeId').val(null).trigger('change');
+			$('#FilterInstrumentId').val(null).trigger('change');
+			$('#FilterFrameId').val(null).trigger('change');
 
 			LoadDataTable();
 		}
@@ -176,10 +176,10 @@
 
 		// Función para cargar datos en la tabla
 		function LoadDataTable() {
-			 const categoryId = document.querySelector('#CategoryId').value || 0;
-			 const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
-			 const instrumentId = document.querySelector('#InstrumentId').value || 0;
-			 const frameId = document.querySelector('#FrameId').value || 0;
+			 const categoryId = document.querySelector('#FilterCategoryId').value || 0;
+			 const accountTypeId = document.querySelector('#FilterAccountTypeId').value || 0;
+			 const instrumentId = document.querySelector('#FilterInstrumentId').value || 0;
+			 const frameId = document.querySelector('#FilterFrameId').value || 0;
 
 			 var data = {
 				  categoryId: categoryId,
@@ -277,7 +277,10 @@
 			$('[data-toggle="tooltip"]').tooltip()
 		}
 
-
+		function showModalForUpdate(id) {
+			urlContentModal = "@Url.Content("~/Orders/Edit/?id=")" + id;
+			showModal(urlContentModal, 'Editar orden','')
+		}
 
 	</script>
 }

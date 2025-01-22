@@ -156,6 +156,12 @@
   <data name="InstrumentsSuccessfullyUpdated" xml:space="preserve">
     <value>El instrumento {0} se actualizó correctamente.</value>
   </data>
+  <data name="OrderSuccessfullySaved" xml:space="preserve">
+    <value>La orden {0} se grabo correctamente.</value>
+  </data>
+  <data name="OrderSuccessfullyUpdated" xml:space="preserve">
+    <value>La orden {0} se actualizó correctamente.</value>
+  </data>
   <data name="RolSuccessfullySaved" xml:space="preserve">
     <value>El perfil {0} se grabo correctamente.</value>
   </data>

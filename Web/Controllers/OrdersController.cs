@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Services;
 using Domain.Enums;
 using Infrastructure;
+using Infrastructure.Email.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -744,7 +745,7 @@ public class OrdersController : Controller
             return Json(new ResultBackViewModel
             {
                 Success = true,
-                Message = "La orden se guardo correctamente.",
+                Message = string.Format(_messageService.GetResourceMessage("OrderSuccessfullySaved"), result.Item2),
                 notificationType = NotificationType.Success
             });
         }
@@ -759,6 +760,153 @@ public class OrdersController : Controller
             });
         }
     }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        // Recuperar el usuario logueado
+        var currentUser = _identityService.GetCurrentUserAsync();
+
+        // Validar permisos del usuario.
+        if (currentUser.PermissionNumberList == null || !currentUser.PermissionNumberList.Any(x => x.Equals(permissionNumber)))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        OrdersViewModel model = null;
+
+        try
+        {
+            var order = await _ordersService.GetByIdAsync(id);
+
+            var accounts = await _accountsService.GetByIdAsync(order.AccountId);
+
+            TimeOnly timeOnlyValue = order.Time;
+            DateOnly fecha = DateOnly.FromDateTime(DateTime.Now);
+
+            model = new OrdersViewModel()
+            {
+                Id = order.Id,
+                AlterDate = order.AlterDate,
+                AuthorId = order.AuthorId,
+                CategoryId = order.CatCategoryId,
+                AccountTypeId = accounts.CatAccountTypeId,
+                InstrumentsId = order.CatInstrumentId,
+                CreationDate = fecha.ToDateTime(TimeOnly.MinValue),
+                Time = timeOnlyValue.ToTimeSpan(),
+                DayId = order.CatDayId,
+                StageId = order.CatStageId,
+                FigureId = order.CatFigureId,
+                FrameId = order.CatFrameId,
+                TriggerId = order.CatTriggerId,
+                DirectionId = order.CatDirectionId,
+                SceneryId = order.CatSceneryId,
+                StatusId = order.CatStatusId,
+            };
+
+        }
+        catch (Exception ex)
+        {
+            ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("FailedToFindItem");
+            _logService.ErrorLog($"Controller: Orders, Action: {nameof(Edit)}", ex);
+        }
+
+        ViewBag.CategoryItems = await GetCategoryListSelect(model.CategoryId);
+        ViewBag.AccountTypeItems = await GetAccountTypeListSelect(model.AccountTypeId);
+        ViewBag.InstrumentItems = await GetInstrumentsListSelect(model.InstrumentsId);
+        ViewBag.DayItems = await GetDayListSelect(model.DayId);
+        ViewBag.StageItems = await GetStageListSelect(model.StatusId);
+        ViewBag.FigureItems = await GetFigureListSelect(model.FigureId);
+        ViewBag.FrameItems = await GetFrameListSelect(model.FrameId);
+        ViewBag.TriggerItems = await GetTriggerListSelect(model.TriggerId);
+        ViewBag.DirectionItems = await GetDirectionListSelect(model.DirectionId);
+        ViewBag.SceneryItems = await GetSceneryListSelect(model.SceneryId);
+        ViewBag.OrderTypeItems = await GetOrderTypeListSelect();
+
+        return View(model);
+    }
+
+    /// <summary>
+    /// Actualiza una orden existente en base al modelo proporcionado.
+    /// </summary>
+    /// <param name="model">Modelo con los datos de la orden a actualizar.</param>
+    /// <returns>Redirección a la acción "Index" con una notificación y mensaje.</returns>
+    [HttpPost]
+    public async Task<IActionResult> Update(OrdersViewModel model)
+    {
+        // Recuperar el usuario logueado
+        var currentUser = _identityService.GetCurrentUserAsync();
+
+        // Validar permisos del usuario.
+        if (currentUser.PermissionNumberList == null || !currentUser.PermissionNumberList.Any(x => x.Equals(permissionNumber)))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+              
+        try
+        {
+            var accounts = (await _accountsService.GetAllAsync())
+               .Where(o => o.UserId == _identityService.GetCurrentUserId() && o.CatAccountTypeId == model.AccountTypeId).FirstOrDefault();
+
+            var order = new Order()
+            {
+                Id = model.Id,
+                AlterDate = DateTime.Now,
+                AuthorId = _identityService.GetCurrentUserId(),
+                CatCategoryId = model.CategoryId,
+                AccountId = accounts.Id,
+                CatInstrumentId = model.InstrumentsId,
+                Date = DateOnly.FromDateTime(model.CreationDate),
+                Time = TimeOnly.FromTimeSpan(model.Time),
+                CatDayId = model.DayId,
+                CatStageId = model.StageId,
+                CatFigureId = model.FigureId,
+                CatFrameId = model.FrameId,
+                CatTriggerId = model.TriggerId,
+                CatDirectionId = model.DirectionId,
+                CatSceneryId = model.SceneryId,
+                CatStatusId = 1,
+                Sl = false,
+                Tp1 = false,
+                Tp2 = false,
+                Tp3 = false,
+                Target = 0m,
+                Chart = "",
+            };
+
+            // Intentar actualizar la orden
+            if (await _ordersService.UpdateAsync(order))
+            {
+                return RedirectToAction("Index", new
+                {
+                    notification = NotificationType.Success,
+                    message = string.Format(_messageService.GetResourceMessage("OrderSuccessfullyUpdated"), model.Id)
+                });                           
+            }
+
+            // Si la actualización falla
+            return RedirectToAction("Index", new
+            {
+                notification = NotificationType.Error,
+                message = _messageService.GetResourceError("GenericError")
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Orders, Action: {nameof(Update)}", ex);
+
+            // Redirigir con notificación de error
+            return RedirectToAction("Index", new
+            {
+                notification = NotificationType.Error,
+                message = _messageService.GetResourceError("GenericError")
+            });
+        }
+       
+    }
+
+
+
 
 
 }

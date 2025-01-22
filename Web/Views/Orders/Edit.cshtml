@@ -1,0 +1,404 @@
+﻿@model Web.Models.OrdersViewModel
+
+@{
+    Layout = null;
+
+    var CategoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+    var AccountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+    var InstrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+    var DayItems = (List<SelectListItem>)ViewBag.DayItems;
+    var StageItems = (List<SelectListItem>)ViewBag.StageItems;
+    var FigureItems = (List<SelectListItem>)ViewBag.FigureItems;
+    var FrameItems = (List<SelectListItem>)ViewBag.FrameItems;
+    var TriggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+    var DirectionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+    var SceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+    var OrderTypeItems = (List<SelectListItem>)ViewBag.OrderTypeItems;
+}
+
+
+@using (Html.BeginForm("Update", "Orders", FormMethod.Post, new { id = "frmdata" }))
+{
+    @Html.AntiForgeryToken()
+
+	<!--begin::Wrapper-->
+	<div class="w-100 mb-10">
+		<div class="row">
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Categoría:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("CategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-5">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Cuenta:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("AccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", disabled = "disabled"  })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-4">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Instrumento:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("InstrumentsId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+		</div>
+		<div class="row pt-2">
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Fecha:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.TextBoxFor(d => d.CreationDate, new { @class = "form-control form-control-solid" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Tiempo:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.TextBoxFor(d => d.Time, new { @class = "form-control form-control-solid" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Día:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("DayId", DayItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+		</div>
+		<div class="row pt-2">
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-3">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Etapa:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("StageId", StageItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-6">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("FrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+		</div>
+		<div class="row pt-2">
+			<!--begin::Col-->
+			<div class="col-lg-6">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+			<!--begin::Col-->
+			<div class="col-lg-6">
+				<!--begin::Row-->
+				<div class="row">
+					<!--begin::Label-->
+					<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
+					<!--end::Label-->
+					<!--begin::Col-->
+					<div class="col-lg-12 fv-row fv-plugins-icon-container">
+						@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--end::Row-->
+			</div>
+			<!--end::Col-->
+
+
+		</div>
+	</div>
+	<!--end::Wrapper-->
+    <!--begin::Actions-->
+    <div class="text-center">
+        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnSave" class="btn btn-primary">
+            <span class="indicator-label">Guardar</span>
+            <span class="indicator-progress">
+                Espere por favor...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+    </div>
+    <!--end::Actions-->
+    <div hidden>
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.AuthorId)
+        @Html.HiddenFor(d => d.AlterDate)
+    </div>
+}
+<script>
+	$(document).ready(function () {
+		// Define form element
+		let form = document.getElementById('frmdata');
+
+		 // Init form validation rules.
+		var validator = FormValidation.formValidation(
+			form,
+			{
+				fields: {
+					'CategoryId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'AccountTypeId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'InstrumentId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'DayId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'StageId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'FigureId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'FrameId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'TriggerId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'DirectionId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+					'SceneryId': {
+						validators: {
+							notEmpty: {
+								message: 'Obligatorio'
+							},
+						}
+					},
+				},
+				plugins: {
+					trigger: new FormValidation.plugins.Trigger(),
+					bootstrap: new FormValidation.plugins.Bootstrap5({
+						rowSelector: '.fv-row',
+						eleInvalidClass: '',
+						eleValidClass: ''
+					}),
+				}
+
+			}
+		);
+	
+		const submitButton = document.getElementById('btnSave');
+		submitButton.addEventListener('click', function (e) {
+			// Prevent default button action
+			e.preventDefault();
+
+			// Validate form before submit
+			if (validator) {
+				validator.validate().then(function (status) {
+					if (status == 'Valid') {
+						// Show loading indication
+						submitButton.setAttribute('data-kt-indicator', 'on');
+
+						// Disable button to avoid multiple click
+						submitButton.disabled = true;
+
+						form.submit(); // Submit form
+					}
+				});
+			}
+
+		});
+	});
+
+	//Script para que funcione el select2 en el modal
+	$('#CategoryId, #AccountTypeId, #InstrumentId, #DayId, #DayId, #StageId, #FigureId, #FrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
+	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
+
+	$("#Time").flatpickr({
+	enableTime: true,
+	noCalendar: true,
+	dateFormat: "H:00",
+	});
+
+	$("#CreationDate").flatpickr({
+	enableTime: false,
+	noCalendar: false,
+	locale: "es",
+	onChange: function(selectedDates, dateStr, instance) {
+		if (selectedDates.length > 0) {
+		// Obtén la fecha seleccionada como objeto Date
+		const selectedDate = selectedDates[0];
+
+		// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
+		const dayOfWeek = selectedDate.getDay();
+
+		// Establece el valor del día de la semana en el select
+		$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
+		}
+		}
+	});
+		
+</script>
