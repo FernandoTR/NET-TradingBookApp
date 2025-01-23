@@ -120,6 +120,9 @@
 					<!--end::Menu 1-->
 				</div>
 				<!--end::Filter menu-->
+				<!--begin::Primary button-->
+				<a href="javascript:showModalForNew()" class="btn btn-sm fw-bold btn-primary" data-toggle='tooltip' data-placement='top' title='Generar una orden'>Generar una orden</a>
+				<!--end::Primary button-->
 			</div>
 			<!--end::Actions-->
 		</div>
@@ -758,5 +761,21 @@
 			});
 		}
 
+		function showModal(urlContent, title, subtitle) {
+			fetch(urlContent).then((response) => {
+				return response.text();
+			}).then((data) => {
+				$("#contentvModal").html(data);
+				$('#title-modal').html(title);
+				$('#subtitle-modal').html(subtitle);
+				$("#vModal").modal("show");
+			});
+		}
+
+		function showModalForNew() {
+			urlContentModal = "@Url.Content("~/Orders/New")";
+			showModal(urlContentModal, 'Nueva orden','');
+			$('[data-toggle="tooltip"]').tooltip()
+		}
 	</script>
 }

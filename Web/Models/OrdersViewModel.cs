@@ -52,3 +52,20 @@ public class OrdersCreateViewModel
 
 }
 
+public class OrdersSellViewModel
+{
+    public int Id { get; set; }
+    public bool? SL { get; set; }
+    public bool? TP1 { get; set; }
+    public bool? TP2 { get; set; }
+    public bool? TP3 { get; set; }
+    public decimal? Target { get; set; }
+    public string? Chart { get; set; }
+    public string? Comments { get; set; }
+    public string? OrderTypeId { get; set; }
+    public string? TradeTypeId { get; set; }
+    public decimal? Quantity { get; set; }
+    public decimal? Price { get; set; }
+    public decimal? CommissionRate { get; set; }
+    public decimal? Total { get; set; }
+}

@@ -28,6 +28,7 @@ public class GetOrdersDataTableDto
     public bool TP1 { get; set; }
     public bool TP2 { get; set; }
     public bool TP3 { get; set; }
+    public string Target { get; set; }
     public string Chart { get; set; }
     public string Task { get; set; }
     public Int64 NumRow { get; set; }

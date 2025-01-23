@@ -115,4 +115,9 @@ public class OrdersService : IOrdersService
         return await _repository.DeleteAsync(id);
     }
 
+    public async Task<bool> CloseOrderAsync(Order entity, Trade trade)
+    {
+        return await _ordersRepository.CloseOrderAsync(entity, trade);
+    }
+
 }

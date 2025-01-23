@@ -7,4 +7,5 @@ public interface IOrdersRepository
 {
     Task<(List<GetOrdersDataTableDto>, int count)> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters);
     Task<(bool, int)> AddOrderAsync(Order entity, Trade trade);
+    Task<bool> CloseOrderAsync(Order entity, Trade trade);
 }

@@ -1,20 +1,10 @@
-﻿@{
+﻿@model Web.Models.OrdersSellViewModel
+
+@{
 	Layout = null;
 
-	var CategoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
-	var AccountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
-	var InstrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
-	var DayItems = (List<SelectListItem>)ViewBag.DayItems;
-	var StageItems = (List<SelectListItem>)ViewBag.StageItems;
-	var FigureItems = (List<SelectListItem>)ViewBag.FigureItems;
-	var FrameItems = (List<SelectListItem>)ViewBag.FrameItems;
-	var TriggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
-	var DirectionItems = (List<SelectListItem>)ViewBag.DirectionItems;
-	var SceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
 	var OrderTypeItems = (List<SelectListItem>)ViewBag.OrderTypeItems;
-
 }
-
 
 <!--begin::Stepper-->
 <div class="stepper stepper-links d-flex flex-column gap-5" id="kt_modal_top_up_wallet_stepper">
@@ -27,133 +17,57 @@
 		<!--end::Step 1-->
 		<!--begin::Step 2-->
 		<div class="stepper-item" data-kt-stepper-element="nav">
-			<h3 class="stepper-title">Información Compra</h3>
+			<h3 class="stepper-title">Información Venta</h3>
 		</div>
 		<!--end::Step 2-->
 	</div>
 	<!--end::Nav-->
 	<!--begin::Form-->
 	<form class="mx-auto w-100 mw-600px pt-2 pb-10" novalidate="novalidate" id="kt_modal_top_up_wallet_stepper_form">
-		
+
 		<!--begin::Step 1-->
 		<div class="current" data-kt-stepper-element="content">
 			<!--begin::Wrapper-->
 			<div class="w-100">
 				<div class="row">
 					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Categoría:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderCategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
+					<div class="col-lg-6 d-flex align-items-center">
+						<!--begin::Checkbox-->
+						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
+							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="SL" name="SL" />
+							<span class="form-check-label fw-semibold">SL</span>
+						</label>
+						<!--end::Checkbox-->
+						<!--begin::Checkbox-->
+						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
+							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP1" name="TP1" />
+							<span class="form-check-label fw-semibold">TP1</span>
+						</label>
+						<!--end::Checkbox-->
+						<!--begin::Checkbox-->
+						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
+							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP2" name="TP2" />
+							<span class="form-check-label fw-semibold">TP2</span>
+						</label>
+						<!--end::Checkbox-->
+						<!--begin::Checkbox-->
+						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
+							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP3" name="TP3" />
+							<span class="form-check-label fw-semibold">TP3</span>
+						</label>
+						<!--end::Checkbox-->
 					</div>
 					<!--end::Col-->
 					<!--begin::Col-->
-					<div class="col-lg-5">
+					<div class="col-lg-6">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Cuenta:</label>
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Target:</label>
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderAccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-4">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Instrumento:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderInstrumentId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">					
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Fecha:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="CreationDate" name="CreationDate" class="form-control form-control-solid" />
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tiempo:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Time" name="Time" class="form-control form-control-solid" />
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Día:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("DayId", DayItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								<input type="text" id="Target" name="Target" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
 							</div>
 							<!--end::Col-->
 						</div>
@@ -164,15 +78,15 @@
 				</div>
 				<div class="row pt-2">
 					<!--begin::Col-->
-					<div class="col-lg-3">
+					<div class="col-lg-12">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Chart:</label>
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								<input type="text" id="Chart" name="Chart" class="form-control form-control-solid" autocomplete="off"  />
 							</div>
 							<!--end::Col-->
 						</div>
@@ -180,52 +94,18 @@
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Etapa:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("StageId", StageItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->			
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderFrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->					
 				</div>
-				<div class="row pt-2">					
+				<div class="row pt-2">
 					<!--begin::Col-->
-					<div class="col-lg-6">
+					<div class="col-lg-12">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Comentarios:</label>
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+								<textarea id="Comments" name="Comments" class="form-control form-control-solid" autocomplete="off" rows="3"></textarea>
 							</div>
 							<!--end::Col-->
 						</div>
@@ -233,25 +113,6 @@
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					
-					
 				</div>
 			</div>
 			<!--end::Wrapper-->
@@ -290,7 +151,7 @@
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
 								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="TradeTypeId" name="TradeTypeId">
 									<option value=""></option>
-									<option selected="selected"  value="Buy">Compra</option>
+									<option selected="selected" value="Sell">Venta</option>
 								</select>
 							</div>
 							<!--end::Col-->
@@ -299,7 +160,7 @@
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
-					
+
 				</div>
 				<div class="row">
 					<!--begin::Col-->
@@ -311,7 +172,7 @@
 							<!--end::Label-->
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Quantity" name="Quantity" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0"  />
+								<input type="text" id="Quantity" name="Quantity" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
 							</div>
 							<!--end::Col-->
 						</div>
@@ -411,13 +272,16 @@
 			<!--end::Wrapper-->
 		</div>
 		<!--end::Actions-->
+		<div hidden>
+			@Html.HiddenFor(d => d.Id)
+		</div>
 	</form>
 	<!--end::Form-->
 </div>
 <!--end::Stepper-->
 <script>
-    $(document).ready(function () {
-		// Define form element
+	$(document).ready(function () {
+	// Define form element
 		let form = document.getElementById('kt_modal_top_up_wallet_stepper_form');
 
 		 // Init form validation rules.
@@ -425,70 +289,7 @@
 			form,
 			{
 				fields: {
-					'CategoryId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'AccountTypeId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'InstrumentId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'DayId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'StageId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'FigureId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'FrameId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'TriggerId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'DirectionId': {
-						validators: {
-							notEmpty: {
-								message: 'Obligatorio'
-							},
-						}
-					},
-					'SceneryId': {
+					'Chart': {
 						validators: {
 							notEmpty: {
 								message: 'Obligatorio'
@@ -548,7 +349,7 @@
 		var stepper = new KTStepper(element);
 
 		// Handle next step
-		stepper.on("kt.stepper.next", function (stepper) {			
+		stepper.on("kt.stepper.next", function (stepper) {
 			if (validatorStep1) {
 				validatorStep1.validate().then(function (status) {
 					if (status == 'Valid') {
@@ -563,10 +364,9 @@
 			stepper.goPrevious(); // go previous step
 		});
 
+
 		const submitButton = document.getElementById('submitButton');
-		submitButton.addEventListener("click", function () {
-			// Prevent default button action
-			// e.preventDefault();
+		submitButton.addEventListener("click", function () {		
 
 			// Validate form before submit
 			if (validatorStep2) {
@@ -578,36 +378,39 @@
 						// Disable button to avoid multiple click
 						submitButton.disabled = true;
 
-						AddOrder();
+						CloseOrder();
 					}
 				});
 			}
 
 		});
 
-
-
-		function AddOrder() {
+		function CloseOrder() {
 			// Helper para obtener valores de los inputs con conversión segura
 			const getValue = (selector, parser = (val) => val, defaultValue = null) => {
 				const element = document.querySelector(selector);
-				return element ? parser(element.value || defaultValue) : defaultValue;
+
+				if (!element) return defaultValue;
+
+				// Manejar diferentes tipos de inputs
+				if (element.type === 'checkbox') {
+					return element.checked; // Devuelve true o false si es un checkbox
+				}
+
+				const value = element.value || defaultValue;
+				return parser(value); // Aplica el parser (si se pasa) al valor
 			};
 
 			// Obtener los valores del formulario
 			const data = {
-				CategoryId: getValue('#OrderCategoryId', parseInt, 0),
-				AccountTypeId: getValue('#OrderAccountTypeId', parseInt, 0),
-				InstrumentsId: getValue('#OrderInstrumentId', parseInt, 0),
-				CreationDate: getValue('#CreationDate'),
-				Time: `${getValue('#Time', (val) => val, '00:00')}:00`,
-				DayId: getValue('#DayId', parseInt, 0),
-				StageId: getValue('#StageId', parseInt, 0),
-				FigureId: getValue('#FigureId', parseInt, 0),
-				FrameId: getValue('#OrderFrameId', parseInt, 0),
-				TriggerId: getValue('#TriggerId', parseInt, 0),
-				DirectionId: getValue('#DirectionId', parseInt, 0),
-				SceneryId: getValue('#SceneryId', parseInt, 0),
+				Id: getValue('#Id', parseInt, 0),
+				SL: getValue('#SL', Boolean, false),
+				TP1: getValue('#TP1', Boolean, false),
+				TP2: getValue('#TP2', Boolean, false),
+				TP3: getValue('#TP3', Boolean, false),
+				Target: getValue('#Target', String, ''),
+				Chart: getValue('#Chart', String, ''),
+				Comments: getValue('#Comments', String, ''),
 				OrderTypeId: getValue('#OrderTypeId', String, ''),
 				TradeTypeId: getValue('#TradeTypeId', String, ''),
 				Quantity: getValue('#Quantity', parseFloat, 0),
@@ -617,7 +420,7 @@
 			};
 
 
-			var url = "@Url.Content("~/Orders/AddOrder")";
+			var url = "@Url.Content("~/Orders/CloseOrder")";
 			fetch(url, {
 				method: 'POST',
 				body: JSON.stringify(data),
@@ -647,49 +450,12 @@
 
 		}
 
+
 	});
 
 	//Script para que funcione el select2 en el modal
-	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
+	$('#OrderTypeId, #TradeTypeId')
 	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
-
-	$("#Time").flatpickr({
-		enableTime: true,
-		noCalendar: true,
-		dateFormat: "H:00",
-		defaultDate: new Date()
-	});
-
-	$("#CreationDate").flatpickr({
-		enableTime: false,
-		noCalendar: false,
-		locale: "es",
-		defaultDate: new Date(),
-		onReady: function(selectedDates, dateStr, instance) {
-			if (selectedDates.length > 0) {
-				// Obtén la fecha seleccionada como objeto Date
-				const selectedDate = selectedDates[0];
-
-				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
-				const dayOfWeek = selectedDate.getDay();
-
-				// Establece el valor del día de la semana en el select
-				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
-			}
-		},
-		onChange: function(selectedDates, dateStr, instance) {
-			if (selectedDates.length > 0) {
-				// Obtén la fecha seleccionada como objeto Date
-				const selectedDate = selectedDates[0];
-
-				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
-				const dayOfWeek = selectedDate.getDay();
-
-                // Establece el valor del día de la semana en el select
-				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
-			}
-		}
-	});
 
 	Inputmask("decimal", {
 		groupSeparator: ",",         // Separador de miles
@@ -699,6 +465,5 @@
 		rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
 		allowMinus: false,           // No permitir números negativos
 		autoUnmask: true,            // Devuelve el valor sin formato al enviar
-	}).mask("#Quantity, #Price, #CommissionRate, #Total");
-	
+	}).mask("#Target, #Quantity, #Price, #CommissionRate, #Total");
 </script>

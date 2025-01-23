@@ -145,6 +145,7 @@ public class OrdersController : Controller
                             TP1Style = x.TP1Style,
                             TP2Style = x.TP2Style,
                             TP3Style = x.TP3Style,
+                            Target = x.Target,
                             Chart = x.Chart,
                             Task = (x.StatusId != 1) ? "" : ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
                             {
@@ -164,7 +165,7 @@ public class OrdersController : Controller
                                  new ActionOptionMenuModel
                                  {
                                      Title = "Cerrar",
-                                     JavaScriptAction = "toCloseOrder",
+                                     JavaScriptAction = "showModalForClose",
                                  },
                                 }
                             })
@@ -936,6 +937,128 @@ public class OrdersController : Controller
     }
 
 
+    public async Task<IActionResult> Close(int id)
+    {
+        // Recuperar el usuario logueado
+        var currentUser = _identityService.GetCurrentUserAsync();
 
+        // Validar permisos del usuario.
+        if (currentUser.PermissionNumberList == null || !currentUser.PermissionNumberList.Any(x => x.Equals(permissionNumber)))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        OrdersSellViewModel model = null;
+
+        try
+        {
+            var order = await _ordersService.GetByIdAsync(id);
+
+            model = new OrdersSellViewModel()
+            {
+                Id = order.Id
+            };
+
+        }
+        catch (Exception ex)
+        {
+            ViewData[$"notifications.{NotificationType.Error}"] = _messageService.GetResourceError("FailedToFindItem");
+            _logService.ErrorLog($"Controller: Orders, Action: {nameof(Edit)}", ex);
+        }
+
+        
+        ViewBag.OrderTypeItems = await GetOrderTypeListSelect();
+
+        return View(model);
+    }
+
+    /// <summary>
+    /// Cierra una orden existente.
+    /// </summary>
+    /// <param name="model">Modelo que contiene los datos necesarios para cerrar la orden.</param>
+    /// <returns>Devuelve un objeto JSON con el resultado de la operación.</returns>
+    [HttpPost]
+    public async Task<IActionResult> CloseOrder([FromBody] OrdersSellViewModel model)
+    {
+        try
+        {
+            // Obtiene la orden por su Id
+            var order = await _ordersService.GetByIdAsync(model.Id);
+            if (order == null) {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "La orden no se encontró.",
+                    notificationType = NotificationType.Error
+                });
+            }
+
+            // Actualiza los datos de la orden
+            order.AlterDate = DateTime.Now;
+            order.AuthorId = _identityService.GetCurrentUserId();
+            order.CatStatusId = 2;
+            order.Sl = model.SL;
+            order.Tp1 = model.TP1;
+            order.Tp2 = model.TP2;
+            order.Tp3 = model.TP3;
+            order.Target = model.Target;
+            order.Chart = model.Chart;
+            order.Comments = model.Comments;
+
+            // Crea el registro del trade relacionado con la orden
+            var trade = new Trade
+            {
+                OrderId = order.Id,
+                OrderType = model.OrderTypeId,
+                TradeType = model.TradeTypeId,
+                Quantity = Convert.ToDecimal(model.Quantity),
+                Price = Convert.ToDecimal(model.Price),
+                CommissionRate = Convert.ToDecimal(model.CommissionRate),
+                Total = Convert.ToDecimal(model.Total),
+                TradeDate = DateTime.Now,
+            };
+
+            // Cerrar la orden
+            if (!await _ordersService.CloseOrderAsync(order, trade))
+            {
+                return Json(new ResultBackViewModel
+                {
+                    Success = false,
+                    Message = "La orden no se cerró correctamente.",
+                    notificationType = NotificationType.Error
+                });
+            }
+
+            // Actualiza el balance de la cuenta asociada
+            var accountBalance = new AccountBalance
+            {
+                AccountId = order.AccountId,
+                OrderId = order.Id,
+                Balance = Convert.ToDecimal(model.Total),
+                Reference = $"Tipo: {model.OrderTypeId}, Acción: {model.TradeTypeId}"
+            };
+
+            await _accountsService.AddCashAsync(accountBalance);
+
+
+            // Devuelve una respuesta de éxito
+            return Json(new ResultBackViewModel
+            {
+                Success = true,
+                Message = string.Format(_messageService.GetResourceMessage("OrderSuccessfullyUpdated"), order.Id),
+                notificationType = NotificationType.Success
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: Orders, Action: {nameof(CloseOrder)}", ex);
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = _messageService.GetResourceError("GenericError"),
+                notificationType = NotificationType.Error
+            });
+        }
+    }
 
 }
