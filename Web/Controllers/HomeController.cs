@@ -1,7 +1,9 @@
+using Application.Common;
 using Application.DTOs;
 using Application.Interfaces;
 using Application.Models;
 using Application.Services;
+using Infrastructure;
 using Infrastructure.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +30,8 @@ public class HomeController : Controller
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatFrameService _catFrameService;
+    private readonly IAccountsService _accountsService;
+    private readonly IEmployeeService _employeeService;
 
     public HomeController(IIdentityService identityService,
                           ILogService logService,
@@ -35,7 +39,9 @@ public class HomeController : Controller
                           ICatCategoryService catCategoryService,
                           ICatAccountTypeService catAccountTypeService,
                           ICatInstrumentsService catInstrumentsService,
-                          ICatFrameService catFrameService)
+                          ICatFrameService catFrameService,
+                          IAccountsService accountsService,
+                          IEmployeeService employeeService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -44,6 +50,8 @@ public class HomeController : Controller
         _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
         _catFrameService = catFrameService;
+        _accountsService = accountsService;
+        _employeeService = employeeService;
     }
 
     #region Métodos para obtener listados para los listBox
@@ -249,6 +257,31 @@ public class HomeController : Controller
     }
 
     /// <summary>
+    /// Muestra el balance de la cuenta del usuario.
+    /// </summary>
+    /// <returns>Vista parcial con el balance de la cuenta del usuario.</returns>
+    public async Task<PartialViewResult> Balance()
+    {
+        var account = await GetUserAccountAsync();
+
+        // Recuperar las cuentas que están asociadas al usuario
+        var options = new QueryOptions<Account>
+        {
+            Where = o => o.UserId == account.AspNetUser.Id,
+            OrderBy = o => o.Id,
+            Includes = "CatAccountType"
+        };
+        var accounts = await _accountsService.GetAllAsync(options);
+
+        var model = new BalanceViewModel
+        {
+            Accounts = accounts.ToList()
+        };
+
+        return PartialView("_Balance", model);
+    }
+
+    /// <summary>
     /// Muestra un resumen general de las estadisticas de gatillos.
     /// </summary>
     /// <returns>Vista parcial con los datos del resumen.</returns>
@@ -331,5 +364,23 @@ public class HomeController : Controller
         }
        
     }
+
+
+
+
+
+    /// <summary>
+    /// Obtiene la información completa de la cuenta del usuario actual.
+    /// </summary>
+    /// <returns>Objeto de cuenta o null si no se encuentra.</returns>
+    private async Task<EmployeeDto?> GetUserAccountAsync()
+    {
+        var currentUser = _identityService.GetCurrentUserAsync();
+        if (currentUser == null) return null;
+
+        var accounts = await _employeeService.GetAllAsync();
+        return accounts.FirstOrDefault(x => x.AspNetUser.Id == currentUser.UserId);
+    }
+
 
 }

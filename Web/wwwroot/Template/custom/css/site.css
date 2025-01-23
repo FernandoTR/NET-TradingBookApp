@@ -34,3 +34,9 @@ tbody, thead {
     font-size: 1.075rem !important;
     font-weight: 500 !important;
 }
+
+sizeColumnCheckBox {
+    width: 10px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}

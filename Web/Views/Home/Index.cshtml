@@ -168,37 +168,26 @@
 				<!--end::Col-->
 				
 				<!--begin::Col-->
-				<div class="col-xl-4">
-					<!--begin::Engage widget 10-->
-					<div class="card card-flush h-md-100">
+				<div class="col-xl-4 mb-5 mb-xl-0">
+					<!--begin::List widget 20-->
+					<div class="card card-flush h-xl-100">
+						<!--begin::Header-->
+						<div class="card-header pt-7">
+							<!--begin::Title-->
+							<h3 class="card-title align-items-start flex-column">
+								<span class="card-label fw-bold text-gray-800">Mis Cuentas</span>
+								<span class="text-gray-500 mt-1 fw-semibold fs-6">A continuación, puedes consultar el saldo de tus cuentas.</span>
+							</h3>
+							<!--end::Title-->
+						</div>
+						<!--end::Header-->
 						<!--begin::Body-->
-						<div class="card-body d-flex flex-column justify-content-between mt-9 bgi-no-repeat bgi-size-cover bgi-position-x-center pb-0" style="background-position: 100% 50%; background-image:url('assets/media/stock/900x600/42.png')">
-							<!--begin::Wrapper-->
-							<div class="mb-10">
-								<!--begin::Title-->
-								<div class="fs-2hx fw-bold text-gray-800 text-center mb-13">
-									<span class="me-2">
-										Bienvenido
-										<br />
-										<span class="position-relative d-inline-block text-danger">
-											<a href="pages/user-profile/overview.html" class="text-danger opacity-75-hover">@ViewBag.FullName</a>
-											<!--begin::Separator-->
-											<span class="position-absolute opacity-15 bottom-0 start-0 border-4 border-danger border-bottom w-100"></span>
-											<!--end::Separator-->
-										</span>
-									</span>
-								</div>
-								<!--end::Title-->
-							</div>
-							<!--begin::Wrapper-->
-							<!--begin::Illustration-->
-							<img class="mx-auto h-150px h-lg-300px theme-light-show" src="~/Template/assets/media/illustrations/unitedpalms-1/19.png" alt="" />
-							<img class="mx-auto h-250px h-lg-300px theme-dark-show" src="~/Template/assets/media/illustrations/unitedpalms-1/19-dark.png" alt="" />
-							<!--end::Illustration-->
+						<div class="card-body d-flex align-items-start" id="balance">
+							
 						</div>
 						<!--end::Body-->
 					</div>
-					<!--end::Engage widget 10-->
+					<!--end::List widget 20-->
 				</div>
 				<!--end::Col-->
 			</div>
@@ -258,6 +247,7 @@
 			LoadChartBlocks(); //inicializa grafico bloques
 
 			SearchData();
+			LoadBalanceView();
 		});
 
 		function ClearFilterData() {
@@ -776,6 +766,12 @@
 			urlContentModal = "@Url.Content("~/Orders/New")";
 			showModal(urlContentModal, 'Nueva orden','');
 			$('[data-toggle="tooltip"]').tooltip()
+		}
+
+		function LoadBalanceView(){
+			$.get('@Url.Action("Balance", "Home")', function (data) {
+				$('#balance').html(data);
+			});
 		}
 	</script>
 }

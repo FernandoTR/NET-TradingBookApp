@@ -1,0 +1,48 @@
+﻿@model Web.Models.BalanceViewModel
+
+<!--begin::Items-->
+<div class="me-md-5 w-100">
+	@foreach (var account in Model.Accounts){
+		var color = account.CatAccountTypeId switch
+		{
+			1 => "danger",
+			2 => "warning",
+			3 => "success",
+			_ => "primary"
+		};
+		<!--begin::Item-->
+		<div class="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+			<!--begin::Block-->
+			<div class="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+				<!--begin::Symbol-->
+				<div class="symbol symbol-50px me-4">
+					<span class="symbol-label">
+						<i class="ki-duotone ki-dollar  fs-2qx text-color">
+							<span class="path1"></span>
+							<span class="path2"></span>
+							<span class="path3"></span>
+						</i>
+					</span>
+				</div>
+				<!--end::Symbol-->
+				<!--begin::Section-->
+				<div class="me-2">
+					<a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">@account.CatAccountType.Description</a>
+					<span class="text-gray-500 fw-bold d-block fs-7">@account.UpdatedAt.ToString("d 'de' MMMM 'de' yyyy, 'a las' hh:mm tt")</span>
+				</div>
+				<!--end::Section-->
+			</div>
+			<!--end::Block-->
+			<!--begin::Info-->
+			<div class="d-flex align-items-center">
+				<span class="text-gray-900 fw-bolder fs-2x">@account.CurrentBalance.ToString("c2") </span>
+				<span class="fw-semibold fs-2 text-gray-600 mx-1 pt-1">/</span>
+				<span class="text-gray-600 fw-semibold fs-2 me-3 pt-2">@account.Currency</span>
+				@* <span class="badge badge-lg badge-light-success align-self-center px-2">@account.Currency</span> *@
+			</div>
+			<!--end::Info-->
+		</div>
+		<!--end::Item-->
+	}	
+</div>
+<!--end::Items-->

@@ -199,7 +199,7 @@
 				},
 				columns: [
 					{ name: "id", title: "ID", data: "id", autoWidth: true,  className: "min-w-50px " },
-					{ name: "accountTypeName", title: "Tipo", data: "accountTypeName", autoWidth: true,  className: "min-w-20px " },
+					{ name: "accountTypeName", title: "Tipo", data: "accountTypeName", autoWidth: false,  className: "sizeColumnCheckBox", width: "10px" },
 					{ name: "symbolName", title: "Instrumento", data: "symbolName", autoWidth: true,  className: "text-center min-w-100px " },
 					{ name: "creationDate", title: "Fecha", data: "creationDate", autoWidth: true,  className: "text-center min-w-30px ", render: function (data, type, row) {
 								// Formatear la fecha solo en las celdas visibles
@@ -213,15 +213,16 @@
 					{ name: "figureName", title: "Figura", data: "figureName", autoWidth: true,  className: "text-center min-w-30px " },
 					{ name: "frameName", title: "Frame", data: "frameName", autoWidth: true,  className: "text-center min-w-30px "  },
 					{ name: "triggerName", title: "Gatillo", data: "triggerName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "sceneryName", title: "Escenario", data: "sceneryName", autoWidth: true,  className: "text-center min-w-30px " },
 					{ name: "directionName", title: "Dirección", data: "directionName", autoWidth: true,  className: "text-center min-w-50px " },
-					{ name: "slStyle", title: "SL", data: "slStyle", autoWidth: true,  className: "text-center min-w-10px " },
-					{ name: "tP1Style", title: "TP1", data: "tP1Style", autoWidth: true,  className: "text-center min-w-10px " },
-					{ name: "tP2Style", title: "TP2", data: "tP2Style", autoWidth: true,  className: "text-center min-w-10px " },
-					{ name: "tP3Style", title: "TP3", data: "tP3Style", autoWidth: true,  className: "text-center min-w-10px " },
+					{ name: "slStyle", title: "SL", data: "slStyle", autoWidth: false,  className: "sizeColumnCheckBox", width: "10px" },
+					{ name: "tP1Style", title: "TP1", data: "tP1Style", autoWidth: false,  className: " sizeColumnCheckBox", width: "10px" },
+					{ name: "tP2Style", title: "TP2", data: "tP2Style", autoWidth: false,  className: " sizeColumnCheckBox", width: "10px" },
+					{ name: "tP3Style", title: "TP3", data: "tP3Style", autoWidth: false,  className: " sizeColumnCheckBox", width: "10px" },
 					{ name: "target", title: "Target", data: "target", autoWidth: true,  className: "text-center min-w-30px " },
 					{ name: "chart", title: "Chart", data: "chart", autoWidth: true,  className: "text-center min-w-30px " },
-					{ name: "statusStyleName", title: "Estatus", data: "statusStyleName", autoWidth: true,  className: "text-center min-w-100px " },
-					{ name: "task", title: "Acciones", data: "task", autoWidth: true, orderable: false,  className: "text-end min-w-30px "  }
+					{ name: "statusStyleName", title: "Estatus", data: "statusStyleName", autoWidth: true,  className: "text-center min-w-30px " },
+					{ name: "task", title: "Acciones", data: "task", autoWidth: false, orderable: false,  className: "text-end min-w-20px "  }
 				],
 				processing: true,
 				serverSide: true,
