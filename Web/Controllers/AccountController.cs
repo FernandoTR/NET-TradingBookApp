@@ -74,10 +74,10 @@ public class AccountController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return View("SignIn", model);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return View("SignIn", model);
+            //}
 
             // Verifica credenciales
             var result = await _identityService.CheckPasswordSignInAsync(model.Email.Trim(), model.Password);           

@@ -74,32 +74,12 @@ public static class DependencyInjection
         builder.Services.ConfigureApplicationCookie(options =>
         {
             options.LoginPath = "/Account/SignIn"; // Ruta para iniciar sesión
+            options.LogoutPath = "/Account/Logout"; // Ruta de cierre de sesión
             options.AccessDeniedPath = "/Account/AccessDenied"; // Ruta para acceso denegado
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Tiempo para que expire la sesión
             options.SlidingExpiration = true; // Renovar tiempo de expiración al interactuar
-            options.Cookie.HttpOnly = true; // Solo accesible desde el servidor
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS obligatorio
-
-            options.Events = new CookieAuthenticationEvents
-            {
-                OnValidatePrincipal = async context =>
-                {
-                    var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-                    var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                    if (userId != null)
-                    {
-                        var user = await userManager.FindByIdAsync(userId);
-
-                        // Validar existencia, SecurityStamp y estado activo del usuario
-                        if (user == null || !user.SecurityStamp.Equals(context.Principal?.FindFirstValue("AspNet.Identity.SecurityStamp")) || !user.Enable)
-                        {
-                            context.RejectPrincipal(); // Rechazar cookie si no es válida
-                            await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-                        }
-                    }
-                }
-            };
+            options.Cookie.HttpOnly = true; // Asegura que la cookie solo sea accesible vía HTTP
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS obligatorio            
         });
 
         // Servicio de Correo 
