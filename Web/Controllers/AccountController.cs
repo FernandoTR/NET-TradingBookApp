@@ -96,7 +96,11 @@ public class AccountController : Controller
                 }
 
                 // Inicia sesión
-                await _identityService.PasswordSignInAsync(model.Email.Trim(), model.Password, model.RememberMe);                
+                await _identityService.PasswordSignInAsync(model.Email.Trim(), model.Password, model.RememberMe);
+
+                //-- Genera una coockie para ver la accion del menu lateral
+                _httpContextAccessor.HttpContext.Response.Cookies.Append("data-kt-app-sidebar-minimize", "on");
+                _httpContextAccessor.HttpContext.Response.Cookies.Append("sidebar_minimize_state", "off");
 
                 // Redirigir en función del resultado
                 if (returnUrl == null || !returnUrl.Contains("LogOff"))

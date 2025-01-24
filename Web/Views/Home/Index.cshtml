@@ -720,13 +720,11 @@
 					chartCategories.splice(0);
 					chartSeries.splice(0);
 
-					console.log("datos: ",data)
 					if (data.result)
 					{
 						var porcentaje = new Array();
 
 						$.each(data.list, function (i, item) {
-							console.log("datos row: ",item)
 							chartCategories.push(item.blockName);
 							porcentaje.push(item.percentage);
 						});

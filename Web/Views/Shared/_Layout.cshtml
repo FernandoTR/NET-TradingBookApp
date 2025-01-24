@@ -435,10 +435,25 @@
 
 				   moment.locale('es'); // Establecer el idioma a español
 
-				  
+				   //-- Se reajusta el sidebar dependiendo de la cookie.
+				   var CookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sidebar_minimize_state\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+				   if (CookieValue == "off")
+					$('#kt_app_body').attr('data-kt-app-sidebar-minimize', 'on');                          
+				   else
+					$('#kt_app_body').removeAttr('data-kt-app-sidebar-minimize');			
 
 			   });
-			  
+
+
+				// Guarda en la cookie el estado del menú al hacer clic en el botón de toggle
+				$('#kt_app_sidebar_toggle').on('click', function () {
+					//Modifica la cookie del menu
+					var CookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sidebar_minimize_state\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+					if (CookieValue == "off")
+						document.cookie = "sidebar_minimize_state=on";
+					else
+						document.cookie = "sidebar_minimize_state=off";
+				});
 		   });
 	</script>
 
