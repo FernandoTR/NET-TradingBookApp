@@ -149,42 +149,6 @@
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
 							<label class="col-lg-12 col-form-label required fw-bold fs-6">Etapa:</label>
 							<!--end::Label-->
 							<!--begin::Col-->
@@ -196,7 +160,26 @@
 
 						<!--end::Row-->
 					</div>
-					<!--end::Col-->			
+					<!--end::Col-->
+				</div>
+				<div class="row pt-2">
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->								
 					<!--begin::Col-->
 					<div class="col-lg-6">
 						<!--begin::Row-->
@@ -221,23 +204,6 @@
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
 							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
 							<!--end::Label-->
 							<!--begin::Col-->
@@ -250,8 +216,40 @@
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
-					
-					
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
 				</div>
 			</div>
 			<!--end::Wrapper-->
