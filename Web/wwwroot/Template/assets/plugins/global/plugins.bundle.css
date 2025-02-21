@@ -47827,7 +47827,7 @@ readers do not read off random characters that represent icons */
   --bs-prismjs-btn-bg: #2d2d5e;
   --bs-prismjs-btn-bg-hover: #2d2d5e;
   --bs-prismjs-btn-color: rgba(255, 255, 255, 0.75);
-  --bs-prismjs-btn-color-hover: #F0B90B;
+  --bs-prismjs-btn-color-hover: #FCD535;
   --bs-prismjs-scrollbar-color: #323268;
   --bs-prismjs-scrollbar-color-hover: #373773;
 }
@@ -47838,7 +47838,7 @@ readers do not read off random characters that represent icons */
   --bs-prismjs-btn-bg: #27273d;
   --bs-prismjs-btn-bg-hover: #27273d;
   --bs-prismjs-btn-color: rgba(255, 255, 255, 0.75);
-  --bs-prismjs-btn-color-hover: #F0B90B;
+  --bs-prismjs-btn-color-hover: #FCD535;
   --bs-prismjs-scrollbar-color: #2d2d46;
   --bs-prismjs-scrollbar-color-hover: #333350;
 }
@@ -49115,9 +49115,9 @@ table.dataTable > thead .dt-ordering-desc:after {
   mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
-  background-color: #F0B90B;
-  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3e%3crect opacity='0.3' x='2' y='2' width='20' height='20' rx='5' fill='%23F0B90B'/%3e%3crect x='6.0104' y='10.9247' width='12' height='2' rx='1' fill='%23F0B90B'/%3e%3c/svg%3e");
-  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3e%3crect opacity='0.3' x='2' y='2' width='20' height='20' rx='5' fill='%23F0B90B'/%3e%3crect x='6.0104' y='10.9247' width='12' height='2' rx='1' fill='%23F0B90B'/%3e%3c/svg%3e");
+  background-color: #FCD535;
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3e%3crect opacity='0.3' x='2' y='2' width='20' height='20' rx='5' fill='%23FCD535'/%3e%3crect x='6.0104' y='10.9247' width='12' height='2' rx='1' fill='%23FCD535'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3e%3crect opacity='0.3' x='2' y='2' width='20' height='20' rx='5' fill='%23FCD535'/%3e%3crect x='6.0104' y='10.9247' width='12' height='2' rx='1' fill='%23FCD535'/%3e%3c/svg%3e");
 }
 
 thead .dtr-control:before {

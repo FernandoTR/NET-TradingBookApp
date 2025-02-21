@@ -52853,7 +52853,7 @@ tinymce.IconManager.add('default', {
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     function Plugin () {
-      global.add('contextmenu', function () {
+      global.add('colorpicker', function () {
       });
     }
 
@@ -52875,7 +52875,7 @@ tinymce.IconManager.add('default', {
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     function Plugin () {
-      global.add('colorpicker', function () {
+      global.add('contextmenu', function () {
       });
     }
 
@@ -53967,6 +53967,551 @@ tinymce.IconManager.add('default', {
         register(editor);
         init(editor, database);
         setup(editor);
+      });
+    }
+
+    Plugin();
+
+}());
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.10.9 (2023-11-15)
+ */
+(function () {
+    'use strict';
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      return {
+        get: get,
+        set: set
+      };
+    };
+
+    var global$4 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.html.DomParser');
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.html.Node');
+
+    var global = tinymce.util.Tools.resolve('tinymce.html.Serializer');
+
+    var shouldHideInSourceView = function (editor) {
+      return editor.getParam('fullpage_hide_in_source_view');
+    };
+    var getDefaultXmlPi = function (editor) {
+      return editor.getParam('fullpage_default_xml_pi');
+    };
+    var getDefaultEncoding = function (editor) {
+      return editor.getParam('fullpage_default_encoding');
+    };
+    var getDefaultFontFamily = function (editor) {
+      return editor.getParam('fullpage_default_font_family');
+    };
+    var getDefaultFontSize = function (editor) {
+      return editor.getParam('fullpage_default_font_size');
+    };
+    var getDefaultTextColor = function (editor) {
+      return editor.getParam('fullpage_default_text_color');
+    };
+    var getDefaultTitle = function (editor) {
+      return editor.getParam('fullpage_default_title');
+    };
+    var getDefaultDocType = function (editor) {
+      return editor.getParam('fullpage_default_doctype', '<!DOCTYPE html>');
+    };
+    var getProtect = function (editor) {
+      return editor.getParam('protect');
+    };
+
+    var parseHeader = function (editor, head) {
+      return global$2({
+        validate: false,
+        root_name: '#document'
+      }, editor.schema).parse(head, { format: 'xhtml' });
+    };
+    var htmlToData = function (editor, head) {
+      var headerFragment = parseHeader(editor, head);
+      var data = {};
+      var elm, matches;
+      var getAttr = function (elm, name) {
+        var value = elm.attr(name);
+        return value || '';
+      };
+      data.fontface = getDefaultFontFamily(editor);
+      data.fontsize = getDefaultFontSize(editor);
+      elm = headerFragment.firstChild;
+      if (elm.type === 7) {
+        data.xml_pi = true;
+        matches = /encoding="([^"]+)"/.exec(elm.value);
+        if (matches) {
+          data.docencoding = matches[1];
+        }
+      }
+      elm = headerFragment.getAll('#doctype')[0];
+      if (elm) {
+        data.doctype = '<!DOCTYPE' + elm.value + '>';
+      }
+      elm = headerFragment.getAll('title')[0];
+      if (elm && elm.firstChild) {
+        data.title = elm.firstChild.value;
+      }
+      global$3.each(headerFragment.getAll('meta'), function (meta) {
+        var name = meta.attr('name');
+        var httpEquiv = meta.attr('http-equiv');
+        var matches;
+        if (name) {
+          data[name.toLowerCase()] = meta.attr('content');
+        } else if (httpEquiv === 'Content-Type') {
+          matches = /charset\s*=\s*(.*)\s*/gi.exec(meta.attr('content'));
+          if (matches) {
+            data.docencoding = matches[1];
+          }
+        }
+      });
+      elm = headerFragment.getAll('html')[0];
+      if (elm) {
+        data.langcode = getAttr(elm, 'lang') || getAttr(elm, 'xml:lang');
+      }
+      data.stylesheets = [];
+      global$3.each(headerFragment.getAll('link'), function (link) {
+        if (link.attr('rel') === 'stylesheet') {
+          data.stylesheets.push(link.attr('href'));
+        }
+      });
+      elm = headerFragment.getAll('body')[0];
+      if (elm) {
+        data.langdir = getAttr(elm, 'dir');
+        data.style = getAttr(elm, 'style');
+        data.visited_color = getAttr(elm, 'vlink');
+        data.link_color = getAttr(elm, 'link');
+        data.active_color = getAttr(elm, 'alink');
+      }
+      return data;
+    };
+    var dataToHtml = function (editor, data, head) {
+      var headElement, elm;
+      var dom = editor.dom;
+      var setAttr = function (elm, name, value) {
+        elm.attr(name, value ? value : undefined);
+      };
+      var addHeadNode = function (node) {
+        if (headElement.firstChild) {
+          headElement.insert(node, headElement.firstChild);
+        } else {
+          headElement.append(node);
+        }
+      };
+      var headerFragment = parseHeader(editor, head);
+      headElement = headerFragment.getAll('head')[0];
+      if (!headElement) {
+        elm = headerFragment.getAll('html')[0];
+        headElement = new global$1('head', 1);
+        if (elm.firstChild) {
+          elm.insert(headElement, elm.firstChild, true);
+        } else {
+          elm.append(headElement);
+        }
+      }
+      elm = headerFragment.firstChild;
+      if (data.xml_pi) {
+        var value = 'version="1.0"';
+        if (data.docencoding) {
+          value += ' encoding="' + data.docencoding + '"';
+        }
+        if (elm.type !== 7) {
+          elm = new global$1('xml', 7);
+          headerFragment.insert(elm, headerFragment.firstChild, true);
+        }
+        elm.value = value;
+      } else if (elm && elm.type === 7) {
+        elm.remove();
+      }
+      elm = headerFragment.getAll('#doctype')[0];
+      if (data.doctype) {
+        if (!elm) {
+          elm = new global$1('#doctype', 10);
+          if (data.xml_pi) {
+            headerFragment.insert(elm, headerFragment.firstChild);
+          } else {
+            addHeadNode(elm);
+          }
+        }
+        elm.value = data.doctype.substring(9, data.doctype.length - 1);
+      } else if (elm) {
+        elm.remove();
+      }
+      elm = null;
+      global$3.each(headerFragment.getAll('meta'), function (meta) {
+        if (meta.attr('http-equiv') === 'Content-Type') {
+          elm = meta;
+        }
+      });
+      if (data.docencoding) {
+        if (!elm) {
+          elm = new global$1('meta', 1);
+          elm.attr('http-equiv', 'Content-Type');
+          elm.shortEnded = true;
+          addHeadNode(elm);
+        }
+        elm.attr('content', 'text/html; charset=' + data.docencoding);
+      } else if (elm) {
+        elm.remove();
+      }
+      elm = headerFragment.getAll('title')[0];
+      if (data.title) {
+        if (!elm) {
+          elm = new global$1('title', 1);
+          addHeadNode(elm);
+        } else {
+          elm.empty();
+        }
+        elm.append(new global$1('#text', 3)).value = data.title;
+      } else if (elm) {
+        elm.remove();
+      }
+      global$3.each('keywords,description,author,copyright,robots'.split(','), function (name) {
+        var nodes = headerFragment.getAll('meta');
+        var i, meta;
+        var value = data[name];
+        for (i = 0; i < nodes.length; i++) {
+          meta = nodes[i];
+          if (meta.attr('name') === name) {
+            if (value) {
+              meta.attr('content', value);
+            } else {
+              meta.remove();
+            }
+            return;
+          }
+        }
+        if (value) {
+          elm = new global$1('meta', 1);
+          elm.attr('name', name);
+          elm.attr('content', value);
+          elm.shortEnded = true;
+          addHeadNode(elm);
+        }
+      });
+      var currentStyleSheetsMap = {};
+      global$3.each(headerFragment.getAll('link'), function (stylesheet) {
+        if (stylesheet.attr('rel') === 'stylesheet') {
+          currentStyleSheetsMap[stylesheet.attr('href')] = stylesheet;
+        }
+      });
+      global$3.each(data.stylesheets, function (stylesheet) {
+        if (!currentStyleSheetsMap[stylesheet]) {
+          elm = new global$1('link', 1);
+          elm.attr({
+            rel: 'stylesheet',
+            text: 'text/css',
+            href: stylesheet
+          });
+          elm.shortEnded = true;
+          addHeadNode(elm);
+        }
+        delete currentStyleSheetsMap[stylesheet];
+      });
+      global$3.each(currentStyleSheetsMap, function (stylesheet) {
+        stylesheet.remove();
+      });
+      elm = headerFragment.getAll('body')[0];
+      if (elm) {
+        setAttr(elm, 'dir', data.langdir);
+        setAttr(elm, 'style', data.style);
+        setAttr(elm, 'vlink', data.visited_color);
+        setAttr(elm, 'link', data.link_color);
+        setAttr(elm, 'alink', data.active_color);
+        dom.setAttribs(editor.getBody(), {
+          style: data.style,
+          dir: data.dir,
+          vLink: data.visited_color,
+          link: data.link_color,
+          aLink: data.active_color
+        });
+      }
+      elm = headerFragment.getAll('html')[0];
+      if (elm) {
+        setAttr(elm, 'lang', data.langcode);
+        setAttr(elm, 'xml:lang', data.langcode);
+      }
+      if (!headElement.firstChild) {
+        headElement.remove();
+      }
+      var html = global({
+        validate: false,
+        indent: true,
+        indent_before: 'head,html,body,meta,title,script,link,style',
+        indent_after: 'head,html,body,meta,title,script,link,style'
+      }).serialize(headerFragment);
+      return html.substring(0, html.indexOf('</body>'));
+    };
+
+    var open = function (editor, headState) {
+      var data = htmlToData(editor, headState.get());
+      var defaultData = {
+        title: '',
+        keywords: '',
+        description: '',
+        robots: '',
+        author: '',
+        docencoding: ''
+      };
+      var initialData = __assign(__assign({}, defaultData), data);
+      editor.windowManager.open({
+        title: 'Metadata and Document Properties',
+        size: 'normal',
+        body: {
+          type: 'panel',
+          items: [
+            {
+              name: 'title',
+              type: 'input',
+              label: 'Title'
+            },
+            {
+              name: 'keywords',
+              type: 'input',
+              label: 'Keywords'
+            },
+            {
+              name: 'description',
+              type: 'input',
+              label: 'Description'
+            },
+            {
+              name: 'robots',
+              type: 'input',
+              label: 'Robots'
+            },
+            {
+              name: 'author',
+              type: 'input',
+              label: 'Author'
+            },
+            {
+              name: 'docencoding',
+              type: 'input',
+              label: 'Encoding'
+            }
+          ]
+        },
+        buttons: [
+          {
+            type: 'cancel',
+            name: 'cancel',
+            text: 'Cancel'
+          },
+          {
+            type: 'submit',
+            name: 'save',
+            text: 'Save',
+            primary: true
+          }
+        ],
+        initialData: initialData,
+        onSubmit: function (api) {
+          var nuData = api.getData();
+          var headHtml = dataToHtml(editor, global$3.extend(data, nuData), headState.get());
+          headState.set(headHtml);
+          api.close();
+        }
+      });
+    };
+
+    var register$1 = function (editor, headState) {
+      editor.addCommand('mceFullPageProperties', function () {
+        open(editor, headState);
+      });
+    };
+
+    var protectHtml = function (protect, html) {
+      global$3.each(protect, function (pattern) {
+        html = html.replace(pattern, function (str) {
+          return '<!--mce:protected ' + escape(str) + '-->';
+        });
+      });
+      return html;
+    };
+    var unprotectHtml = function (html) {
+      return html.replace(/<!--mce:protected ([\s\S]*?)-->/g, function (a, m) {
+        return unescape(m);
+      });
+    };
+
+    var each = global$3.each;
+    var low = function (s) {
+      return s.replace(/<\/?[A-Z]+/g, function (a) {
+        return a.toLowerCase();
+      });
+    };
+    var handleSetContent = function (editor, headState, footState, evt) {
+      var startPos, endPos, content, styles = '';
+      var dom = editor.dom;
+      if (evt.selection) {
+        return;
+      }
+      content = protectHtml(getProtect(editor), evt.content);
+      if (evt.format === 'raw' && headState.get()) {
+        return;
+      }
+      if (evt.source_view && shouldHideInSourceView(editor)) {
+        return;
+      }
+      if (content.length === 0 && !evt.source_view) {
+        content = global$3.trim(headState.get()) + '\n' + global$3.trim(content) + '\n' + global$3.trim(footState.get());
+      }
+      content = content.replace(/<(\/?)BODY/gi, '<$1body');
+      startPos = content.indexOf('<body');
+      if (startPos !== -1) {
+        startPos = content.indexOf('>', startPos);
+        headState.set(low(content.substring(0, startPos + 1)));
+        endPos = content.indexOf('</body', startPos);
+        if (endPos === -1) {
+          endPos = content.length;
+        }
+        evt.content = global$3.trim(content.substring(startPos + 1, endPos));
+        footState.set(low(content.substring(endPos)));
+      } else {
+        headState.set(getDefaultHeader(editor));
+        footState.set('\n</body>\n</html>');
+      }
+      var headerFragment = parseHeader(editor, headState.get());
+      each(headerFragment.getAll('style'), function (node) {
+        if (node.firstChild) {
+          styles += node.firstChild.value;
+        }
+      });
+      var bodyElm = headerFragment.getAll('body')[0];
+      if (bodyElm) {
+        dom.setAttribs(editor.getBody(), {
+          style: bodyElm.attr('style') || '',
+          dir: bodyElm.attr('dir') || '',
+          vLink: bodyElm.attr('vlink') || '',
+          link: bodyElm.attr('link') || '',
+          aLink: bodyElm.attr('alink') || ''
+        });
+      }
+      dom.remove('fullpage_styles');
+      var headElm = editor.getDoc().getElementsByTagName('head')[0];
+      if (styles) {
+        var styleElm = dom.add(headElm, 'style', { id: 'fullpage_styles' });
+        styleElm.appendChild(document.createTextNode(styles));
+      }
+      var currentStyleSheetsMap = {};
+      global$3.each(headElm.getElementsByTagName('link'), function (stylesheet) {
+        if (stylesheet.rel === 'stylesheet' && stylesheet.getAttribute('data-mce-fullpage')) {
+          currentStyleSheetsMap[stylesheet.href] = stylesheet;
+        }
+      });
+      global$3.each(headerFragment.getAll('link'), function (stylesheet) {
+        var href = stylesheet.attr('href');
+        if (!href) {
+          return true;
+        }
+        if (!currentStyleSheetsMap[href] && stylesheet.attr('rel') === 'stylesheet') {
+          dom.add(headElm, 'link', {
+            'rel': 'stylesheet',
+            'text': 'text/css',
+            href: href,
+            'data-mce-fullpage': '1'
+          });
+        }
+        delete currentStyleSheetsMap[href];
+      });
+      global$3.each(currentStyleSheetsMap, function (stylesheet) {
+        stylesheet.parentNode.removeChild(stylesheet);
+      });
+    };
+    var getDefaultHeader = function (editor) {
+      var header = '', value, styles = '';
+      if (getDefaultXmlPi(editor)) {
+        var piEncoding = getDefaultEncoding(editor);
+        header += '<?xml version="1.0" encoding="' + (piEncoding ? piEncoding : 'ISO-8859-1') + '" ?>\n';
+      }
+      header += getDefaultDocType(editor);
+      header += '\n<html>\n<head>\n';
+      if (value = getDefaultTitle(editor)) {
+        header += '<title>' + value + '</title>\n';
+      }
+      if (value = getDefaultEncoding(editor)) {
+        header += '<meta http-equiv="Content-Type" content="text/html; charset=' + value + '" />\n';
+      }
+      if (value = getDefaultFontFamily(editor)) {
+        styles += 'font-family: ' + value + ';';
+      }
+      if (value = getDefaultFontSize(editor)) {
+        styles += 'font-size: ' + value + ';';
+      }
+      if (value = getDefaultTextColor(editor)) {
+        styles += 'color: ' + value + ';';
+      }
+      header += '</head>\n<body' + (styles ? ' style="' + styles + '"' : '') + '>\n';
+      return header;
+    };
+    var handleGetContent = function (editor, head, foot, evt) {
+      if (evt.format === 'html' && !evt.selection && (!evt.source_view || !shouldHideInSourceView(editor))) {
+        evt.content = unprotectHtml(global$3.trim(head) + '\n' + global$3.trim(evt.content) + '\n' + global$3.trim(foot));
+      }
+    };
+    var setup = function (editor, headState, footState) {
+      editor.on('BeforeSetContent', function (evt) {
+        handleSetContent(editor, headState, footState, evt);
+      });
+      editor.on('GetContent', function (evt) {
+        handleGetContent(editor, headState.get(), footState.get(), evt);
+      });
+    };
+
+    var register = function (editor) {
+      editor.ui.registry.addButton('fullpage', {
+        tooltip: 'Metadata and document properties',
+        icon: 'document-properties',
+        onAction: function () {
+          editor.execCommand('mceFullPageProperties');
+        }
+      });
+      editor.ui.registry.addMenuItem('fullpage', {
+        text: 'Metadata and document properties',
+        icon: 'document-properties',
+        onAction: function () {
+          editor.execCommand('mceFullPageProperties');
+        }
+      });
+    };
+
+    function Plugin () {
+      global$4.add('fullpage', function (editor) {
+        var headState = Cell(''), footState = Cell('');
+        register$1(editor, headState);
+        register(editor);
+        setup(editor, headState, footState);
       });
     }
 
@@ -55347,597 +55892,6 @@ tinymce.IconManager.add('default', {
       };
     };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
-    };
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.html.DomParser');
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.html.Node');
-
-    var global = tinymce.util.Tools.resolve('tinymce.html.Serializer');
-
-    var shouldHideInSourceView = function (editor) {
-      return editor.getParam('fullpage_hide_in_source_view');
-    };
-    var getDefaultXmlPi = function (editor) {
-      return editor.getParam('fullpage_default_xml_pi');
-    };
-    var getDefaultEncoding = function (editor) {
-      return editor.getParam('fullpage_default_encoding');
-    };
-    var getDefaultFontFamily = function (editor) {
-      return editor.getParam('fullpage_default_font_family');
-    };
-    var getDefaultFontSize = function (editor) {
-      return editor.getParam('fullpage_default_font_size');
-    };
-    var getDefaultTextColor = function (editor) {
-      return editor.getParam('fullpage_default_text_color');
-    };
-    var getDefaultTitle = function (editor) {
-      return editor.getParam('fullpage_default_title');
-    };
-    var getDefaultDocType = function (editor) {
-      return editor.getParam('fullpage_default_doctype', '<!DOCTYPE html>');
-    };
-    var getProtect = function (editor) {
-      return editor.getParam('protect');
-    };
-
-    var parseHeader = function (editor, head) {
-      return global$2({
-        validate: false,
-        root_name: '#document'
-      }, editor.schema).parse(head, { format: 'xhtml' });
-    };
-    var htmlToData = function (editor, head) {
-      var headerFragment = parseHeader(editor, head);
-      var data = {};
-      var elm, matches;
-      var getAttr = function (elm, name) {
-        var value = elm.attr(name);
-        return value || '';
-      };
-      data.fontface = getDefaultFontFamily(editor);
-      data.fontsize = getDefaultFontSize(editor);
-      elm = headerFragment.firstChild;
-      if (elm.type === 7) {
-        data.xml_pi = true;
-        matches = /encoding="([^"]+)"/.exec(elm.value);
-        if (matches) {
-          data.docencoding = matches[1];
-        }
-      }
-      elm = headerFragment.getAll('#doctype')[0];
-      if (elm) {
-        data.doctype = '<!DOCTYPE' + elm.value + '>';
-      }
-      elm = headerFragment.getAll('title')[0];
-      if (elm && elm.firstChild) {
-        data.title = elm.firstChild.value;
-      }
-      global$3.each(headerFragment.getAll('meta'), function (meta) {
-        var name = meta.attr('name');
-        var httpEquiv = meta.attr('http-equiv');
-        var matches;
-        if (name) {
-          data[name.toLowerCase()] = meta.attr('content');
-        } else if (httpEquiv === 'Content-Type') {
-          matches = /charset\s*=\s*(.*)\s*/gi.exec(meta.attr('content'));
-          if (matches) {
-            data.docencoding = matches[1];
-          }
-        }
-      });
-      elm = headerFragment.getAll('html')[0];
-      if (elm) {
-        data.langcode = getAttr(elm, 'lang') || getAttr(elm, 'xml:lang');
-      }
-      data.stylesheets = [];
-      global$3.each(headerFragment.getAll('link'), function (link) {
-        if (link.attr('rel') === 'stylesheet') {
-          data.stylesheets.push(link.attr('href'));
-        }
-      });
-      elm = headerFragment.getAll('body')[0];
-      if (elm) {
-        data.langdir = getAttr(elm, 'dir');
-        data.style = getAttr(elm, 'style');
-        data.visited_color = getAttr(elm, 'vlink');
-        data.link_color = getAttr(elm, 'link');
-        data.active_color = getAttr(elm, 'alink');
-      }
-      return data;
-    };
-    var dataToHtml = function (editor, data, head) {
-      var headElement, elm;
-      var dom = editor.dom;
-      var setAttr = function (elm, name, value) {
-        elm.attr(name, value ? value : undefined);
-      };
-      var addHeadNode = function (node) {
-        if (headElement.firstChild) {
-          headElement.insert(node, headElement.firstChild);
-        } else {
-          headElement.append(node);
-        }
-      };
-      var headerFragment = parseHeader(editor, head);
-      headElement = headerFragment.getAll('head')[0];
-      if (!headElement) {
-        elm = headerFragment.getAll('html')[0];
-        headElement = new global$1('head', 1);
-        if (elm.firstChild) {
-          elm.insert(headElement, elm.firstChild, true);
-        } else {
-          elm.append(headElement);
-        }
-      }
-      elm = headerFragment.firstChild;
-      if (data.xml_pi) {
-        var value = 'version="1.0"';
-        if (data.docencoding) {
-          value += ' encoding="' + data.docencoding + '"';
-        }
-        if (elm.type !== 7) {
-          elm = new global$1('xml', 7);
-          headerFragment.insert(elm, headerFragment.firstChild, true);
-        }
-        elm.value = value;
-      } else if (elm && elm.type === 7) {
-        elm.remove();
-      }
-      elm = headerFragment.getAll('#doctype')[0];
-      if (data.doctype) {
-        if (!elm) {
-          elm = new global$1('#doctype', 10);
-          if (data.xml_pi) {
-            headerFragment.insert(elm, headerFragment.firstChild);
-          } else {
-            addHeadNode(elm);
-          }
-        }
-        elm.value = data.doctype.substring(9, data.doctype.length - 1);
-      } else if (elm) {
-        elm.remove();
-      }
-      elm = null;
-      global$3.each(headerFragment.getAll('meta'), function (meta) {
-        if (meta.attr('http-equiv') === 'Content-Type') {
-          elm = meta;
-        }
-      });
-      if (data.docencoding) {
-        if (!elm) {
-          elm = new global$1('meta', 1);
-          elm.attr('http-equiv', 'Content-Type');
-          elm.shortEnded = true;
-          addHeadNode(elm);
-        }
-        elm.attr('content', 'text/html; charset=' + data.docencoding);
-      } else if (elm) {
-        elm.remove();
-      }
-      elm = headerFragment.getAll('title')[0];
-      if (data.title) {
-        if (!elm) {
-          elm = new global$1('title', 1);
-          addHeadNode(elm);
-        } else {
-          elm.empty();
-        }
-        elm.append(new global$1('#text', 3)).value = data.title;
-      } else if (elm) {
-        elm.remove();
-      }
-      global$3.each('keywords,description,author,copyright,robots'.split(','), function (name) {
-        var nodes = headerFragment.getAll('meta');
-        var i, meta;
-        var value = data[name];
-        for (i = 0; i < nodes.length; i++) {
-          meta = nodes[i];
-          if (meta.attr('name') === name) {
-            if (value) {
-              meta.attr('content', value);
-            } else {
-              meta.remove();
-            }
-            return;
-          }
-        }
-        if (value) {
-          elm = new global$1('meta', 1);
-          elm.attr('name', name);
-          elm.attr('content', value);
-          elm.shortEnded = true;
-          addHeadNode(elm);
-        }
-      });
-      var currentStyleSheetsMap = {};
-      global$3.each(headerFragment.getAll('link'), function (stylesheet) {
-        if (stylesheet.attr('rel') === 'stylesheet') {
-          currentStyleSheetsMap[stylesheet.attr('href')] = stylesheet;
-        }
-      });
-      global$3.each(data.stylesheets, function (stylesheet) {
-        if (!currentStyleSheetsMap[stylesheet]) {
-          elm = new global$1('link', 1);
-          elm.attr({
-            rel: 'stylesheet',
-            text: 'text/css',
-            href: stylesheet
-          });
-          elm.shortEnded = true;
-          addHeadNode(elm);
-        }
-        delete currentStyleSheetsMap[stylesheet];
-      });
-      global$3.each(currentStyleSheetsMap, function (stylesheet) {
-        stylesheet.remove();
-      });
-      elm = headerFragment.getAll('body')[0];
-      if (elm) {
-        setAttr(elm, 'dir', data.langdir);
-        setAttr(elm, 'style', data.style);
-        setAttr(elm, 'vlink', data.visited_color);
-        setAttr(elm, 'link', data.link_color);
-        setAttr(elm, 'alink', data.active_color);
-        dom.setAttribs(editor.getBody(), {
-          style: data.style,
-          dir: data.dir,
-          vLink: data.visited_color,
-          link: data.link_color,
-          aLink: data.active_color
-        });
-      }
-      elm = headerFragment.getAll('html')[0];
-      if (elm) {
-        setAttr(elm, 'lang', data.langcode);
-        setAttr(elm, 'xml:lang', data.langcode);
-      }
-      if (!headElement.firstChild) {
-        headElement.remove();
-      }
-      var html = global({
-        validate: false,
-        indent: true,
-        indent_before: 'head,html,body,meta,title,script,link,style',
-        indent_after: 'head,html,body,meta,title,script,link,style'
-      }).serialize(headerFragment);
-      return html.substring(0, html.indexOf('</body>'));
-    };
-
-    var open = function (editor, headState) {
-      var data = htmlToData(editor, headState.get());
-      var defaultData = {
-        title: '',
-        keywords: '',
-        description: '',
-        robots: '',
-        author: '',
-        docencoding: ''
-      };
-      var initialData = __assign(__assign({}, defaultData), data);
-      editor.windowManager.open({
-        title: 'Metadata and Document Properties',
-        size: 'normal',
-        body: {
-          type: 'panel',
-          items: [
-            {
-              name: 'title',
-              type: 'input',
-              label: 'Title'
-            },
-            {
-              name: 'keywords',
-              type: 'input',
-              label: 'Keywords'
-            },
-            {
-              name: 'description',
-              type: 'input',
-              label: 'Description'
-            },
-            {
-              name: 'robots',
-              type: 'input',
-              label: 'Robots'
-            },
-            {
-              name: 'author',
-              type: 'input',
-              label: 'Author'
-            },
-            {
-              name: 'docencoding',
-              type: 'input',
-              label: 'Encoding'
-            }
-          ]
-        },
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
-          }
-        ],
-        initialData: initialData,
-        onSubmit: function (api) {
-          var nuData = api.getData();
-          var headHtml = dataToHtml(editor, global$3.extend(data, nuData), headState.get());
-          headState.set(headHtml);
-          api.close();
-        }
-      });
-    };
-
-    var register$1 = function (editor, headState) {
-      editor.addCommand('mceFullPageProperties', function () {
-        open(editor, headState);
-      });
-    };
-
-    var protectHtml = function (protect, html) {
-      global$3.each(protect, function (pattern) {
-        html = html.replace(pattern, function (str) {
-          return '<!--mce:protected ' + escape(str) + '-->';
-        });
-      });
-      return html;
-    };
-    var unprotectHtml = function (html) {
-      return html.replace(/<!--mce:protected ([\s\S]*?)-->/g, function (a, m) {
-        return unescape(m);
-      });
-    };
-
-    var each = global$3.each;
-    var low = function (s) {
-      return s.replace(/<\/?[A-Z]+/g, function (a) {
-        return a.toLowerCase();
-      });
-    };
-    var handleSetContent = function (editor, headState, footState, evt) {
-      var startPos, endPos, content, styles = '';
-      var dom = editor.dom;
-      if (evt.selection) {
-        return;
-      }
-      content = protectHtml(getProtect(editor), evt.content);
-      if (evt.format === 'raw' && headState.get()) {
-        return;
-      }
-      if (evt.source_view && shouldHideInSourceView(editor)) {
-        return;
-      }
-      if (content.length === 0 && !evt.source_view) {
-        content = global$3.trim(headState.get()) + '\n' + global$3.trim(content) + '\n' + global$3.trim(footState.get());
-      }
-      content = content.replace(/<(\/?)BODY/gi, '<$1body');
-      startPos = content.indexOf('<body');
-      if (startPos !== -1) {
-        startPos = content.indexOf('>', startPos);
-        headState.set(low(content.substring(0, startPos + 1)));
-        endPos = content.indexOf('</body', startPos);
-        if (endPos === -1) {
-          endPos = content.length;
-        }
-        evt.content = global$3.trim(content.substring(startPos + 1, endPos));
-        footState.set(low(content.substring(endPos)));
-      } else {
-        headState.set(getDefaultHeader(editor));
-        footState.set('\n</body>\n</html>');
-      }
-      var headerFragment = parseHeader(editor, headState.get());
-      each(headerFragment.getAll('style'), function (node) {
-        if (node.firstChild) {
-          styles += node.firstChild.value;
-        }
-      });
-      var bodyElm = headerFragment.getAll('body')[0];
-      if (bodyElm) {
-        dom.setAttribs(editor.getBody(), {
-          style: bodyElm.attr('style') || '',
-          dir: bodyElm.attr('dir') || '',
-          vLink: bodyElm.attr('vlink') || '',
-          link: bodyElm.attr('link') || '',
-          aLink: bodyElm.attr('alink') || ''
-        });
-      }
-      dom.remove('fullpage_styles');
-      var headElm = editor.getDoc().getElementsByTagName('head')[0];
-      if (styles) {
-        var styleElm = dom.add(headElm, 'style', { id: 'fullpage_styles' });
-        styleElm.appendChild(document.createTextNode(styles));
-      }
-      var currentStyleSheetsMap = {};
-      global$3.each(headElm.getElementsByTagName('link'), function (stylesheet) {
-        if (stylesheet.rel === 'stylesheet' && stylesheet.getAttribute('data-mce-fullpage')) {
-          currentStyleSheetsMap[stylesheet.href] = stylesheet;
-        }
-      });
-      global$3.each(headerFragment.getAll('link'), function (stylesheet) {
-        var href = stylesheet.attr('href');
-        if (!href) {
-          return true;
-        }
-        if (!currentStyleSheetsMap[href] && stylesheet.attr('rel') === 'stylesheet') {
-          dom.add(headElm, 'link', {
-            'rel': 'stylesheet',
-            'text': 'text/css',
-            href: href,
-            'data-mce-fullpage': '1'
-          });
-        }
-        delete currentStyleSheetsMap[href];
-      });
-      global$3.each(currentStyleSheetsMap, function (stylesheet) {
-        stylesheet.parentNode.removeChild(stylesheet);
-      });
-    };
-    var getDefaultHeader = function (editor) {
-      var header = '', value, styles = '';
-      if (getDefaultXmlPi(editor)) {
-        var piEncoding = getDefaultEncoding(editor);
-        header += '<?xml version="1.0" encoding="' + (piEncoding ? piEncoding : 'ISO-8859-1') + '" ?>\n';
-      }
-      header += getDefaultDocType(editor);
-      header += '\n<html>\n<head>\n';
-      if (value = getDefaultTitle(editor)) {
-        header += '<title>' + value + '</title>\n';
-      }
-      if (value = getDefaultEncoding(editor)) {
-        header += '<meta http-equiv="Content-Type" content="text/html; charset=' + value + '" />\n';
-      }
-      if (value = getDefaultFontFamily(editor)) {
-        styles += 'font-family: ' + value + ';';
-      }
-      if (value = getDefaultFontSize(editor)) {
-        styles += 'font-size: ' + value + ';';
-      }
-      if (value = getDefaultTextColor(editor)) {
-        styles += 'color: ' + value + ';';
-      }
-      header += '</head>\n<body' + (styles ? ' style="' + styles + '"' : '') + '>\n';
-      return header;
-    };
-    var handleGetContent = function (editor, head, foot, evt) {
-      if (evt.format === 'html' && !evt.selection && (!evt.source_view || !shouldHideInSourceView(editor))) {
-        evt.content = unprotectHtml(global$3.trim(head) + '\n' + global$3.trim(evt.content) + '\n' + global$3.trim(foot));
-      }
-    };
-    var setup = function (editor, headState, footState) {
-      editor.on('BeforeSetContent', function (evt) {
-        handleSetContent(editor, headState, footState, evt);
-      });
-      editor.on('GetContent', function (evt) {
-        handleGetContent(editor, headState.get(), footState.get(), evt);
-      });
-    };
-
-    var register = function (editor) {
-      editor.ui.registry.addButton('fullpage', {
-        tooltip: 'Metadata and document properties',
-        icon: 'document-properties',
-        onAction: function () {
-          editor.execCommand('mceFullPageProperties');
-        }
-      });
-      editor.ui.registry.addMenuItem('fullpage', {
-        text: 'Metadata and document properties',
-        icon: 'document-properties',
-        onAction: function () {
-          editor.execCommand('mceFullPageProperties');
-        }
-      });
-    };
-
-    function Plugin () {
-      global$4.add('fullpage', function (editor) {
-        var headState = Cell(''), footState = Cell('');
-        register$1(editor, headState);
-        register(editor);
-        setup(editor, headState, footState);
-      });
-    }
-
-    Plugin();
-
-}());
-
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.10.9 (2023-11-15)
- */
-(function () {
-    'use strict';
-
-    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var register$1 = function (editor) {
-      editor.addCommand('InsertHorizontalRule', function () {
-        editor.execCommand('mceInsertContent', false, '<hr />');
-      });
-    };
-
-    var register = function (editor) {
-      var onAction = function () {
-        return editor.execCommand('InsertHorizontalRule');
-      };
-      editor.ui.registry.addButton('hr', {
-        icon: 'horizontal-rule',
-        tooltip: 'Horizontal line',
-        onAction: onAction
-      });
-      editor.ui.registry.addMenuItem('hr', {
-        icon: 'horizontal-rule',
-        text: 'Horizontal line',
-        onAction: onAction
-      });
-    };
-
-    function Plugin () {
-      global.add('hr', function (editor) {
-        register$1(editor);
-        register(editor);
-      });
-    }
-
-    Plugin();
-
-}());
-
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.10.9 (2023-11-15)
- */
-(function () {
-    'use strict';
-
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      return {
-        get: get,
-        set: set
-      };
-    };
-
     var global$3 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var get$1 = function (customTabs) {
@@ -56759,6 +56713,52 @@ tinymce.IconManager.add('default', {
         register$1(editor, dialogOpener);
         editor.shortcuts.add('Alt+0', 'Open help dialog', 'mceHelp');
         return api;
+      });
+    }
+
+    Plugin();
+
+}());
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.10.9 (2023-11-15)
+ */
+(function () {
+    'use strict';
+
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var register$1 = function (editor) {
+      editor.addCommand('InsertHorizontalRule', function () {
+        editor.execCommand('mceInsertContent', false, '<hr />');
+      });
+    };
+
+    var register = function (editor) {
+      var onAction = function () {
+        return editor.execCommand('InsertHorizontalRule');
+      };
+      editor.ui.registry.addButton('hr', {
+        icon: 'horizontal-rule',
+        tooltip: 'Horizontal line',
+        onAction: onAction
+      });
+      editor.ui.registry.addMenuItem('hr', {
+        icon: 'horizontal-rule',
+        text: 'Horizontal line',
+        onAction: onAction
+      });
+    };
+
+    function Plugin () {
+      global.add('hr', function (editor) {
+        register$1(editor);
+        register(editor);
       });
     }
 
@@ -60502,6 +60502,206 @@ tinymce.IconManager.add('default', {
 (function () {
     'use strict';
 
+    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var getFontSizeFormats = function (editor) {
+      return editor.getParam('fontsize_formats');
+    };
+    var setFontSizeFormats = function (editor, fontsize_formats) {
+      editor.settings.fontsize_formats = fontsize_formats;
+    };
+    var getFontFormats = function (editor) {
+      return editor.getParam('font_formats');
+    };
+    var setFontFormats = function (editor, font_formats) {
+      editor.settings.font_formats = font_formats;
+    };
+    var getFontSizeStyleValues = function (editor) {
+      return editor.getParam('font_size_style_values', 'xx-small,x-small,small,medium,large,x-large,xx-large');
+    };
+    var setInlineStyles = function (editor, inline_styles) {
+      editor.settings.inline_styles = inline_styles;
+    };
+
+    var overrideFormats = function (editor) {
+      var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', fontSizes = global.explode(getFontSizeStyleValues(editor)), schema = editor.schema;
+      editor.formatter.register({
+        alignleft: {
+          selector: alignElements,
+          attributes: { align: 'left' }
+        },
+        aligncenter: {
+          selector: alignElements,
+          attributes: { align: 'center' }
+        },
+        alignright: {
+          selector: alignElements,
+          attributes: { align: 'right' }
+        },
+        alignjustify: {
+          selector: alignElements,
+          attributes: { align: 'justify' }
+        },
+        bold: [
+          {
+            inline: 'b',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'strong',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'span',
+            styles: { fontWeight: 'bold' }
+          }
+        ],
+        italic: [
+          {
+            inline: 'i',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'em',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'span',
+            styles: { fontStyle: 'italic' }
+          }
+        ],
+        underline: [
+          {
+            inline: 'u',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'span',
+            styles: { textDecoration: 'underline' },
+            exact: true
+          }
+        ],
+        strikethrough: [
+          {
+            inline: 'strike',
+            remove: 'all',
+            preserve_attributes: [
+              'class',
+              'style'
+            ]
+          },
+          {
+            inline: 'span',
+            styles: { textDecoration: 'line-through' },
+            exact: true
+          }
+        ],
+        fontname: {
+          inline: 'font',
+          toggle: false,
+          attributes: { face: '%value' }
+        },
+        fontsize: {
+          inline: 'font',
+          toggle: false,
+          attributes: {
+            size: function (vars) {
+              return String(global.inArray(fontSizes, vars.value) + 1);
+            }
+          }
+        },
+        forecolor: {
+          inline: 'font',
+          attributes: { color: '%value' },
+          links: true,
+          remove_similar: true,
+          clear_child_styles: true
+        },
+        hilitecolor: {
+          inline: 'font',
+          styles: { backgroundColor: '%value' },
+          links: true,
+          remove_similar: true,
+          clear_child_styles: true
+        }
+      });
+      global.each('b,i,u,strike'.split(','), function (name) {
+        schema.addValidElements(name + '[*]');
+      });
+      if (!schema.getElementRule('font')) {
+        schema.addValidElements('font[face|size|color|style]');
+      }
+      global.each(alignElements.split(','), function (name) {
+        var rule = schema.getElementRule(name);
+        if (rule) {
+          if (!rule.attributes.align) {
+            rule.attributes.align = {};
+            rule.attributesOrder.push('align');
+          }
+        }
+      });
+    };
+    var overrideSettings = function (editor) {
+      var defaultFontsizeFormats = '8pt=1 10pt=2 12pt=3 14pt=4 18pt=5 24pt=6 36pt=7';
+      var defaultFontsFormats = 'Andale Mono=andale mono,monospace;' + 'Arial=arial,helvetica,sans-serif;' + 'Arial Black=arial black,sans-serif;' + 'Book Antiqua=book antiqua,palatino,serif;' + 'Comic Sans MS=comic sans ms,sans-serif;' + 'Courier New=courier new,courier,monospace;' + 'Georgia=georgia,palatino,serif;' + 'Helvetica=helvetica,arial,sans-serif;' + 'Impact=impact,sans-serif;' + 'Symbol=symbol;' + 'Tahoma=tahoma,arial,helvetica,sans-serif;' + 'Terminal=terminal,monaco,monospace;' + 'Times New Roman=times new roman,times,serif;' + 'Trebuchet MS=trebuchet ms,geneva,sans-serif;' + 'Verdana=verdana,geneva,sans-serif;' + 'Webdings=webdings;' + 'Wingdings=wingdings,zapf dingbats';
+      setInlineStyles(editor, false);
+      if (!getFontSizeFormats(editor)) {
+        setFontSizeFormats(editor, defaultFontsizeFormats);
+      }
+      if (!getFontFormats(editor)) {
+        setFontFormats(editor, defaultFontsFormats);
+      }
+    };
+    var setup = function (editor) {
+      overrideSettings(editor);
+      editor.on('PreInit', function () {
+        return overrideFormats(editor);
+      });
+    };
+
+    function Plugin () {
+      global$1.add('legacyoutput', function (editor) {
+        setup(editor);
+      });
+    }
+
+    Plugin();
+
+}());
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.10.9 (2023-11-15)
+ */
+(function () {
+    'use strict';
+
     var global$7 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var global$6 = tinymce.util.Tools.resolve('tinymce.util.VK');
@@ -61777,206 +61977,6 @@ tinymce.IconManager.add('default', {
         setupContextToolbars(editor);
         setupGotoLinks(editor);
         register(editor);
-        setup(editor);
-      });
-    }
-
-    Plugin();
-
-}());
-
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.10.9 (2023-11-15)
- */
-(function () {
-    'use strict';
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var getFontSizeFormats = function (editor) {
-      return editor.getParam('fontsize_formats');
-    };
-    var setFontSizeFormats = function (editor, fontsize_formats) {
-      editor.settings.fontsize_formats = fontsize_formats;
-    };
-    var getFontFormats = function (editor) {
-      return editor.getParam('font_formats');
-    };
-    var setFontFormats = function (editor, font_formats) {
-      editor.settings.font_formats = font_formats;
-    };
-    var getFontSizeStyleValues = function (editor) {
-      return editor.getParam('font_size_style_values', 'xx-small,x-small,small,medium,large,x-large,xx-large');
-    };
-    var setInlineStyles = function (editor, inline_styles) {
-      editor.settings.inline_styles = inline_styles;
-    };
-
-    var overrideFormats = function (editor) {
-      var alignElements = 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', fontSizes = global.explode(getFontSizeStyleValues(editor)), schema = editor.schema;
-      editor.formatter.register({
-        alignleft: {
-          selector: alignElements,
-          attributes: { align: 'left' }
-        },
-        aligncenter: {
-          selector: alignElements,
-          attributes: { align: 'center' }
-        },
-        alignright: {
-          selector: alignElements,
-          attributes: { align: 'right' }
-        },
-        alignjustify: {
-          selector: alignElements,
-          attributes: { align: 'justify' }
-        },
-        bold: [
-          {
-            inline: 'b',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'strong',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'span',
-            styles: { fontWeight: 'bold' }
-          }
-        ],
-        italic: [
-          {
-            inline: 'i',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'em',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'span',
-            styles: { fontStyle: 'italic' }
-          }
-        ],
-        underline: [
-          {
-            inline: 'u',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'span',
-            styles: { textDecoration: 'underline' },
-            exact: true
-          }
-        ],
-        strikethrough: [
-          {
-            inline: 'strike',
-            remove: 'all',
-            preserve_attributes: [
-              'class',
-              'style'
-            ]
-          },
-          {
-            inline: 'span',
-            styles: { textDecoration: 'line-through' },
-            exact: true
-          }
-        ],
-        fontname: {
-          inline: 'font',
-          toggle: false,
-          attributes: { face: '%value' }
-        },
-        fontsize: {
-          inline: 'font',
-          toggle: false,
-          attributes: {
-            size: function (vars) {
-              return String(global.inArray(fontSizes, vars.value) + 1);
-            }
-          }
-        },
-        forecolor: {
-          inline: 'font',
-          attributes: { color: '%value' },
-          links: true,
-          remove_similar: true,
-          clear_child_styles: true
-        },
-        hilitecolor: {
-          inline: 'font',
-          styles: { backgroundColor: '%value' },
-          links: true,
-          remove_similar: true,
-          clear_child_styles: true
-        }
-      });
-      global.each('b,i,u,strike'.split(','), function (name) {
-        schema.addValidElements(name + '[*]');
-      });
-      if (!schema.getElementRule('font')) {
-        schema.addValidElements('font[face|size|color|style]');
-      }
-      global.each(alignElements.split(','), function (name) {
-        var rule = schema.getElementRule(name);
-        if (rule) {
-          if (!rule.attributes.align) {
-            rule.attributes.align = {};
-            rule.attributesOrder.push('align');
-          }
-        }
-      });
-    };
-    var overrideSettings = function (editor) {
-      var defaultFontsizeFormats = '8pt=1 10pt=2 12pt=3 14pt=4 18pt=5 24pt=6 36pt=7';
-      var defaultFontsFormats = 'Andale Mono=andale mono,monospace;' + 'Arial=arial,helvetica,sans-serif;' + 'Arial Black=arial black,sans-serif;' + 'Book Antiqua=book antiqua,palatino,serif;' + 'Comic Sans MS=comic sans ms,sans-serif;' + 'Courier New=courier new,courier,monospace;' + 'Georgia=georgia,palatino,serif;' + 'Helvetica=helvetica,arial,sans-serif;' + 'Impact=impact,sans-serif;' + 'Symbol=symbol;' + 'Tahoma=tahoma,arial,helvetica,sans-serif;' + 'Terminal=terminal,monaco,monospace;' + 'Times New Roman=times new roman,times,serif;' + 'Trebuchet MS=trebuchet ms,geneva,sans-serif;' + 'Verdana=verdana,geneva,sans-serif;' + 'Webdings=webdings;' + 'Wingdings=wingdings,zapf dingbats';
-      setInlineStyles(editor, false);
-      if (!getFontSizeFormats(editor)) {
-        setFontSizeFormats(editor, defaultFontsizeFormats);
-      }
-      if (!getFontFormats(editor)) {
-        setFontFormats(editor, defaultFontsFormats);
-      }
-    };
-    var setup = function (editor) {
-      overrideSettings(editor);
-      editor.on('PreInit', function () {
-        return overrideFormats(editor);
-      });
-    };
-
-    function Plugin () {
-      global$1.add('legacyoutput', function (editor) {
         setup(editor);
       });
     }
@@ -65672,6 +65672,107 @@ tinymce.IconManager.add('default', {
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
+    var getKeyboardSpaces = function (editor) {
+      var spaces = editor.getParam('nonbreaking_force_tab', 0);
+      if (typeof spaces === 'boolean') {
+        return spaces === true ? 3 : 0;
+      } else {
+        return spaces;
+      }
+    };
+    var wrapNbsps = function (editor) {
+      return editor.getParam('nonbreaking_wrap', true, 'boolean');
+    };
+
+    var stringRepeat = function (string, repeats) {
+      var str = '';
+      for (var index = 0; index < repeats; index++) {
+        str += string;
+      }
+      return str;
+    };
+    var isVisualCharsEnabled = function (editor) {
+      return editor.plugins.visualchars ? editor.plugins.visualchars.isEnabled() : false;
+    };
+    var insertNbsp = function (editor, times) {
+      var classes = function () {
+        return isVisualCharsEnabled(editor) ? 'mce-nbsp-wrap mce-nbsp' : 'mce-nbsp-wrap';
+      };
+      var nbspSpan = function () {
+        return '<span class="' + classes() + '" contenteditable="false">' + stringRepeat('&nbsp;', times) + '</span>';
+      };
+      var shouldWrap = wrapNbsps(editor);
+      var html = shouldWrap || editor.plugins.visualchars ? nbspSpan() : stringRepeat('&nbsp;', times);
+      editor.undoManager.transact(function () {
+        return editor.insertContent(html);
+      });
+    };
+
+    var register$1 = function (editor) {
+      editor.addCommand('mceNonBreaking', function () {
+        insertNbsp(editor, 1);
+      });
+    };
+
+    var global = tinymce.util.Tools.resolve('tinymce.util.VK');
+
+    var setup = function (editor) {
+      var spaces = getKeyboardSpaces(editor);
+      if (spaces > 0) {
+        editor.on('keydown', function (e) {
+          if (e.keyCode === global.TAB && !e.isDefaultPrevented()) {
+            if (e.shiftKey) {
+              return;
+            }
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            insertNbsp(editor, spaces);
+          }
+        });
+      }
+    };
+
+    var register = function (editor) {
+      var onAction = function () {
+        return editor.execCommand('mceNonBreaking');
+      };
+      editor.ui.registry.addButton('nonbreaking', {
+        icon: 'non-breaking',
+        tooltip: 'Nonbreaking space',
+        onAction: onAction
+      });
+      editor.ui.registry.addMenuItem('nonbreaking', {
+        icon: 'non-breaking',
+        text: 'Nonbreaking space',
+        onAction: onAction
+      });
+    };
+
+    function Plugin () {
+      global$1.add('nonbreaking', function (editor) {
+        register$1(editor);
+        register(editor);
+        setup(editor);
+      });
+    }
+
+    Plugin();
+
+}());
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.10.9 (2023-11-15)
+ */
+(function () {
+    'use strict';
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
     var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var getNonEditableClass = function (editor) {
@@ -65790,107 +65891,6 @@ tinymce.IconManager.add('default', {
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var getKeyboardSpaces = function (editor) {
-      var spaces = editor.getParam('nonbreaking_force_tab', 0);
-      if (typeof spaces === 'boolean') {
-        return spaces === true ? 3 : 0;
-      } else {
-        return spaces;
-      }
-    };
-    var wrapNbsps = function (editor) {
-      return editor.getParam('nonbreaking_wrap', true, 'boolean');
-    };
-
-    var stringRepeat = function (string, repeats) {
-      var str = '';
-      for (var index = 0; index < repeats; index++) {
-        str += string;
-      }
-      return str;
-    };
-    var isVisualCharsEnabled = function (editor) {
-      return editor.plugins.visualchars ? editor.plugins.visualchars.isEnabled() : false;
-    };
-    var insertNbsp = function (editor, times) {
-      var classes = function () {
-        return isVisualCharsEnabled(editor) ? 'mce-nbsp-wrap mce-nbsp' : 'mce-nbsp-wrap';
-      };
-      var nbspSpan = function () {
-        return '<span class="' + classes() + '" contenteditable="false">' + stringRepeat('&nbsp;', times) + '</span>';
-      };
-      var shouldWrap = wrapNbsps(editor);
-      var html = shouldWrap || editor.plugins.visualchars ? nbspSpan() : stringRepeat('&nbsp;', times);
-      editor.undoManager.transact(function () {
-        return editor.insertContent(html);
-      });
-    };
-
-    var register$1 = function (editor) {
-      editor.addCommand('mceNonBreaking', function () {
-        insertNbsp(editor, 1);
-      });
-    };
-
-    var global = tinymce.util.Tools.resolve('tinymce.util.VK');
-
-    var setup = function (editor) {
-      var spaces = getKeyboardSpaces(editor);
-      if (spaces > 0) {
-        editor.on('keydown', function (e) {
-          if (e.keyCode === global.TAB && !e.isDefaultPrevented()) {
-            if (e.shiftKey) {
-              return;
-            }
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            insertNbsp(editor, spaces);
-          }
-        });
-      }
-    };
-
-    var register = function (editor) {
-      var onAction = function () {
-        return editor.execCommand('mceNonBreaking');
-      };
-      editor.ui.registry.addButton('nonbreaking', {
-        icon: 'non-breaking',
-        tooltip: 'Nonbreaking space',
-        onAction: onAction
-      });
-      editor.ui.registry.addMenuItem('nonbreaking', {
-        icon: 'non-breaking',
-        text: 'Nonbreaking space',
-        onAction: onAction
-      });
-    };
-
-    function Plugin () {
-      global$1.add('nonbreaking', function (editor) {
-        register$1(editor);
-        register(editor);
-        setup(editor);
-      });
-    }
-
-    Plugin();
-
-}());
-
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.10.9 (2023-11-15)
- */
-(function () {
-    'use strict';
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
     var global = tinymce.util.Tools.resolve('tinymce.Env');
 
     var getSeparatorHtml = function (editor) {
@@ -65976,133 +65976,6 @@ tinymce.IconManager.add('default', {
         register(editor);
         setup$1(editor);
         setup(editor);
-      });
-    }
-
-    Plugin();
-
-}());
-
-/**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
- *
- * Version: 5.10.9 (2023-11-15)
- */
-(function () {
-    'use strict';
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
-
-    var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var getContentStyle = function (editor) {
-      return editor.getParam('content_style', '', 'string');
-    };
-    var shouldUseContentCssCors = function (editor) {
-      return editor.getParam('content_css_cors', false, 'boolean');
-    };
-    var getBodyClassByHash = function (editor) {
-      var bodyClass = editor.getParam('body_class', '', 'hash');
-      return bodyClass[editor.id] || '';
-    };
-    var getBodyClass = function (editor) {
-      var bodyClass = editor.getParam('body_class', '', 'string');
-      if (bodyClass.indexOf('=') === -1) {
-        return bodyClass;
-      } else {
-        return getBodyClassByHash(editor);
-      }
-    };
-    var getBodyIdByHash = function (editor) {
-      var bodyId = editor.getParam('body_id', '', 'hash');
-      return bodyId[editor.id] || bodyId;
-    };
-    var getBodyId = function (editor) {
-      var bodyId = editor.getParam('body_id', 'tinymce', 'string');
-      if (bodyId.indexOf('=') === -1) {
-        return bodyId;
-      } else {
-        return getBodyIdByHash(editor);
-      }
-    };
-
-    var getPreviewHtml = function (editor) {
-      var headHtml = '';
-      var encode = editor.dom.encode;
-      var contentStyle = getContentStyle(editor);
-      headHtml += '<base href="' + encode(editor.documentBaseURI.getURI()) + '">';
-      var cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
-      global.each(editor.contentCSS, function (url) {
-        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
-      });
-      if (contentStyle) {
-        headHtml += '<style type="text/css">' + contentStyle + '</style>';
-      }
-      var bodyId = getBodyId(editor);
-      var bodyClass = getBodyClass(editor);
-      var isMetaKeyPressed = global$1.mac ? 'e.metaKey' : 'e.ctrlKey && !e.altKey';
-      var preventClicksOnLinksScript = '<script>' + 'document.addEventListener && document.addEventListener("click", function(e) {' + 'for (var elm = e.target; elm; elm = elm.parentNode) {' + 'if (elm.nodeName === "A" && !(' + isMetaKeyPressed + ')) {' + 'e.preventDefault();' + '}' + '}' + '}, false);' + '</script> ';
-      var directionality = editor.getBody().dir;
-      var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
-      var previewHtml = '<!DOCTYPE html>' + '<html>' + '<head>' + headHtml + '</head>' + '<body id="' + encode(bodyId) + '" class="mce-content-body ' + encode(bodyClass) + '"' + dirAttr + '>' + editor.getContent() + preventClicksOnLinksScript + '</body>' + '</html>';
-      return previewHtml;
-    };
-
-    var open = function (editor) {
-      var content = getPreviewHtml(editor);
-      var dataApi = editor.windowManager.open({
-        title: 'Preview',
-        size: 'large',
-        body: {
-          type: 'panel',
-          items: [{
-              name: 'preview',
-              type: 'iframe',
-              sandboxed: true
-            }]
-        },
-        buttons: [{
-            type: 'cancel',
-            name: 'close',
-            text: 'Close',
-            primary: true
-          }],
-        initialData: { preview: content }
-      });
-      dataApi.focus('close');
-    };
-
-    var register$1 = function (editor) {
-      editor.addCommand('mcePreview', function () {
-        open(editor);
-      });
-    };
-
-    var register = function (editor) {
-      var onAction = function () {
-        return editor.execCommand('mcePreview');
-      };
-      editor.ui.registry.addButton('preview', {
-        icon: 'preview',
-        tooltip: 'Preview',
-        onAction: onAction
-      });
-      editor.ui.registry.addMenuItem('preview', {
-        icon: 'preview',
-        text: 'Preview',
-        onAction: onAction
-      });
-    };
-
-    function Plugin () {
-      global$2.add('preview', function (editor) {
-        register$1(editor);
-        register(editor);
       });
     }
 
@@ -67907,6 +67780,133 @@ tinymce.IconManager.add('default', {
           setup$2(editor, clipboard, draggingInternallyState);
           return get(clipboard);
         }
+      });
+    }
+
+    Plugin();
+
+}());
+
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.10.9 (2023-11-15)
+ */
+(function () {
+    'use strict';
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
+
+    var global = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var getContentStyle = function (editor) {
+      return editor.getParam('content_style', '', 'string');
+    };
+    var shouldUseContentCssCors = function (editor) {
+      return editor.getParam('content_css_cors', false, 'boolean');
+    };
+    var getBodyClassByHash = function (editor) {
+      var bodyClass = editor.getParam('body_class', '', 'hash');
+      return bodyClass[editor.id] || '';
+    };
+    var getBodyClass = function (editor) {
+      var bodyClass = editor.getParam('body_class', '', 'string');
+      if (bodyClass.indexOf('=') === -1) {
+        return bodyClass;
+      } else {
+        return getBodyClassByHash(editor);
+      }
+    };
+    var getBodyIdByHash = function (editor) {
+      var bodyId = editor.getParam('body_id', '', 'hash');
+      return bodyId[editor.id] || bodyId;
+    };
+    var getBodyId = function (editor) {
+      var bodyId = editor.getParam('body_id', 'tinymce', 'string');
+      if (bodyId.indexOf('=') === -1) {
+        return bodyId;
+      } else {
+        return getBodyIdByHash(editor);
+      }
+    };
+
+    var getPreviewHtml = function (editor) {
+      var headHtml = '';
+      var encode = editor.dom.encode;
+      var contentStyle = getContentStyle(editor);
+      headHtml += '<base href="' + encode(editor.documentBaseURI.getURI()) + '">';
+      var cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
+      global.each(editor.contentCSS, function (url) {
+        headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
+      });
+      if (contentStyle) {
+        headHtml += '<style type="text/css">' + contentStyle + '</style>';
+      }
+      var bodyId = getBodyId(editor);
+      var bodyClass = getBodyClass(editor);
+      var isMetaKeyPressed = global$1.mac ? 'e.metaKey' : 'e.ctrlKey && !e.altKey';
+      var preventClicksOnLinksScript = '<script>' + 'document.addEventListener && document.addEventListener("click", function(e) {' + 'for (var elm = e.target; elm; elm = elm.parentNode) {' + 'if (elm.nodeName === "A" && !(' + isMetaKeyPressed + ')) {' + 'e.preventDefault();' + '}' + '}' + '}, false);' + '</script> ';
+      var directionality = editor.getBody().dir;
+      var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
+      var previewHtml = '<!DOCTYPE html>' + '<html>' + '<head>' + headHtml + '</head>' + '<body id="' + encode(bodyId) + '" class="mce-content-body ' + encode(bodyClass) + '"' + dirAttr + '>' + editor.getContent() + preventClicksOnLinksScript + '</body>' + '</html>';
+      return previewHtml;
+    };
+
+    var open = function (editor) {
+      var content = getPreviewHtml(editor);
+      var dataApi = editor.windowManager.open({
+        title: 'Preview',
+        size: 'large',
+        body: {
+          type: 'panel',
+          items: [{
+              name: 'preview',
+              type: 'iframe',
+              sandboxed: true
+            }]
+        },
+        buttons: [{
+            type: 'cancel',
+            name: 'close',
+            text: 'Close',
+            primary: true
+          }],
+        initialData: { preview: content }
+      });
+      dataApi.focus('close');
+    };
+
+    var register$1 = function (editor) {
+      editor.addCommand('mcePreview', function () {
+        open(editor);
+      });
+    };
+
+    var register = function (editor) {
+      var onAction = function () {
+        return editor.execCommand('mcePreview');
+      };
+      editor.ui.registry.addButton('preview', {
+        icon: 'preview',
+        tooltip: 'Preview',
+        onAction: onAction
+      });
+      editor.ui.registry.addMenuItem('preview', {
+        icon: 'preview',
+        text: 'Preview',
+        onAction: onAction
+      });
+    };
+
+    function Plugin () {
+      global$2.add('preview', function (editor) {
+        register$1(editor);
+        register(editor);
       });
     }
 

@@ -403,11 +403,11 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Riesgo Requerido:</label>
+							<label class="form-label fw-semibold">Riesgo Deseado:</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<div data-select2-id="select2-data-134-peu1">
-								<input type="text" id="RiskRequired" name="RiskRequired" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+								<input type="text" id="RiskWanted" name="RiskWanted" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
 							</div>
 							<!--end::Input-->
 						</div>
@@ -427,11 +427,11 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Total:</label>
+							<label class="form-label fw-semibold">Tamaño Posición:</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<div data-select2-id="select2-data-134-peu1">
-								<input type="text" id="Total" name="Total" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+								<input type="text" id="PositionSize" name="PositionSize" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
 							</div>
 							<!--end::Input-->
 						</div>
@@ -454,7 +454,7 @@
 					</div>
 					<!--end::Actions-->
 					<!--begin::Send-->
-					<button class="btn btn-primary" type="button" data-kt-element="send">Calcular</button>
+					<button class="btn btn-primary" type="button" data-kt-element="send" style="background-color: #FCD535!important; color: black!important;">Calcular</button>
 					<!--end::Send-->
 				</div>
 				<!--end::Toolbar-->
@@ -595,6 +595,16 @@
 					else
 						document.cookie = "sidebar_minimize_state=off";
 				});
+
+				Inputmask("decimal", {
+					groupSeparator: ",",         // Separador de miles
+					digits: 4,                   // Número de decimales
+					digitsOptional: false,       // Obliga a mostrar los decimales
+					prefix: "",                  // Prefijo de moneda
+					rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
+					allowMinus: false,           // No permitir números negativos
+					autoUnmask: true,            // Devuelve el valor sin formato al enviar
+				}).mask("#Capital, #RiskWanted, #RiskReal, #PositionSize");
 		   });
 	</script>
 
