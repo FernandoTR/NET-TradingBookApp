@@ -670,7 +670,7 @@
 			let riesgoReal = parseFloat(document.getElementById("RiskReal").value);
 
 			if (isNaN(capital) || isNaN(riesgo) || isNaN(riesgoReal) || riesgoReal <= 0) {
-				alert("Ingrese valores válidos.");
+				ShowNotification(3, "Ingrese valores válidos.");
 				return;
 			}
 
