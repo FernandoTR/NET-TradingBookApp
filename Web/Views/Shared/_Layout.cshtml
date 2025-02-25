@@ -389,7 +389,16 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Capital:</label>
+							<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+								<span class="required">Capital</span>
+								<span class="ms-1" data-bs-toggle="tooltip" title="Ingresas tu capital total en dólares.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<!--begin::Col-->
@@ -403,7 +412,16 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Riesgo Deseado:</label>
+							<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+								<span class="required">Riesgo Deseado</span>
+								<span class="ms-1" data-bs-toggle="tooltip" title="Especificas el porcentaje de riesgo que deseas asumir por operación.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<div data-select2-id="select2-data-134-peu1">
@@ -415,7 +433,16 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Riesgo Real:</label>
+							<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+								<span class="required">Riesgo Real</span>
+								<span class="ms-1" data-bs-toggle="tooltip" title="Indicas el riesgo real, es decir, la diferencia entre el precio de entrada y el stop-loss.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<div data-select2-id="select2-data-134-peu1">
@@ -427,7 +454,16 @@
 						<!--begin::Input group-->
 						<div class="mb-10">
 							<!--begin::Label-->
-							<label class="form-label fw-semibold">Tamaño Posición:</label>
+							<label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+								<span class="">Tamaño Posición</span>
+								<span class="ms-1" data-bs-toggle="tooltip" title="Tamaño de la posición recomendada.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
 							<!--end::Label-->
 							<!--begin::Input-->
 							<div data-select2-id="select2-data-134-peu1">
@@ -447,14 +483,20 @@
 				<!--begin:Toolbar-->
 				<div class="d-flex flex-stack">
 					<!--begin::Actions-->
-					<div class="d-flex align-items-center me-2">
-						<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Limpiar">
-							<i class="ki-duotone ki-paper-clip fs-3"></i>
+					<div class="d-flex align-items-center me-2">						
+						<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Limpiar" id="btn_Calculadora_Limpiar">
+							<i class="ki-duotone ki-trash fs-3">
+								<span class="path1"></span>
+								<span class="path2"></span>
+								<span class="path3"></span>
+								<span class="path4"></span>
+								<span class="path5"></span>
+							</i>
 						</button>
 					</div>
 					<!--end::Actions-->
 					<!--begin::Send-->
-					<button class="btn btn-primary" type="button" data-kt-element="send" style="background-color: #FCD535!important; color: black!important;">Calcular</button>
+					<button class="btn btn-primary" type="button" id="btn_Calculadora_Calcular" data-kt-element="send" style="background-color: #FCD535!important; color: black!important;">Calcular</button>
 					<!--end::Send-->
 				</div>
 				<!--end::Toolbar-->
@@ -598,14 +640,47 @@
 
 				Inputmask("decimal", {
 					groupSeparator: ",",         // Separador de miles
-					digits: 4,                   // Número de decimales
+					digits: 2,                   // Número de decimales
 					digitsOptional: false,       // Obliga a mostrar los decimales
 					prefix: "",                  // Prefijo de moneda
 					rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
 					allowMinus: false,           // No permitir números negativos
 					autoUnmask: true,            // Devuelve el valor sin formato al enviar
 				}).mask("#Capital, #RiskWanted, #RiskReal, #PositionSize");
-		   });
+		});
+
+		const clearButton = document.getElementById('btn_Calculadora_Limpiar');
+		clearButton.addEventListener("click", function () {
+			document.querySelector("#Capital").value = 0;
+			document.querySelector("#RiskWanted").value = 0;
+			document.querySelector("#RiskReal").value = 0;
+			document.querySelector("#PositionSize").value = 0;
+		});
+
+		const calculateButton = document.getElementById('btn_Calculadora_Calcular');
+		calculateButton.addEventListener("click", function () {
+			calcularPosicion();
+
+			
+		});
+
+		 function calcularPosicion() {
+			let capital = parseFloat(document.getElementById("Capital").value);
+			let riesgo = parseFloat(document.getElementById("RiskWanted").value);
+			let riesgoReal = parseFloat(document.getElementById("RiskReal").value);
+
+			if (isNaN(capital) || isNaN(riesgo) || isNaN(riesgoReal) || riesgoReal <= 0) {
+				alert("Ingrese valores válidos.");
+				return;
+			}
+
+			let cantidadRiesgo = (capital * (riesgo / 100)); // Dinero a arriesgar
+			let tamañoPosicion = cantidadRiesgo / riesgoReal; // Tamaño de la posición
+
+			console.log(`Tamaño de la posición: ${tamañoPosicion.toFixed(2)} unidades`);
+
+			document.querySelector("#PositionSize").value =  tamañoPosicion.toFixed(2);
+		}
 	</script>
 
 	
