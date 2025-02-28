@@ -5,6 +5,8 @@
 	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
 	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
 	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+	var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+
 }
 
 <div class="d-flex flex-column flex-column-fluid">
@@ -104,6 +106,18 @@
 								<!--begin::Input-->
 								<div data-select2-id="select2-data-134-peu1">
 									@Html.DropDownList("FrameId", frameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Dirección:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("DirectionId", directionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
 								</div>
 								<!--end::Input-->
 							</div>
@@ -255,6 +269,8 @@
 			$('#AccountTypeId').val(null).trigger('change');
 			$('#InstrumentId').val(null).trigger('change');
 			$('#FrameId').val(null).trigger('change');
+			$('#DirectionId').val(null).trigger('change');
+
 
 			LoadAnalyticsTriggerView();
 			LoadAnalyticsTriggerChart();
@@ -272,13 +288,17 @@
 			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
 			const instrumentId = document.querySelector('#InstrumentId').value || 0;
 			const frameId = document.querySelector('#FrameId').value || 0;
+			const directionId = document.querySelector('#DirectionId').value || 0;
+
 
 			
 			var data = {
 				categoryId: categoryId,
 				accountTypeId: accountTypeId,
 				instrumentId: instrumentId,
-				frameId: frameId
+				frameId: frameId,
+				directionId: directionId
+
 			};
 
 
@@ -311,13 +331,14 @@
 			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
 			const instrumentId = document.querySelector('#InstrumentId').value || 0;
 			const frameId = document.querySelector('#FrameId').value || 0;
-
+			const directionId = document.querySelector('#DirectionId').value || 0;
 
 			var data = {
 				categoryId: categoryId,
 				accountTypeId: accountTypeId,
 				instrumentId: instrumentId,
-				frameId: frameId
+				frameId: frameId,
+				directionId: directionId
 			};
 
 
@@ -691,13 +712,15 @@
 			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
 			const instrumentId = document.querySelector('#InstrumentId').value || 0;
 			const frameId = document.querySelector('#FrameId').value || 0;
-
+			const directionId = document.querySelector('#DirectionId').value || 0;
 
 			var data = {
 				categoryId: categoryId,
 				accountTypeId: accountTypeId,
 				instrumentId: instrumentId,
-				frameId: frameId
+				frameId: frameId,
+				directionId: directionId
+
 			};
 
 

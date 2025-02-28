@@ -30,6 +30,7 @@ public class HomeController : Controller
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatFrameService _catFrameService;
+    private readonly ICatDirectionService _catDirectionService;
     private readonly IAccountsService _accountsService;
     private readonly IEmployeeService _employeeService;
 
@@ -41,7 +42,8 @@ public class HomeController : Controller
                           ICatInstrumentsService catInstrumentsService,
                           ICatFrameService catFrameService,
                           IAccountsService accountsService,
-                          IEmployeeService employeeService)
+                          IEmployeeService employeeService,
+                          ICatDirectionService catDirectionService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -52,6 +54,7 @@ public class HomeController : Controller
         _catFrameService = catFrameService;
         _accountsService = accountsService;
         _employeeService = employeeService;
+        _catDirectionService = catDirectionService;
     }
 
     #region Métodos para obtener listados para los listBox
@@ -206,6 +209,44 @@ public class HomeController : Controller
 
         return selectItems;
     }
+
+    /// <summary>
+    /// Obtiene una lista de direciones en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la direccion que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las direcciones disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetDirectionListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catDirectionService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
     #endregion
 
 
@@ -241,6 +282,7 @@ public class HomeController : Controller
         ViewBag.AccountTypeItems = await GetAccountTypeListSelect(null);
         ViewBag.InstrumentItems = await GetInstrumentsListSelect(null);
         ViewBag.FrameItems = await GetFrameListSelect(null);
+        ViewBag.DirectionItems = await GetDirectionListSelect(null);
 
         return View();
     }
@@ -294,6 +336,7 @@ public class HomeController : Controller
             AccountTypeId = parameters.AccountTypeId,
             InstrumentId = parameters.InstrumentId,
             FrameId = parameters.FrameId,
+            DirectionId = parameters.DirectionId,
             SearchValue = "",
             OrderByColumn = "Id",
             SortColumnDir = "ASC",
@@ -326,6 +369,7 @@ public class HomeController : Controller
             AccountTypeId = parameters.AccountTypeId,
             InstrumentId = parameters.InstrumentId,
             FrameId = parameters.FrameId,
+            DirectionId = parameters.DirectionId,
             SearchValue = "",
             OrderByColumn = "Id",
             SortColumnDir = "ASC",
