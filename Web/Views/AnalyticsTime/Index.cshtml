@@ -5,6 +5,7 @@
 	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
 	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
 	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+	var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
 }
 
 <!--begin::Content wrapper-->
@@ -119,6 +120,18 @@
 								<!--end::Input-->
 							</div>
 							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Dirección:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("DirectionId", directionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
 							<!--begin::Actions-->
 							<div class="d-flex justify-content-end">
 								<a href="javascript:ClearFilterData()" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reiniciar</a>
@@ -172,6 +185,7 @@
 			$('#AccountTypeId').val(null).trigger('change');
 			$('#InstrumentId').val(null).trigger('change');
 			$('#FrameId').val(null).trigger('change');
+			$('#DirectionId').val(null).trigger('change');
 
 			LoadDataTable();
 		}
@@ -186,15 +200,17 @@
 			 const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
 			 const instrumentId = document.querySelector('#InstrumentId').value || 0;
 			 const frameId = document.querySelector('#FrameId').value || 0;
+			 const directionId = document.querySelector('#DirectionId').value || 0;
 
 			 var data = {
 				  categoryId: categoryId,
 				  accountTypeId: accountTypeId,
 				  instrumentId: instrumentId,
-				  frameId: frameId
+				  frameId: frameId,
+				  directionId: directionId
 			 };
 
-			 console.log("valores:", data)
+			
 
 			$('#dtTable').DataTable({
 				destroy: true, // Destruir instancia previa para evitar conflictos

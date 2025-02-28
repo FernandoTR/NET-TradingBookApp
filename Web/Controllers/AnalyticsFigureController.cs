@@ -20,6 +20,7 @@ public class AnalyticsFigureController : Controller
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatFrameService _catFrameService;
+    private readonly ICatDirectionService _catDirectionService;
 
     // Identificador del permiso 
     private static int permissionNumber = (int)Permissions.AnalyticsFigure;
@@ -31,7 +32,8 @@ public class AnalyticsFigureController : Controller
                                     ICatCategoryService catCategoryService,
                                     ICatAccountTypeService catAccountTypeService,
                                     ICatInstrumentsService catInstrumentsService,
-                                    ICatFrameService catFrameService)
+                                    ICatFrameService catFrameService,
+                                    ICatDirectionService catDirectionService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -41,6 +43,7 @@ public class AnalyticsFigureController : Controller
         _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
         _catFrameService = catFrameService;
+        _catDirectionService = catDirectionService;
     }
 
     #region Carga de datos en el DataTable
@@ -63,7 +66,7 @@ public class AnalyticsFigureController : Controller
     /// </summary>
     /// <returns>Un objeto JSON que contiene los datos solicitados por el DataTable.</returns>
     [HttpPost]
-    public async Task<ActionResult> JsonDataTable(int categoryId, int accountTypeId, int instrumentId, int frameId)
+    public async Task<ActionResult> JsonDataTable(int categoryId, int accountTypeId, int instrumentId, int frameId, int directionId)
     {
         var data = new List<GetTBAnalyticsFigureDto>();
 
@@ -90,6 +93,7 @@ public class AnalyticsFigureController : Controller
                 AccountTypeId = accountTypeId,
                 InstrumentId = instrumentId,
                 FrameId = frameId,
+                DirectionId = directionId,
                 SearchValue = searchValue,
                 OrderByColumn = "Id",
                 SortColumnDir = "ASC",
@@ -276,6 +280,44 @@ public class AnalyticsFigureController : Controller
 
         return selectItems;
     }
+
+    /// <summary>
+    /// Obtiene una lista de direciones en formato <see cref="SelectListItem"/> para cargar controles como ListBox o DropDownList.
+    /// </summary>
+    /// <param name="selectedId">ID de la direccion que debe aparecer seleccionada en la lista, si aplica. Puede ser null.</param>
+    /// <returns>Una lista de objetos <see cref="SelectListItem"/> con las direcciones disponibles.</returns>
+    /// <remarks>
+    /// El primer elemento de la lista es un valor vacío que puede usarse como placeholder.
+    /// </remarks>
+    public async Task<List<SelectListItem>> GetDirectionListSelect(int? selectedId)
+    {
+        // Obtiene todas las categorías disponibles
+        var data = await _catDirectionService.GetAllAsync();
+
+        // Si no hay datos, retorna una lista con solo el placeholder
+        if (data == null || !data.Any())
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+            };
+        }
+
+        // Construye la lista de categorías
+        var selectItems = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" } // Placeholder inicial
+        };
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Description,
+            Value = x.Id.ToString(),
+            Selected = selectedId == x.Id // Marca como seleccionado si el ID coincide
+        }));
+
+        return selectItems;
+    }
     #endregion
 
     public async Task<IActionResult> Index(NotificationType? notification, string message)
@@ -317,6 +359,7 @@ public class AnalyticsFigureController : Controller
         ViewBag.AccountTypeItems = await GetAccountTypeListSelect(null);
         ViewBag.InstrumentItems = await GetInstrumentsListSelect(null);
         ViewBag.FrameItems = await GetFrameListSelect(null);
+        ViewBag.DirectionItems = await GetDirectionListSelect(null);
 
         return View();
     }

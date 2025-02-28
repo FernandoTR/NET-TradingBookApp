@@ -35,6 +35,8 @@ public class CatFigureRepository : ICatFigureRepository
                 new SqlParameter("@AccountTypeId", SqlDbType.Int) { Value = parameters.AccountTypeId },
                 new SqlParameter("@InstrumentId", SqlDbType.Int) { Value = parameters.InstrumentId },
                 new SqlParameter("@FrameId", SqlDbType.Int) { Value = parameters.FrameId },
+                new SqlParameter("@DirectionId", SqlDbType.Int) { Value = parameters.DirectionId },
+
                 new SqlParameter("@SearchValue", SqlDbType.NVarChar) { Value = parameters.SearchValue ?? (object)DBNull.Value },
                 new SqlParameter("@OrderByColumn", SqlDbType.NVarChar) { Value = parameters.OrderByColumn ?? (object)DBNull.Value },
                 new SqlParameter("@SortColumnDir", SqlDbType.NVarChar) { Value = parameters.SortColumnDir ?? (object)DBNull.Value },
@@ -46,7 +48,7 @@ public class CatFigureRepository : ICatFigureRepository
 
             // Ejecutar el procedimiento almacenado y obtener los resultados
             var result = await _context.Set<GetTBAnalyticsFigureDto>()
-                .FromSqlRaw("EXEC usp_GetTBAnalyticsFigure @CategoryId, @AccountTypeId, @InstrumentId, @FrameId, @SearchValue, @OrderByColumn, @SortColumnDir, @Skip, @Take, @Count OUTPUT", sqlParameters)
+                .FromSqlRaw("EXEC usp_GetTBAnalyticsFigure @CategoryId, @AccountTypeId, @InstrumentId, @FrameId, @DirectionId, @SearchValue, @OrderByColumn, @SortColumnDir, @Skip, @Take, @Count OUTPUT", sqlParameters)
                 .ToListAsync();
 
             return result;
