@@ -35,7 +35,9 @@ public class OrdersRepository : IOrdersRepository
                 new SqlParameter("@AccountTypeId", SqlDbType.Int) { Value = parameters.AccountTypeId },
                 new SqlParameter("@InstrumentId", SqlDbType.Int) { Value = parameters.InstrumentId },
                 new SqlParameter("@FrameId", SqlDbType.Int) { Value = parameters.FrameId },
-               
+                new SqlParameter("@DirectionId", SqlDbType.Int) { Value = parameters.DirectionId },
+
+
                 new SqlParameter("@Skip", SqlDbType.Int) { Value = parameters.Skip },
                 new SqlParameter("@Take", SqlDbType.Int) { Value = parameters.Take },
                 new SqlParameter("@Count", SqlDbType.Int) {  Direction = ParameterDirection.Output }
@@ -44,7 +46,7 @@ public class OrdersRepository : IOrdersRepository
 
             // Ejecutar el procedimiento almacenado y obtener los resultados
             var result = await _context.Set<GetOrdersDataTableDto>()
-                .FromSqlRaw("EXEC usp_GetOrdersDataTable @CategoryId, @AccountTypeId, @InstrumentId, @FrameId, @Skip, @Take, @Count OUTPUT", sqlParameters)
+                .FromSqlRaw("EXEC usp_GetOrdersDataTable @CategoryId, @AccountTypeId, @InstrumentId, @FrameId, @DirectionId, @Skip, @Take, @Count OUTPUT", sqlParameters)
                 .AsNoTracking()
                 .ToListAsync();
 

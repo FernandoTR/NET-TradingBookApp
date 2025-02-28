@@ -90,7 +90,7 @@ public class OrdersController : Controller
     /// </summary>
     /// <returns>Un objeto JSON que contiene los datos solicitados por el DataTable.</returns>
     [HttpPost]
-    public async Task<ActionResult> JsonDataTable(int categoryId, int accountTypeId, int instrumentId, int frameId)
+    public async Task<ActionResult> JsonDataTable(int categoryId, int accountTypeId, int instrumentId, int frameId, int directionId)
     {
         var data = new List<GetOrdersDataTableDto>();
 
@@ -117,6 +117,7 @@ public class OrdersController : Controller
                             AccountTypeId = accountTypeId,
                             InstrumentId = instrumentId,
                             FrameId = frameId,
+                            DirectionId = directionId,
                             SearchValue = searchValue,
                             OrderByColumn = "Id",
                             SortColumnDir = "DESC",
@@ -640,6 +641,7 @@ public class OrdersController : Controller
         ViewBag.AccountTypeItems = await GetAccountTypeListSelect(null);
         ViewBag.InstrumentItems = await GetInstrumentsListSelect(null);
         ViewBag.FrameItems = await GetFrameListSelect(null);
+        ViewBag.DirectionItems = await GetDirectionListSelect(null);
 
         return View();
     }

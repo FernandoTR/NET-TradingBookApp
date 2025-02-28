@@ -5,6 +5,8 @@
 	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
 	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
 	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+	var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+
 }
 
 
@@ -110,6 +112,18 @@
 								<!--end::Input-->
 							</div>
 							<!--end::Input group-->
+							<!--begin::Input group-->
+							<div class="mb-10">
+								<!--begin::Label-->
+								<label class="form-label fw-semibold">Dirección:</label>
+								<!--end::Label-->
+								<!--begin::Input-->
+								<div data-select2-id="select2-data-134-peu1">
+									@Html.DropDownList("FilterDirectionId", directionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true", data_allow_clear = "true" })
+								</div>
+								<!--end::Input-->
+							</div>
+							<!--end::Input group-->
 							<!--begin::Actions-->
 							<div class="d-flex justify-content-end">
 								<a href="javascript:ClearFilterData()" class="btn btn-sm btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true">Reiniciar</a>
@@ -166,6 +180,8 @@
 			$('#FilterAccountTypeId').val(null).trigger('change');
 			$('#FilterInstrumentId').val(null).trigger('change');
 			$('#FilterFrameId').val(null).trigger('change');
+			$('#FilterDirectionId').val(null).trigger('change');
+
 
 			LoadDataTable();
 		}
@@ -180,12 +196,14 @@
 			 const accountTypeId = document.querySelector('#FilterAccountTypeId').value || 0;
 			 const instrumentId = document.querySelector('#FilterInstrumentId').value || 0;
 			 const frameId = document.querySelector('#FilterFrameId').value || 0;
+			 const directionId = document.querySelector('#FilterDirectionId').value || 0;
 
 			 var data = {
 				  categoryId: categoryId,
 				  accountTypeId: accountTypeId,
 				  instrumentId: instrumentId,
-				  frameId: frameId
+				  frameId: frameId,
+				  directionId: directionId
 			 };
 			 			
 
