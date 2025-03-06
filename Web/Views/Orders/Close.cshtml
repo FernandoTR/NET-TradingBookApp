@@ -281,7 +281,7 @@
 <!--end::Stepper-->
 <script>
 	$(document).ready(function () {
-	// Define form element
+	    // Define form element
 		let form = document.getElementById('kt_modal_top_up_wallet_stepper_form');
 
 		 // Init form validation rules.
@@ -451,6 +451,32 @@
 		}
 
 
+		const config = {
+				SL: { uncheck: ["TP1", "TP2", "TP3"], message: "La operación se efectuó con una pérdida del 0,00%." },
+				TP1: { uncheck: ["SL", "TP2", "TP3"], message: "La operación se realizó con un rendimiento del 0.00%." },
+				TP2: { uncheck: ["SL", "TP3"], check: ["TP1"], message: "La operación se realizó con un rendimiento del 0.00%." },
+				TP3: { uncheck: ["SL"], check: ["TP1", "TP2"], message: "La operación se realizó con un rendimiento del 0.00%." }
+			};
+
+
+		Object.keys(config).forEach(id => {
+			document.getElementById(id).addEventListener("change", function () {
+				if (this.checked) {
+					const { uncheck = [], check = [], message } = config[id];
+
+					// Desmarca los checkboxes indicados
+					uncheck.forEach(uncheckId => $('#' + uncheckId).prop('checked', false));
+
+					// Marca los checkboxes indicados
+					check.forEach(checkId => $('#' + checkId).prop('checked', true));
+
+					// Actualiza el texto de Comments
+					$('#Comments').text(message);
+				}
+			});
+		});
+
+
 	});
 
 	//Script para que funcione el select2 en el modal
@@ -466,4 +492,7 @@
 		allowMinus: false,           // No permitir números negativos
 		autoUnmask: true,            // Devuelve el valor sin formato al enviar
 	}).mask("#Target, #Quantity, #Price, #CommissionRate, #Total");
+
+	
+
 </script>
