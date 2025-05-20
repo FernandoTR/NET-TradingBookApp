@@ -51,7 +51,7 @@ public class OrdersRepository : IOrdersRepository
                 .ToListAsync();
 
             // Recuperar el valor del parámetro de salida después de la ejecución
-            int totalCount = (int)(sqlParameters[6].Value ?? 0);
+            int totalCount = (int)(sqlParameters[7].Value ?? 0);
 
             return (result, totalCount);
         }
