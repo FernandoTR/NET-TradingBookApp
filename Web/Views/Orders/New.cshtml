@@ -651,18 +651,21 @@
 	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
 	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
 
-	$("#Time").flatpickr({
+    $("#Time").flatpickr({
 		enableTime: true,
 		noCalendar: true,
-		dateFormat: "H:00",
-		defaultDate: new Date()
-	});
+		dateFormat: "H:i", // Formato hora:minutos
+		defaultDate: new Date(),
+		minuteIncrement: 1, // <-- Esto hace que avance de 1 en 1 minuto
+		allowInput: true    // Permite escribir manualmente la hora
+    });
 
 	$("#CreationDate").flatpickr({
 		enableTime: false,
 		noCalendar: false,
 		locale: "es",
 		defaultDate: new Date(),
+		allowInput: true,    // Permite escribir manualmente la fecha
 		onReady: function(selectedDates, dateStr, instance) {
 			if (selectedDates.length > 0) {
 				// Obtén la fecha seleccionada como objeto Date

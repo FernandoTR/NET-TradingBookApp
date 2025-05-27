@@ -378,15 +378,18 @@
 	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
 
 	$("#Time").flatpickr({
-	enableTime: true,
-	noCalendar: true,
-	dateFormat: "H:00",
+		enableTime: true,
+		noCalendar: true,
+		dateFormat: "H:i", // Formato hora:minutos
+		minuteIncrement: 1, // <-- Esto hace que avance de 1 en 1 minuto
+		allowInput: true    // Permite escribir manualmente la hora
 	});
 
 	$("#CreationDate").flatpickr({
 	enableTime: false,
 	noCalendar: false,
 	locale: "es",
+	allowInput: true,    // Permite escribir manualmente la fecha
 	onChange: function(selectedDates, dateStr, instance) {
 		if (selectedDates.length > 0) {
 		// Obtén la fecha seleccionada como objeto Date
