@@ -1,3 +1,6 @@
+![TradingBookApp](./PortalTrading.png)
+
+
 # Documentación de la Estructura del Proyecto - ASP.NET Core
 
 Este proyecto utiliza el enfoque de arquitectura limpia para organizar el código, facilitando la separación de responsabilidades, la escalabilidad y el mantenimiento. A continuación, se describe la estructura de carpetas y archivos del proyecto.
