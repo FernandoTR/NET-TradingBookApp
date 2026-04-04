@@ -1,5 +1,23 @@
 ![TradingBookApp](./PortalTrading.png)
 
+# TradingBook
+
+_Plataforma web para análisis de performance en trading cripto._
+
+TradingBook es una plataforma web creada para centralizar el registro y análisis de operaciones de trading en criptomonedas.
+
+Su objetivo es transformar la ejecución operativa en información accionable, permitiendo evaluar setups, medir efectividad, detectar patrones y mejorar la toma de decisiones a partir de datos reales. El proyecto fue desarrollado con **.NET 8** y **Clean Architecture**, con un enfoque en escalabilidad, mantenibilidad y evolución del producto.
+
+## Stack
+
+- **.NET 8**
+- **ASP.NET Core MVC**
+- **Entity Framework Core**
+- **SQL Server**
+- **Clean Architecture**
+- **Bootstrap**
+- **JavaScript**
+- **Chart.js**
 
 # Documentación de la Estructura del Proyecto - ASP.NET Core
 
