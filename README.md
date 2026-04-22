@@ -28,23 +28,43 @@ Este proyecto utiliza el enfoque de arquitectura limpia para organizar el código
 ### **1. Application**
 Contiene la lógica de aplicación y define las interfaces, DTOs y servicios necesarios para interactuar con otras capas.
 
-- **DTOs**: Objetos de transferencia de datos utilizados para encapsular y transportar datos entre capas.
-- **Interfaces**: Contratos que definen la lógica que deben implementar las clases concretas.
-- **Models**: Modelos que representan estructuras utilizadas en el contexto de la lógica de aplicación.
-- **Resources**: Archivos de recursos como cadenas localizadas o configuraciones específicas.
-- **Services**: Servicios de aplicación que implementan la lógica específica del negocio.
-- **DependencyInjection.cs**: Configuración para registrar los servicios de Application en el contenedor de dependencias.
-- **GlobalUsings.cs**: Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `DTOs/` 
+   Objetos de transferencia de datos utilizados para encapsular y transportar datos entre capas.
+
+- `Interfaces/` 
+   Contratos que definen la lógica que deben implementar las clases concretas.
+
+- `Models/` 
+   Modelos que representan estructuras utilizadas en el contexto de la lógica de aplicación.
+
+- `Resources/` 
+   Archivos de recursos como cadenas localizadas o configuraciones específicas.
+
+- `Services/` 
+   Servicios de aplicación que implementan la lógica específica del negocio.
+
+- `DependencyInjection.cs` 
+   Configuración para registrar los servicios de Application en el contenedor de dependencias.
+
+- `GlobalUsings.cs` 
+   Archivo para declarar los using globales que simplifican las referencias en esta capa.
 
 ---
 
 ### **2. Domain**
 Representa el núcleo del negocio y contiene las entidades, valores constantes y enumeraciones.
 
-- **Constants**: Valores constantes que son utilizados en toda la aplicación.
-- **Entities**: Clases que representan las entidades del dominio con sus propiedades y comportamientos.
-- **Enums**: Enumeraciones que representan conjuntos de valores predefinidos.
-- **GlobalUsings.cs**: Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `Constants/` 
+   Valores constantes que son utilizados en toda la aplicación.
+
+- `Entities/` 
+   Clases que representan las entidades del dominio con sus propiedades y comportamientos.
+
+- `Enums/` 
+   Enumeraciones que representan conjuntos de valores predefinidos.
+
+- `GlobalUsings.cs` 
+   Archivo para declarar los using globales que simplifican las referencias en esta capa.
 
 ---
 
@@ -67,10 +87,10 @@ Proporciona implementaciones concretas para las interfaces definidas en `Applica
     - `Repositories/` 
       Implementaciones de repositorios para acceder a los datos.
 
-- `DependencyInjection.cs/` 
+- `DependencyInjection.cs` 
   Configuración para registrar los servicios de Infrastructure en el contenedor de dependencias.
 
-- `GlobalUsings.cs/` 
+- `GlobalUsings.cs` 
   Archivo para declarar los using globales que simplifican las referencias en esta capa.
 
 ---
