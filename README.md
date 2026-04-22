@@ -51,14 +51,27 @@ Representa el núcleo del negocio y contiene las entidades, valores constantes y 
 ### **3. Infrastructure**
 Proporciona implementaciones concretas para las interfaces definidas en `Application`. Incluye servicios para correo electrónico, identidad, logging, persistencia y más.
 
-- **Email**: Lógica relacionada con el envío de correos electrónicos.
-- **Identity**: Manejo de autenticación y autorización.
-- **Logging**: Configuración y servicios relacionados con el registro de eventos.
-- **Persistence**:
-  - **Data**: Contiene el `DbContext` para interactuar con la base de datos.
-  - **Repositories**: Implementaciones de repositorios para acceder a los datos.
-- **DependencyInjection.cs**: Configuración para registrar los servicios de Infrastructure en el contenedor de dependencias.
-- **GlobalUsings.cs**: Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `Email/` 
+  Lógica relacionada con el envío de correos electrónicos.
+
+- `Identity/` 
+  Manejo de autenticación y autorización.
+
+- `Logging/` 
+  Configuración y servicios relacionados con el registro de eventos.
+
+- `Persistence:`
+    - `Data/` 
+      Contiene el `DbContext` para interactuar con la base de datos.
+
+    - `Repositories/` 
+      Implementaciones de repositorios para acceder a los datos.
+
+- `DependencyInjection.cs/` 
+  Configuración para registrar los servicios de Infrastructure en el contenedor de dependencias.
+
+- `GlobalUsings.cs/` 
+  Archivo para declarar los using globales que simplifican las referencias en esta capa.
 
 ---
 
