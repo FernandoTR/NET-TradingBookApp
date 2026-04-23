@@ -1,4 +1,4 @@
-﻿@model Web.Models.AnalyticsTriggerViewModel
+﻿@model Web.Models.AnalyticsSceneryViewModel
 
 
 <!--begin::List widget 12-->
@@ -7,8 +7,8 @@
 	<div class="card-header pt-7">
 		<!--begin::Title-->
 		<h3 class="card-title align-items-start flex-column">
-			<span class="card-label fw-bold text-gray-800">Efectividad Gatillos</span>
-			<span class="text-gray-500 mt-1 fw-semibold fs-6">@Model.TotalValidRecords gatillos con una efectividad superior al 70%</span>
+			<span class="card-label fw-bold text-gray-800">Análisis por escenario</span>
+			<span class="text-gray-500 mt-1 fw-semibold fs-6">@Model.TotalValidRecords escenarios con una efectividad superior al 70%</span>
 		</h3>
 		<!--end::Title-->
 
@@ -18,15 +18,12 @@
 	<div class="card-body d-flex align-items-start">
 		<!--begin::Wrapper-->
 		<div class="w-100">
-			@{
-				int index = 1;                  
+			@{               
 					
-
-				foreach (var trigger in Model.AnalyticsTriggerList)
+				foreach (var scenery in Model.AnalyticsSceneryList)
 				{
-					string color = (trigger.TP1P >= 70) ? "success" : "danger";
-					string icon = (trigger.TP1P >= 70) ? "up" : "down";
-
+					string color = (scenery.TP1P >= 70) ? "success" : "danger";
+					string icon = (scenery.TP1P >= 70) ? "up" : "down";
 
 					<!--begin::Item-->
 					<div class="d-flex align-items-center">						
@@ -35,17 +32,28 @@
 							<!--begin::Content-->
 							<div class="me-5">
 								<!--begin::Title-->
-								<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">@trigger.Code</a>
+								<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">@scenery.Code</a>
 								<!--end::Title-->
 								<!--begin::Desc-->
-								<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">@trigger.Description</span>
+								<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">@scenery.Quantity Trades</span>
 								<!--end::Desc-->
 							</div>
 							<!--end::Content-->
 							<!--begin::Wrapper-->
 							<div class="d-flex align-items-center">
 								<!--begin::Number-->
-								<span class="text-gray-800 fw-bold fs-4 me-3">@trigger.Quantity</span>
+								<!--<span class="text-gray-800 fw-bold fs-4 me-3">@scenery.Quantity</span>-->							
+
+								@if(scenery.Quantity < 30){
+									<span class="fw-semibold fs-7 d-block text-start text-danger ps-0 me-3">No confiable</span>
+								}else if(scenery.Quantity >= 30 && scenery.Quantity <= 100){
+									<span class="fw-semibold fs-7 d-block text-start text-primary  ps-0 me-3">En validación</span>
+								}
+								else
+								{
+									<span class="fw-semibold fs-7 d-block text-start text-success ps-0 me-3">Confiable</span>
+								}
+
 								<!--end::Number-->
 								<!--begin::Info-->
 								<!--begin::label-->
@@ -53,7 +61,7 @@
 									<i class="ki-duotone ki-arrow-@icon fs-5 text-white ms-n1">
 										<span class="path1"></span>
 										<span class="path2"></span>
-									</i>@trigger.TP1P.ToString("0")%
+									</i>@scenery.TP1P.ToString("0")%
 								</span>
 								<!--end::label-->
 								<!--end::Info-->
@@ -63,13 +71,12 @@
 						<!--end::Container-->
 					</div>
 					<!--end::Item-->
-					if (index != Model.TotalRecords)
+					if (scenery != Model.AnalyticsSceneryList.Last())
 					{
 						<!--begin::Separator-->
 						<div class="separator separator-dashed my-3"></div>
 						<!--end::Separator-->
 					}
-					index++;
 				}
 			}
 

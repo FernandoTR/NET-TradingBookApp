@@ -147,20 +147,18 @@
 	<div id="kt_app_content" class="app-content flex-column-fluid">
 		<!--begin::Content container-->
 		<div id="kt_app_content_container" class="app-container container-fluid">
-
-
 			<!--begin::Row-->
-			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
+			<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0">
+				<div class="col-xl-3">
 					<!--begin::Chart widget 14-->
 					<div class="card card-flush h-xl-100">
 						<!--begin::Header-->
 						<div class="card-header pt-7">
 							<!--begin::Title-->
 							<h3 class="card-title align-items-start flex-column">
-								<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumEfectividad"></span>
-								<span class="text-gray-500 pt-2 fw-semibold fs-6">Efectividad solo con gatillos</span>
+								<span class="card-label fw-bold text-gray-800">Efectividad</span>
+								<span class="text-gray-500 pt-2 fw-semibold fs-6">Solo con gatillos</span>
 							</h3>
 							<!--end::Title-->
 
@@ -168,9 +166,224 @@
 						<!--end::Header-->
 						<!--begin::Body-->
 						<div class="card-body pt-5">
+							<div class="d-flex flex-wrap d-grid gap-5  mt-3 align-items-center">
+								<!--begin::Item-->
+								<div class="border-end-dashed border-end border-gray-300 pe-xxl-7 me-xxl-5">
+									<!--begin::Statistics-->
+									<div class="d-flex mb-2">
+										<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumEfectividad">0</span>
+									</div>
+									<!--end::Statistics-->
+									<!--begin::Description-->
+									<span class="fs-6 fw-semibold text-gray-500">Efectividad</span>
+									<!--end::Description-->
+								</div>
+								<!--end::Item-->
+								<!--begin::Item-->
+								<div class="m-0">
+									<!--begin::Statistics-->
+									<div class="d-flex align-items-center mb-2">
+										<!--begin::Value-->
+										<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumTotalTrades">0</span>
+										<!--end::Value-->
+									</div>
+									<!--end::Statistics-->
+									<!--begin::Description-->
+									<span class="fs-6 fw-semibold text-gray-500">Trades Totales</span>
+									<!--end::Description-->
+								</div>
+								<!--end::Item-->
+							</div>
 							<!--begin::Chart container-->
 							<div id="chartTriggerdiv" style="width: 100%; height: 400px;"></div>
 							<!--end::Chart container-->
+							<!--begin::Items-->
+							<div class="m-0 mt-20">
+								<!--begin::Item-->
+								<div class="d-flex flex-stack">
+									<!--begin::Section-->
+									<div class="d-flex align-items-center me-5">
+										<!--begin::Icon-->
+										<div class="symbol symbol-30px me-4">
+											<span class="symbol-label">
+												<i class="ki-duotone ki-arrow-down fs-3 text-gray-600">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+											</span>
+										</div>
+										<!--end::Icon-->
+										<!--begin::Content-->
+										<div class="me-5">
+											<!--begin::Title-->
+											<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Stop Loss</a>
+											<!--end::Title-->
+										</div>
+										<!--end::Content-->
+									</div>
+									<!--end::Section-->
+									<!--begin::Wrapper-->
+									<div class="d-flex align-items-center">
+										<!--begin::Number-->
+										<span class="text-gray-800 fw-bold fs-4 me-3" id="lblStopLoss">0</span>
+										<!--end::Number-->
+										<!--begin::Info-->
+										<div class="m-0">
+											<!--begin::Label-->
+											<span class="badge badge-danger fs-base">
+											<i class="ki-duotone ki-arrow-down fs-5 text-white ms-n1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i><span id="lblStopLossPercentage"></span>%</span>
+											<!--end::Label-->
+										</div>
+										<!--end::Info-->
+									</div>
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Item-->
+								<!--begin::Separator-->
+								<div class="separator separator-dashed my-4"></div>
+								<!--end::Separator-->
+								<!--begin::Item-->
+								<div class="d-flex flex-stack">
+									<!--begin::Section-->
+									<div class="d-flex align-items-center me-5">
+										<!--begin::Icon-->
+										<div class="symbol symbol-30px me-4">
+											<span class="symbol-label">
+												<i class="ki-duotone ki-arrow-up fs-3 text-gray-600">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+											</span>
+										</div>
+										<!--end::Icon-->
+										<!--begin::Content-->
+										<div class="me-5">
+											<!--begin::Title-->
+											<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Take Profit 1 </a>
+											<!--end::Title-->
+										</div>
+										<!--end::Content-->
+									</div>
+									<!--end::Section-->
+									<!--begin::Wrapper-->
+									<div class="d-flex align-items-center">
+										<!--begin::Number-->
+										<span class="text-gray-800 fw-bold fs-4 me-3" id="lblTakeProfit1">0</span>
+										<!--end::Number-->
+										<!--begin::Info-->
+										<div class="m-0">
+											<!--begin::Label-->
+											<span class="badge badge-success fs-base">
+											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i><span id="lblTakeProfit1Percentage"></span>%</span>
+											<!--end::Label-->
+										</div>
+										<!--end::Info-->
+									</div>
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Item-->
+								<!--begin::Separator-->
+								<div class="separator separator-dashed my-4"></div>
+								<!--end::Separator-->
+								<!--begin::Item-->
+								<div class="d-flex flex-stack">
+									<!--begin::Section-->
+									<div class="d-flex align-items-center me-5">
+										<!--begin::Icon-->
+										<div class="symbol symbol-30px me-4">
+											<span class="symbol-label">
+												<i class="ki-duotone ki-arrow-up fs-3 text-gray-600">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+											</span>
+										</div>
+										<!--end::Icon-->
+										<!--begin::Content-->
+										<div class="me-5">
+											<!--begin::Title-->
+											<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Take Profit 2</a>
+											<!--end::Title-->
+										</div>
+										<!--end::Content-->
+									</div>
+									<!--end::Section-->
+									<!--begin::Wrapper-->
+									<div class="d-flex align-items-center">
+										<!--begin::Number-->
+										<span class="text-gray-800 fw-bold fs-4 me-3" id="lblTakeProfit2">0</span>
+										<!--end::Number-->
+										<!--begin::Info-->
+										<div class="m-0">
+											<!--begin::Label-->
+											<span class="badge badge-success fs-base">
+											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i><span id="lblTakeProfit2Percentage"></span>%</span>
+											<!--end::Label-->
+										</div>
+										<!--end::Info-->
+									</div>
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Item-->
+								<!--begin::Separator-->
+								<div class="separator separator-dashed my-4"></div>
+								<!--end::Separator-->
+								<!--begin::Item-->
+								<div class="d-flex flex-stack">
+									<!--begin::Section-->
+									<div class="d-flex align-items-center me-5">
+										<!--begin::Icon-->
+										<div class="symbol symbol-30px me-4">
+											<span class="symbol-label">
+												<i class="ki-duotone ki-arrow-up fs-3 text-gray-600">
+													<span class="path1"></span>
+													<span class="path2"></span>
+												</i>
+											</span>
+										</div>
+										<!--end::Icon-->
+										<!--begin::Content-->
+										<div class="me-5">
+											<!--begin::Title-->
+											<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">Take Profit 3</a>
+											<!--end::Title-->
+										</div>
+										<!--end::Content-->
+									</div>
+									<!--end::Section-->
+									<!--begin::Wrapper-->
+									<div class="d-flex align-items-center">
+										<!--begin::Number-->
+										<span class="text-gray-800 fw-bold fs-4 me-3" id="lblTakeProfit3">0</span>
+										<!--end::Number-->
+										<!--begin::Info-->
+										<div class="m-0">
+											<!--begin::Label-->
+											<span class="badge badge-success fs-base">
+											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i><span id="lblTakeProfit3Percentage"></span>%</span>
+											<!--end::Label-->
+										</div>
+										<!--end::Info-->
+									</div>
+									<!--end::Wrapper-->
+								</div>
+								<!--end::Item-->
+								
+							</div>
+							<!--end::Items-->
+
 						</div>
 						<!--end::Body-->
 					</div>
@@ -178,64 +391,77 @@
 				</div>
 				<!--end::Col-->
 				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
-				<!--end::Col-->
-				
-				<!--begin::Col-->
-				<div class="col-xl-4 mb-5 mb-xl-0">
-					<!--begin::List widget 20-->
-					<div class="card card-flush h-xl-100">
-						<!--begin::Header-->
-						<div class="card-header pt-7">
-							<!--begin::Title-->
-							<h3 class="card-title align-items-start flex-column">
-								<span class="card-label fw-bold text-gray-800">Mis Cuentas</span>
-								<span class="text-gray-500 mt-1 fw-semibold fs-6">A continuación, puedes consultar el saldo de tus cuentas.</span>
-							</h3>
-							<!--end::Title-->
-						</div>
-						<!--end::Header-->
-						<!--begin::Body-->
-						<div class="card-body d-flex align-items-start" id="balance">
-							
-						</div>
-						<!--end::Body-->
-					</div>
-					<!--end::List widget 20-->
-				</div>
-				<!--end::Col-->
-			</div>
-			<!--end::Row-->
-			<!--begin::Row-->
-			<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
-				<!--begin::Col-->
-				<div class="col-xxl-12 mb-5 mb-xl-10">
-					<!--begin::Chart widget 28-->
-					<div class="card card-flush h-xl-100">
-						<!--begin::Header-->
-						<div class="card-header pt-7">
-							<!--begin::Title-->
-							<h3 class="card-title align-items-start flex-column">
-								<span class="card-label fw-bold text-gray-800">Efectividad últimos bloques</span>
-								<span class="text-gray-500 mt-1 fw-semibold fs-6">Muestra los últimos 100 bloques</span>
-							</h3>
-							<!--end::Title-->
+				<div class="col-xl-9 ">
+					<!--begin::Row-->
+					<div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
+						<!--begin::Col-->
+						<div class="col-lg-4 mb-5 mb-xl-0" id="analyticsTriggersContainer"></div>
+						<!--end::Col-->
 
+						<!--begin::Col-->
+						<div class="col-lg-4 mb-5 mb-xl-0" id="analyticsSceneryContainer"></div>
+						<!--end::Col-->
+
+						<!--begin::Col-->
+						<div class="col-lg-4 mb-5 mb-xl-0">
+							<!--begin::List widget 20-->
+							<div class="card card-flush h-xl-100">
+								<!--begin::Header-->
+								<div class="card-header pt-7">
+									<!--begin::Title-->
+									<h3 class="card-title align-items-start flex-column">
+										<span class="card-label fw-bold text-gray-800">Mis Cuentas</span>
+										<span class="text-gray-500 mt-1 fw-semibold fs-6">Saldo de tus cuentas.</span>
+									</h3>
+									<!--end::Title-->
+								</div>
+								<!--end::Header-->
+								<!--begin::Body-->
+								<div class="card-body d-flex align-items-start" id="balance">
+							
+								</div>
+								<!--end::Body-->
+							</div>
+							<!--end::List widget 20-->
 						</div>
-						<!--end::Header-->
-						<!--begin::Body-->
-						<div class="card-body d-flex align-items-end ps-4 pe-0 pb-4">
-							<!--begin::Chart-->
-							<div id="kt_charts_bloques" class="h-400px w-100 min-h-auto" style="min-height: 315px;"></div>
-							<!--end::Chart-->
-						</div>
-						<!--end::Body-->
+						<!--end::Col-->
 					</div>
-					<!--end::Chart widget 28-->
+					<!--end::Row-->
+					<!--begin::Row-->
+					<div class="row g-5 ">
+						<!--begin::Col-->
+						<div class="col-xxl-12">
+							<!--begin::Chart widget 28-->
+							<div class="card card-flush h-xl-100">
+								<!--begin::Header-->
+								<div class="card-header pt-7">
+									<!--begin::Title-->
+									<h3 class="card-title align-items-start flex-column">
+										<span class="card-label fw-bold text-gray-800">Efectividad últimos bloques</span>
+										<span class="text-gray-500 mt-1 fw-semibold fs-6">Muestra los últimos 100 bloques</span>
+									</h3>
+									<!--end::Title-->
+
+								</div>
+								<!--end::Header-->
+								<!--begin::Body-->
+								<div class="card-body d-flex align-items-end ps-4 pe-0 pb-4">
+									<!--begin::Chart-->
+									<div id="kt_charts_bloques" class="h-300px w-100 min-h-auto" style="min-height: 215px;"></div>
+									<!--end::Chart-->
+								</div>
+								<!--end::Body-->
+							</div>
+							<!--end::Chart widget 28-->
+						</div>
+						<!--end::Col-->
+					</div>
+					<!--end::Row-->
 				</div>
 				<!--end::Col-->
 			</div>
-			<!--end::Row-->
+			<!--end::Row-->		
+			
 
 
 			
@@ -273,12 +499,14 @@
 
 
 			LoadAnalyticsTriggerView();
+			LoadAnalyticsSceneryView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
 		}
 
 		function SearchData() {
 			LoadAnalyticsTriggerView();
+			LoadAnalyticsSceneryView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
 		}
@@ -320,6 +548,49 @@
 			.then(html => {
 				// Actualizar la interfaz con la vista parcial recibida
 				document.getElementById('analyticsTriggersContainer').innerHTML = html;
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+
+		function LoadAnalyticsSceneryView(){
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const frameId = document.querySelector('#FrameId').value || 0;
+			const directionId = document.querySelector('#DirectionId').value || 0;
+
+
+			
+			var data = {
+				categoryId: categoryId,
+				accountTypeId: accountTypeId,
+				instrumentId: instrumentId,
+				frameId: frameId,
+				directionId: directionId
+
+			};
+
+
+			// Realizar la petición POST
+			fetch('/Home/AnalyticsScenery', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json', 
+					'Accept': 'text/html'               // Especifica que esperas una vista parcial como respuesta
+				},
+				body: JSON.stringify(data)       // Convierte los datos a JSON para enviarlos
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`Error en la petición: ${response.status}`);
+				}
+				return response.text();             // La respuesta es texto HTML
+			})
+			.then(html => {
+				// Actualizar la interfaz con la vista parcial recibida
+				document.getElementById('analyticsSceneryContainer').innerHTML = html;
 			})
 			.catch(error => {
 				console.error('Error:', error);
@@ -383,38 +654,44 @@
 				const tp3Effectiveness = quantity > 0 ? Math.round((tp3 * 100) / quantity) : 0;
 
 				$('#lblNumEfectividad').text(tp1Effectiveness + '%');
-
-
-
+				$('#lblNumTotalTrades').text(quantity);
+				$('#lblStopLoss').text(sl);
+				$('#lblTakeProfit1').text(tp1);
+				$('#lblTakeProfit2').text(tp2);
+				$('#lblTakeProfit3').text(tp3);
+				$('#lblStopLossPercentage').text(slEffectiveness);
+				$('#lblTakeProfit1Percentage').text(tp1Effectiveness);
+				$('#lblTakeProfit2Percentage').text(tp2Effectiveness);
+				$('#lblTakeProfit3Percentage').text(tp3Effectiveness);
 
 				// Data
 				var data = [{
-					category: "Stop Lost",
+					category: "Stop Loss",
 					value: slEffectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#67B7DC")
+						fill: am5.color("#E42855")
 					}
 				}, {
 					category: "Take Profit 1",
 					value: tp1Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#6794DC")
+						fill: am5.color("#00A261")
 					}
 				}, {
 					category: "Take Profit 2",
 					value: tp2Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#6771DC")
+						fill: am5.color("#FCD535")
 					}
 				}, {
 					category: "Take Profit 3",
 					value: tp3Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#8067DC")
+						fill: am5.color("#9E63FF")
 					}
 				}];
 

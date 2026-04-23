@@ -33,6 +33,7 @@ public class HomeController : Controller
     private readonly ICatDirectionService _catDirectionService;
     private readonly IAccountsService _accountsService;
     private readonly IEmployeeService _employeeService;
+    private readonly ICatSceneryService _catSceneryService;
 
     public HomeController(IIdentityService identityService,
                           ILogService logService,
@@ -43,7 +44,8 @@ public class HomeController : Controller
                           ICatFrameService catFrameService,
                           IAccountsService accountsService,
                           IEmployeeService employeeService,
-                          ICatDirectionService catDirectionService)
+                          ICatDirectionService catDirectionService,
+                          ICatSceneryService catSceneryService)
     {
         _identityService = identityService;
         _logService = logService;
@@ -55,6 +57,7 @@ public class HomeController : Controller
         _accountsService = accountsService;
         _employeeService = employeeService;
         _catDirectionService = catDirectionService;
+        _catSceneryService = catSceneryService;
     }
 
     #region Métodos para obtener listados para los listBox
@@ -355,6 +358,37 @@ public class HomeController : Controller
         return PartialView("_AnalyticsTrigger", model);
     }
 
+    /// <summary>
+    /// Muestra un resumen general de las estadisticas de escenarios.
+    /// </summary>
+    /// <returns>Vista parcial con los datos del resumen.</returns>
+    [HttpPost]
+    public async Task<PartialViewResult> AnalyticsScenery([FromBody] ParametersAnalyticsDto parameters)
+    {
+        var query = await _catSceneryService.GetTBAnalyticsSceneryAsync(new ParametersTBAnalyticsDto
+        {
+            CategoryId = parameters.CategoryId,
+            AccountTypeId = parameters.AccountTypeId,
+            InstrumentId = parameters.InstrumentId,
+            FrameId = parameters.FrameId,
+            DirectionId = parameters.DirectionId,
+            SearchValue = "",
+            OrderByColumn = "Id",
+            SortColumnDir = "ASC",
+            Skip = 0,
+            Take = 10
+        });
+
+        var model = new AnalyticsSceneryViewModel
+        {
+            AnalyticsSceneryList = query.Where(x => x.TP1P >= 70).OrderByDescending(x => x.TP1P).ToList(),
+            TotalRecords = query.Count(),
+            TotalValidRecords = query.Where(x => x.TP1P >= 70).Count(),
+
+        };
+
+        return PartialView("_AnalyticsScenery", model);
+    }
 
     /// <summary>
     /// Obtiene la lista de gatillos para cargar en la grafica.
