@@ -24,8 +24,14 @@ public class OrdersViewModel
     public bool? TP3 { get; set; }
     public decimal? Target { get; set; }
     public string? Chart { get; set; }
-    public string? Comments { get; set; } 
-
+    public string? Comments { get; set; }
+    public bool? IsTrendAligned { get; set; }
+    public byte? LocationType { get; set; }
+    public byte? ConfirmationType { get; set; }
+    public bool? IsPivotZone { get; set; }
+    public short? StructuralScore { get; set; }
+    public double? TotalScore { get; set; }
+    public string? Grade { get; set; }
 }
 
 public class OrdersCreateViewModel
@@ -49,7 +55,10 @@ public class OrdersCreateViewModel
     public decimal? CommissionRate { get; set; }
     public decimal? Total { get; set; }
 
-
+    public bool? IsTrendAligned { get; set; }
+    public byte? LocationType { get; set; }
+    public byte? ConfirmationType { get; set; }
+    public bool? IsPivotZone { get; set; }
 }
 
 public class OrdersSellViewModel

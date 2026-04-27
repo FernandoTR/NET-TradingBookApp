@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Infrastructure;
+﻿
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +26,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<Application> Applications { get; set; }
 
-    public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }
-   
+    public virtual DbSet<ApplicationRole> ApplicationRoles { get; set; }    
+
     public virtual DbSet<CatAccountType> CatAccountTypes { get; set; }
 
     public virtual DbSet<CatCategory> CatCategories { get; set; }
@@ -70,6 +68,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<UserType> UserTypes { get; set; }
 
+    public virtual DbSet<ViewOrder> ViewOrders { get; set; }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -174,6 +174,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<Order>(entity =>
         {
+            entity.Property(e => e.Grade).IsFixedLength();
+
             entity.HasOne(d => d.Account).WithMany(p => p.Orders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Orders_Accounts");
@@ -247,6 +249,13 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<UserType>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_TypeUser");
+        });
+
+        modelBuilder.Entity<ViewOrder>(entity =>
+        {
+            entity.ToView("View_Orders");
+
+            entity.Property(e => e.Grade).IsFixedLength();
         });
 
         OnModelCreatingPartial(modelBuilder);
