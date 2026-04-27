@@ -5,6 +5,7 @@ using Application.Services;
 using Domain.Enums;
 using Infrastructure;
 using Infrastructure.Email.Services;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -32,7 +33,7 @@ public class OrdersController : Controller
     private readonly ICatDirectionService _catDirectionService;
     private readonly ICatSceneryService _catSceneryService;
     private readonly IAccountsService _accountsService;
-
+  
     // Identificador del permiso 
     private static int permissionNumber = (int)Permissions.Orders;
 
@@ -171,7 +172,7 @@ public class OrdersController : Controller
                                 }
                             })
                         }).ToList();
-
+           
             // Obtener el total de registros
             recordsTotal = result.count;
 
@@ -597,8 +598,8 @@ public class OrdersController : Controller
         return selectItems;
     }
 
- 
-
+   
+  
     #endregion
 
 
@@ -703,6 +704,13 @@ public class OrdersController : Controller
                 CatDirectionId = model.DirectionId,
                 CatSceneryId = model.SceneryId,
                 CatStatusId = 1,
+
+                // Contexto estructural
+                IsTrendAligned = model.IsTrendAligned,
+                LocationType = model.LocationType,
+                ConfirmationType = model.ConfirmationType,
+                IsPivotZone = model.IsPivotZone,
+
                 Sl = false,
                 Tp1 = false,
                 Tp2 = false,
@@ -805,6 +813,12 @@ public class OrdersController : Controller
                 DirectionId = order.CatDirectionId,
                 SceneryId = order.CatSceneryId,
                 StatusId = order.CatStatusId,
+                IsTrendAligned = order.IsTrendAligned,
+                LocationType = order.LocationType,
+                ConfirmationType = order.ConfirmationType,
+                IsPivotZone = order.IsPivotZone,
+                Grade = order.Grade,
+                TotalScore = order.TotalScore,
             };
 
         }
@@ -870,6 +884,13 @@ public class OrdersController : Controller
                 CatDirectionId = model.DirectionId,
                 CatSceneryId = model.SceneryId,
                 CatStatusId = 1,
+
+                // Contexto estructural
+                IsTrendAligned = model.IsTrendAligned,
+                LocationType = model.LocationType,
+                ConfirmationType = model.ConfirmationType,
+                IsPivotZone = model.IsPivotZone,
+
                 Sl = false,
                 Tp1 = false,
                 Tp2 = false,

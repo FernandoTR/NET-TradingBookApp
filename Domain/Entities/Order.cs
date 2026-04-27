@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
+[Index("Grade", Name = "IX_Orders_Grade")]
+[Index("IsTrendAligned", Name = "IX_Orders_IsTrendAligned")]
+[Index("LocationType", Name = "IX_Orders_LocationType")]
+[Index("StructuralScore", Name = "IX_Orders_StructuralScore")]
 public partial class Order
 {
     [Key]
@@ -71,6 +76,53 @@ public partial class Order
     public string Chart { get; set; } = null!;
 
     public string? Comments { get; set; }
+
+    // =========================
+    // 🧠 NUEVO MOTOR CUANTITATIVO
+    // =========================
+
+    [Column("IsTrendAligned")]
+    public bool? IsTrendAligned { get; set; }
+
+    [Column("LocationType")]
+    public byte? LocationType { get; set; }
+
+    [Column("ConfirmationType")]
+    public byte? ConfirmationType { get; set; }
+
+    [Column("IsPivotZone")]
+    public bool? IsPivotZone { get; set; }
+
+    [Column("StructuralScore")]
+    public short? StructuralScore { get; set; }
+
+    [Column("TotalScore")]
+    public double? TotalScore { get; set; }
+
+    [StringLength(2)]
+    [Unicode(false)]
+    public string? Grade { get; set; }
+
+    // =========================
+    // 🧠 HELPERS (NO MAPEADOS)
+    // =========================
+
+    //public GradeType? GradeEnum
+    //{
+    //    get
+    //    {
+    //        if (string.IsNullOrEmpty(Grade))
+    //            return null;
+
+    //        return Enum.TryParse<GradeType>(Grade, out var result)
+    //            ? result
+    //            : null;
+    //    }
+    //    set
+    //    {
+    //        Grade = value?.ToString();
+    //    }
+    //}
 
     [ForeignKey("AccountId")]
     [InverseProperty("Orders")]

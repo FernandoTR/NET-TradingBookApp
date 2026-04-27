@@ -111,7 +111,7 @@
 					</div>
 					<!--end::Col-->
 					<!--begin::Col-->
-					<div class="col-lg-3">
+					<div class="col-lg-5">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
@@ -128,7 +128,7 @@
 					</div>
 					<!--end::Col-->
 					<!--begin::Col-->
-					<div class="col-lg-3">
+					<div class="col-lg-4">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
@@ -144,6 +144,16 @@
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
+					
+				</div>
+
+				<!--begin::Separator-->
+				<div class="separator d-flex flex-center mt-10">
+					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Contexto de Mercado</span>
+				</div>
+				<!--end::Separator-->
+
+				<div class="row pt-2">
 					<!--begin::Col-->
 					<div class="col-lg-3">
 						<!--begin::Row-->
@@ -157,62 +167,6 @@
 							</div>
 							<!--end::Col-->
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->								
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderFrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->					
-				</div>
-				<div class="row pt-2">					
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
 						<!--end::Row-->
 					</div>
 					<!--end::Col-->
@@ -234,7 +188,209 @@
 					</div>
 					<!--end::Col-->
 					<!--begin::Col-->
-					<div class="col-lg-3">
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
+								<span class="required">Ubicación en la estructura:</span>
+								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica dónde estás operando dentro de la estructura: Soporte (mejor), Medio (neutral), Resistencia (riesgo).">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="LocationType" name="LocationType" aria-hidden="true">
+									<option selected="selected" value="" data-select2-id="select2-data-31-ug7m"></option>
+									<option value="1">SOPORTE</option>
+									<option value="2">MEDIO</option>
+									<option value="3">RESISTENCIA</option>
+								</select>
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->								
+				</div>
+
+				<div class="row pt-2">					
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
+								<span class="required">¿Tu trade va con la tendencia?</span>
+								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica si tu operación va a favor de la tendencia principal. A favor suma probabilidad, en contra la reduce.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="IsTrendAligned" name="IsTrendAligned" aria-hidden="true">
+									<option selected="selected" value=""></option>
+									<option value="0">EN CONTRA</option>
+									<option value="1">A FAVOR</option>
+								</select>
+							</div>
+							<!--end::Col-->
+						</div>
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
+								<span class="required">Zona de indecisión:</span>
+								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica si el precio está en zona de indecisión o rango.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="IsPivotZone" name="IsPivotZone" aria-hidden="true">
+									<option selected="selected" value=""></option>
+									<option value="0">NO</option>
+									<option value="1">SI</option>
+								</select>
+							</div>
+							<!--end::Col-->
+						</div>
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--begin::Separator-->
+				<div class="separator d-flex flex-center  mt-10">
+					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Estructura </span>
+				</div>
+				<!--end::Separator-->
+
+				<div class="row pt-2">
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("OrderFrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+
+
+				<!--begin::Separator-->
+				<div class="separator d-flex flex-center  mt-10">
+					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Entrada  </span>
+				</div>
+				<!--end::Separator-->
+
+				<div class="row pt-2">
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-6">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
+								<span class="required">Tipo de confirmación:</span>
+								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Define el tipo de confirmación antes de entrar.">
+									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+								</span>
+							</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="ConfirmationType" name="ConfirmationType" aria-hidden="true">
+									<option selected="selected" value=""></option>
+									<option value="0">NONE</option>
+									<option value="1">BREAK</option>
+									<option value="2">RETEST</option>
+								</select>
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+				</div>
+
+				<!--begin::Separator-->
+				<div class="separator d-flex flex-center  mt-10">
+					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Evaluación   </span>
+				</div>
+				<!--end::Separator-->
+
+				<div class="row pt-2">					
+					<!--begin::Col-->
+					<div class="col-lg-6">
 						<!--begin::Row-->
 						<div class="row">
 							<!--begin::Label-->
@@ -243,6 +399,40 @@
 							<!--begin::Col-->
 							<div class="col-lg-12 fv-row fv-plugins-icon-container">
 								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Grade:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" class="form-control form-control-solid" placeholder="Grade" disabled />
+							</div>
+							<!--end::Col-->
+						</div>
+
+						<!--end::Row-->
+					</div>
+					<!--end::Col-->
+					<!--begin::Col-->
+					<div class="col-lg-3">
+						<!--begin::Row-->
+						<div class="row">
+							<!--begin::Label-->
+							<label class="col-lg-12 col-form-label required fw-bold fs-6">Score:</label>
+							<!--end::Label-->
+							<!--begin::Col-->
+							<div class="col-lg-12 fv-row fv-plugins-icon-container">
+								<input type="text" class="form-control form-control-solid" placeholder="Score" disabled />
 							</div>
 							<!--end::Col-->
 						</div>
@@ -586,6 +776,22 @@
 
 
 		function AddOrder() {
+			// Parser seguro para booleanos
+			const parseBool = (val) => {
+				if (typeof val === 'boolean') return val;
+
+				if (typeof val === 'string') {
+				const normalized = val.trim().toLowerCase();
+				return ['true', '1', 'yes', 'on'].includes(normalized);
+				}
+
+				if (typeof val === 'number') {
+				return val !== 0;
+				}
+
+				return false;
+			};
+
 			// Helper para obtener valores de los inputs con conversión segura
 			const getValue = (selector, parser = (val) => val, defaultValue = null) => {
 				const element = document.querySelector(selector);
@@ -612,8 +818,13 @@
 				Price: getValue('#Price', parseFloat, 0),
 				CommissionRate: getValue('#CommissionRate', parseFloat, 0),
 				Total: getValue('#Total', parseFloat, 0),
+				IsTrendAligned: getValue('#IsTrendAligned', parseBool, false),
+				LocationType: getValue('#LocationType', parseInt, 0),
+				IsPivotZone: getValue('#IsPivotZone', parseBool, false),
+				ConfirmationType: getValue('#ConfirmationType', parseInt, 0),
 			};
 
+            console.log('Datos a enviar:', data);
 
 			var url = "@Url.Content("~/Orders/AddOrder")";
 			fetch(url, {
@@ -648,7 +859,7 @@
 	});
 
 	//Script para que funcione el select2 en el modal
-	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId')
+	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId, #LocationType, #IsTrendAligned, #IsPivotZone, #ConfirmationType')
 	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
 
     $("#Time").flatpickr({
