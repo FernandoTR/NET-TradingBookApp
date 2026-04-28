@@ -356,7 +356,7 @@
 							<!--begin::Label-->
 							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
 								<span class="required">Tipo de confirmación:</span>
-								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Define el tipo de confirmación antes de entrar.">
+								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Define el tipo de confirmación antes de entrar. Canal Desc: Long → Reversal o Short → Continuation">
 									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
 										<span class="path1"></span>
 										<span class="path2"></span>
@@ -370,8 +370,10 @@
 								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="ConfirmationType" name="ConfirmationType" aria-hidden="true">
 									<option selected="selected" value=""></option>
 									<option value="0">NONE</option>
-									<option value="1">BREAK</option>
-									<option value="2">RETEST</option>
+									<option value="1">CONTINUATION BREAK</option>
+									<option value="2">CONTINUATION RETEST</option>
+									<option value="3">REVERSAL BREAK</option>
+									<option value="4">REVERSAL RETEST</option>
 								</select>
 							</div>
 							<!--end::Col-->

@@ -14,5 +14,6 @@ public class GetTBAnalyticsSceneryDto
     public double TP1P { get; set; }
     public double TP2P { get; set; }
     public double TP3P { get; set; }
-    public int Valid { get; set; }
+    public int Valid { get; set; }    
+
 }

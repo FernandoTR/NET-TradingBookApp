@@ -38,9 +38,9 @@ public class TradingScoreEngineService : ITradingScoreEngineService
     private int GetLocationScore(Order o) =>
         o.LocationType switch
         {
-            (int)LocationType.Support => 3,
+            (int)LocationType.Support => 4,
             (int)LocationType.Middle => -1,
-            (int)LocationType.Resistance => -3,
+            (int)LocationType.Resistance => -4,
             null => 0,
             _ => 0
         };
@@ -53,7 +53,7 @@ public class TradingScoreEngineService : ITradingScoreEngineService
         o.IsTrendAligned switch
         {
             true => 2,
-            false => -2,
+            false => -3,
             null => 0
         };
 
@@ -64,9 +64,16 @@ public class TradingScoreEngineService : ITradingScoreEngineService
     private int GetConfirmationScore(Order o) =>
         o.ConfirmationType switch
         {
-            (int)ConfirmationType.Retest => 2,
-            (int)ConfirmationType.Break => 1,
-            (int)ConfirmationType.None => 0,
+            // 🔴 REVERSAL (lo más valioso)
+            (int)ConfirmationType.ReversalRetest => 4,
+            (int)ConfirmationType.ReversalBreak => 3,
+
+            // 🟡 CONTINUATION (menos edge)
+            (int)ConfirmationType.ContinuationRetest => 1,
+            (int)ConfirmationType.ContinuationBreak => 0,
+
+            // ⚪ SIN CONFIRMACIÓN
+            (int)ConfirmationType.None => -2,
             null => 0,
             _ => 0
         };
@@ -76,7 +83,7 @@ public class TradingScoreEngineService : ITradingScoreEngineService
     // =========================
 
     private int GetPivotPenalty(Order o) =>
-        o.IsPivotZone == true ? -2 : 0;
+        o.IsPivotZone == true ? -3 : 0;
 
     // =========================
     // 🔴 ETAPA 1 CAP
@@ -109,12 +116,12 @@ public class TradingScoreEngineService : ITradingScoreEngineService
 
         return score switch
         {
-            >= 5 => GradeType.A,
-            4 => GradeType.AB,
-            3 => GradeType.BA,
-            2 => GradeType.B,
-            1 => GradeType.BC,
-            0 => GradeType.CB,
+            >= 8 => GradeType.A,
+            >= 6 => GradeType.AB,
+            >= 4 => GradeType.BA,
+            >= 2 => GradeType.B,
+            >= 0 => GradeType.BC,
+            >= -2 => GradeType.CB,
             _ => GradeType.C
         };
     }

@@ -11,4 +11,5 @@ public interface ICatSceneryService
     Task<CatScenery?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(CatScenery entity);
     Task<List<GetTBAnalyticsSceneryDto>> GetTBAnalyticsSceneryAsync(ParametersTBAnalyticsDto parameters);
+    Task<List<GetTBAnalyticsSceneryDto>> GetTBAnalyticsSceneryAutoScoreAsync(ParametersTBAnalyticsDto parameters);    
 }
