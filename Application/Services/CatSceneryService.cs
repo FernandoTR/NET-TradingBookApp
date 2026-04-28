@@ -45,4 +45,10 @@ public class CatSceneryService : ICatSceneryService
         return await _catSceneryRepository.GetTBAnalyticsSceneryAsync(parameters);
     }
 
+    public async Task<List<GetTBAnalyticsSceneryDto>> GetTBAnalyticsSceneryAutoScoreAsync(ParametersTBAnalyticsDto parameters)
+    {
+        return await _catSceneryRepository.GetTBAnalyticsSceneryAutoScoreAsync(parameters);
+    }
+
+    
 }

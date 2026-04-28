@@ -35,7 +35,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IStringUtilitiesService, StringUtilitiesService>();
         builder.Services.AddScoped<ITradesService, TradesService>();
         builder.Services.AddScoped<IUserService, UserService>();
-
+        builder.Services.AddScoped<ITradingScoreEngineService, TradingScoreEngineService>();
 
 
 

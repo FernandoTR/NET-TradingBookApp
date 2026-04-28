@@ -108,6 +108,8 @@ public static class DependencyInjection
         // Servicio de Generación de códigos QR
         builder.Services.AddTransient<IQrCodeGeneratorService, QrCodeGeneratorService>();
 
+        // Otros
+        builder.Services.AddTransient<ITradingViewDownloaderServices, TradingViewDownloaderServices>();
     }
 }
 

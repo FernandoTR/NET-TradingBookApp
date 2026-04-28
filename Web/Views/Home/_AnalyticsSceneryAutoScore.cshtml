@@ -7,7 +7,7 @@
 	<div class="card-header pt-7">
 		<!--begin::Title-->
 		<h3 class="card-title align-items-start flex-column">
-			<span class="card-label fw-bold text-gray-800">Análisis por escenario</span>
+			<span class="card-label fw-bold text-gray-800">Análisis por escenario automaticó</span>
 			<span class="text-gray-500 mt-1 fw-semibold fs-6">@Model.TotalValidRecords escenarios con una efectividad superior al 70%</span>
 		</h3>
 		<!--end::Title-->
@@ -18,7 +18,7 @@
 	<div class="card-body d-flex align-items-start">
 		<!--begin::Wrapper-->
 		<div class="w-100">
-			@{               
+			@{
 					
 				foreach (var scenery in Model.AnalyticsSceneryList)
 				{
@@ -26,7 +26,7 @@
 					string icon = (scenery.TP1P >= 70) ? "up" : "down";
 
 					<!--begin::Item-->
-					<div class="d-flex align-items-center">						
+					<div class="d-flex align-items-center">
 						<!--begin::Container-->
 						<div class="d-flex align-items-center flex-stack flex-wrap d-grid gap-1 flex-row-fluid">
 							<!--begin::Content-->
@@ -42,11 +42,13 @@
 							<!--begin::Wrapper-->
 							<div class="d-flex align-items-center">
 								<!--begin::Number-->
-								<!--<span class="text-gray-800 fw-bold fs-4 me-3">@scenery.Quantity</span>-->							
-
-								@if(scenery.Quantity < 30){
+								<!--<span class="text-gray-800 fw-bold fs-4 me-3">@scenery.Quantity</span>-->
+								@if (scenery.Quantity < 30)
+								{
 									<span class="fw-semibold fs-7 d-block text-start text-danger ps-0 me-3">No confiable</span>
-								}else if(scenery.Quantity >= 30 && scenery.Quantity <= 100){
+								}
+								else if (scenery.Quantity >= 30 && scenery.Quantity <= 100)
+								{
 									<span class="fw-semibold fs-7 d-block text-start text-primary  ps-0 me-3">En validación</span>
 								}
 								else

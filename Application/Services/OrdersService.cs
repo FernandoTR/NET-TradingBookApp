@@ -15,13 +15,17 @@ public class OrdersService : IOrdersService
     private readonly ILogService _logService;
     private readonly IAccountBalancesService _accountBalancesService;
     private readonly IAccountsService _accountsService;
+    private readonly ITradingScoreEngineService _tradingScoreEngineService;
+    private readonly ITradingViewDownloaderServices _tradingViewDownloaderServices;
     public OrdersService(IGenericRepository<Order> repository,
                          IOrdersRepository ordersRepository,
                          ICatTimeRepository catTimeRepository,
                          ITradesService tradesService,
                          ILogService logService,
                          IAccountBalancesService accountBalancesService,
-                         IAccountsService accountsService)
+                         IAccountsService accountsService,
+                         ITradingScoreEngineService tradingScoreEngineService,
+                         ITradingViewDownloaderServices tradingViewDownloaderServices)
     {
         _repository = repository;
         _ordersRepository = ordersRepository;
@@ -30,6 +34,8 @@ public class OrdersService : IOrdersService
         _logService = logService;
         _accountBalancesService = accountBalancesService;
         _accountsService = accountsService;
+        _tradingScoreEngineService = tradingScoreEngineService;
+        _tradingViewDownloaderServices = tradingViewDownloaderServices;
     }
 
     public async Task<bool> AddAsync(Order entity)
@@ -54,6 +60,9 @@ public class OrdersService : IOrdersService
 
     public async Task<bool> UpdateAsync(Order entity)
     {
+        // 🔥 EJECUTAR MOTOR ANTES DE GUARDAR
+        _tradingScoreEngineService.Evaluate(entity);
+
         return await _repository.UpdateAsync(entity);
     }
 
@@ -69,6 +78,9 @@ public class OrdersService : IOrdersService
 
     public async Task<(bool, int)> AddOrderAsync(Order entity, Trade trade)
     {
+        // 🔥 EJECUTAR MOTOR ANTES DE GUARDAR
+        _tradingScoreEngineService.Evaluate(entity);
+
         return await _ordersRepository.AddOrderAsync(entity, trade);
     }
 
@@ -118,6 +130,16 @@ public class OrdersService : IOrdersService
     public async Task<bool> CloseOrderAsync(Order entity, Trade trade)
     {
         return await _ordersRepository.CloseOrderAsync(entity, trade);
+    }
+
+    public async Task<bool> DownloadImageTradingViewAsync()
+    {
+        var result = await _repository.GetAllAsync();
+        var dataset = result.Where(z => z.Id > 116).SelectMany(x=> new List<(int, string)> {(x.Id,x.Chart) }).ToList();
+
+        _tradingViewDownloaderServices.DescargarImagenes(dataset);
+
+        return true;
     }
 
 }

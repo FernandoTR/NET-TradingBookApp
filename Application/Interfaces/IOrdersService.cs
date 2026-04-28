@@ -15,4 +15,5 @@ public interface IOrdersService
     Task<(bool, int)> AddOrderAsync(Order entity, Trade trade);
     Task<bool> DeleteOrderAsync(int id);
     Task<bool> CloseOrderAsync(Order entity, Trade trade);
+    Task<bool> DownloadImageTradingViewAsync();
 }

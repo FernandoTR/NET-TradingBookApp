@@ -148,6 +148,9 @@
 		<!--begin::Content container-->
 		<div id="kt_app_content_container" class="app-container container-fluid">
 			<!--begin::Row-->
+			<div class="row gy-5 gx-xl-10" id="balance"></div>
+			<!--end::Row-->
+			<!--begin::Row-->
 			<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
 				<!--begin::Col-->
 				<div class="col-xl-3">
@@ -165,35 +168,7 @@
 						</div>
 						<!--end::Header-->
 						<!--begin::Body-->
-						<div class="card-body pt-5">
-							<div class="d-flex flex-wrap d-grid gap-5  mt-3 align-items-center">
-								<!--begin::Item-->
-								<div class="border-end-dashed border-end border-gray-300 pe-xxl-7 me-xxl-5">
-									<!--begin::Statistics-->
-									<div class="d-flex mb-2">
-										<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumEfectividad">0</span>
-									</div>
-									<!--end::Statistics-->
-									<!--begin::Description-->
-									<span class="fs-6 fw-semibold text-gray-500">Efectividad</span>
-									<!--end::Description-->
-								</div>
-								<!--end::Item-->
-								<!--begin::Item-->
-								<div class="m-0">
-									<!--begin::Statistics-->
-									<div class="d-flex align-items-center mb-2">
-										<!--begin::Value-->
-										<span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" id="lblNumTotalTrades">0</span>
-										<!--end::Value-->
-									</div>
-									<!--end::Statistics-->
-									<!--begin::Description-->
-									<span class="fs-6 fw-semibold text-gray-500">Trades Totales</span>
-									<!--end::Description-->
-								</div>
-								<!--end::Item-->
-							</div>
+						<div class="card-body pt-5">							
 							<!--begin::Chart container-->
 							<div id="chartTriggerdiv" style="width: 100%; height: 400px;"></div>
 							<!--end::Chart container-->
@@ -230,8 +205,8 @@
 										<!--begin::Info-->
 										<div class="m-0">
 											<!--begin::Label-->
-											<span class="badge badge-danger fs-base">
-											<i class="ki-duotone ki-arrow-down fs-5 text-white ms-n1">
+											<span class="badge badge-light-danger fs-base">
+											<i class="ki-duotone ki-arrow-down fs-5 text-danger ms-n1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i><span id="lblStopLossPercentage"></span>%</span>
@@ -276,8 +251,8 @@
 										<!--begin::Info-->
 										<div class="m-0">
 											<!--begin::Label-->
-											<span class="badge badge-success fs-base">
-											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+											<span class="badge badge-light-success fs-base">
+												<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i><span id="lblTakeProfit1Percentage"></span>%</span>
@@ -322,8 +297,8 @@
 										<!--begin::Info-->
 										<div class="m-0">
 											<!--begin::Label-->
-											<span class="badge badge-success fs-base">
-											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+											<span class="badge badge-light-success fs-base">
+												<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i><span id="lblTakeProfit2Percentage"></span>%</span>
@@ -368,8 +343,8 @@
 										<!--begin::Info-->
 										<div class="m-0">
 											<!--begin::Label-->
-											<span class="badge badge-success fs-base">
-											<i class="ki-duotone ki-arrow-up fs-5 text-white ms-n1">
+											<span class="badge badge-light-success fs-base">
+												<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i><span id="lblTakeProfit3Percentage"></span>%</span>
@@ -403,27 +378,7 @@
 						<!--end::Col-->
 
 						<!--begin::Col-->
-						<div class="col-lg-4 mb-5 mb-xl-0">
-							<!--begin::List widget 20-->
-							<div class="card card-flush h-xl-100">
-								<!--begin::Header-->
-								<div class="card-header pt-7">
-									<!--begin::Title-->
-									<h3 class="card-title align-items-start flex-column">
-										<span class="card-label fw-bold text-gray-800">Mis Cuentas</span>
-										<span class="text-gray-500 mt-1 fw-semibold fs-6">Saldo de tus cuentas.</span>
-									</h3>
-									<!--end::Title-->
-								</div>
-								<!--end::Header-->
-								<!--begin::Body-->
-								<div class="card-body d-flex align-items-start" id="balance">
-							
-								</div>
-								<!--end::Body-->
-							</div>
-							<!--end::List widget 20-->
-						</div>
+						<div class="col-lg-4 mb-5 mb-xl-0" id="analyticsSceneryAutoScoreContainer"></div>
 						<!--end::Col-->
 					</div>
 					<!--end::Row-->
@@ -484,10 +439,11 @@
 		//--end::variables para grafico de bloques
 
 		$(document).ready(function () {
+			LoadBalanceView();
 			LoadChartBlocks(); //inicializa grafico bloques
 
 			SearchData();
-			LoadBalanceView();
+			
 		});
 
 		function ClearFilterData() {
@@ -500,6 +456,7 @@
 
 			LoadAnalyticsTriggerView();
 			LoadAnalyticsSceneryView();
+			LoadAnalyticsSceneryAutoScoreView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
 		}
@@ -507,6 +464,7 @@
 		function SearchData() {
 			LoadAnalyticsTriggerView();
 			LoadAnalyticsSceneryView();
+			LoadAnalyticsSceneryAutoScoreView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
 		}
@@ -597,6 +555,49 @@
 			});
 		}
 		
+		function LoadAnalyticsSceneryAutoScoreView(){
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const frameId = document.querySelector('#FrameId').value || 0;
+			const directionId = document.querySelector('#DirectionId').value || 0;
+
+
+			
+			var data = {
+			categoryId: categoryId,
+			accountTypeId: accountTypeId,
+			instrumentId: instrumentId,
+			frameId: frameId,
+			directionId: directionId
+
+			};
+
+
+			// Realizar la petición POST
+		fetch('/Home/AnalyticsSceneryAutoScore', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'text/html'               // Especifica que esperas una vista parcial como respuesta
+			},
+			body: JSON.stringify(data)       // Convierte los datos a JSON para enviarlos
+			})
+			.then(response => {
+			if (!response.ok) {
+			throw new Error(`Error en la petición: ${response.status}`);
+			}
+			return response.text();             // La respuesta es texto HTML
+			})
+			.then(html => {
+				// Actualizar la interfaz con la vista parcial recibida
+				document.getElementById('analyticsSceneryAutoScoreContainer').innerHTML = html;
+			})
+			.catch(error => {
+			console.error('Error:', error);
+			});
+		}
+
 		function LoadAnalyticsTriggerChart(){
 			const categoryId = document.querySelector('#CategoryId').value || 0;
 			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
@@ -670,28 +671,28 @@
 					value: slEffectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#E42855")
+					fill: am5.color("#FB7185")
 					}
 				}, {
 					category: "Take Profit 1",
 					value: tp1Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#00A261")
+					fill: am5.color("#34D399")
 					}
 				}, {
 					category: "Take Profit 2",
 					value: tp2Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#FCD535")
+					fill: am5.color("#FBBF24")
 					}
 				}, {
 					category: "Take Profit 3",
 					value: tp3Effectiveness,
 					full: 100,
 					columnSettings: {
-						fill: am5.color("#9E63FF")
+					fill: am5.color("#A78BFA")
 					}
 				}];
 

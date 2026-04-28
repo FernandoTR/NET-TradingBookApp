@@ -391,6 +391,38 @@ public class HomeController : Controller
     }
 
     /// <summary>
+    /// Muestra un resumen general de las estadisticas de escenarios con puntuación automática.
+    /// </summary>
+    /// <returns>Vista parcial con los datos del resumen.</returns>
+    [HttpPost]
+    public async Task<PartialViewResult> AnalyticsSceneryAutoScore([FromBody] ParametersAnalyticsDto parameters)
+    {
+        var query = await _catSceneryService.GetTBAnalyticsSceneryAutoScoreAsync(new ParametersTBAnalyticsDto
+        {
+            CategoryId = parameters.CategoryId,
+            AccountTypeId = parameters.AccountTypeId,
+            InstrumentId = parameters.InstrumentId,
+            FrameId = parameters.FrameId,
+            DirectionId = parameters.DirectionId,
+            SearchValue = "",
+            OrderByColumn = "Id",
+            SortColumnDir = "ASC",
+            Skip = 0,
+            Take = 10
+        });
+
+        var model = new AnalyticsSceneryViewModel
+        {
+            AnalyticsSceneryList = query.Where(x => x.TP1P >= 70).OrderByDescending(x => x.TP1P).ToList(),
+            TotalRecords = query.Count(),
+            TotalValidRecords = query.Where(x => x.TP1P >= 70).Count(),
+
+        };
+
+        return PartialView("_AnalyticsSceneryAutoScore", model);
+    }
+
+    /// <summary>
     /// Obtiene la lista de gatillos para cargar en la grafica.
     /// </summary>
     /// <returns>Vista parcial con los datos del resumen.</returns>
