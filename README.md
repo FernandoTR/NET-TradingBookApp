@@ -2,130 +2,206 @@
 
 # TradingBook
 
-_Plataforma web para an�lisis de performance en trading cripto._
+*Plataforma web para análisis de performance en trading cripto / Web platform for crypto trading performance analysis*
 
-TradingBook es una plataforma web creada para centralizar el registro y an�lisis de operaciones de trading en criptomonedas.
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core%20MVC-8.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/aspnet/core/)
+[![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-8.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/ef/core/)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![Clean Architecture](https://img.shields.io/badge/Clean%20Architecture-0078D4?style=flat-square)]()
 
-Su objetivo es transformar la ejecuci�n operativa en informaci�n accionable, permitiendo evaluar setups, medir efectividad, detectar patrones y mejorar la toma de decisiones a partir de datos reales. El proyecto fue desarrollado con **.NET 8** y **Clean Architecture**, con un enfoque en escalabilidad, mantenibilidad y evoluci�n del producto.
+TradingBook es una plataforma web creada para centralizar el registro y análisis de operaciones de trading en criptomonedas. Su objetivo es transformar la ejecución operativa en información accionable, permitiendo evaluar setups, medir efectividad, detectar patrones y mejorar la toma de decisiones a partir de datos reales.
 
-## Stack
+> [!TIP]
+> The project was developed with **.NET 8** and **Clean Architecture**, with a focus on scalability, maintainability, and product evolution.
 
-- **.NET 8**
-- **ASP.NET Core MVC**
-- **Entity Framework Core**
-- **SQL Server**
-- **Clean Architecture**
-- **Bootstrap**
-- **JavaScript**
-- **Chart.js**
+## Features / Características
 
-# Documentaci�n de la Estructura del Proyecto - ASP.NET Core
+- **Trading Score Engine**: Evalúa operaciones usando ubicación, tendencia, confirmación y zonas pivote 
+- **Análisis Multidimensional**: Estadísticas por trigger, escenario, figura, dirección, marco temporal y día 
+- **Dashboard Interactivo**: Visualizaciones con Chart.js para métricas clave 
+- **Gestión de Cuentas**: Múltiples cuentas con tracking de balance y transacciones 
+- **Seguridad Robusta**: Autenticación con 2FA y hashing de contraseñas 
+- **Registro de Actividad**: Logging completo de operaciones 
 
-Este proyecto utiliza el enfoque de arquitectura limpia para organizar el c�digo, facilitando la separaci�n de responsabilidades, la escalabilidad y el mantenimiento. A continuaci�n, se describe la estructura de carpetas y archivos del proyecto.
+## Architecture / Arquitectura
 
-## **Capas del Proyecto**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                          Web                                │
+│              (ASP.NET Core MVC, Controllers,                │
+│               Views, wwwroot, Middleware)                   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                     Application                             │
+│        (Services, DTOs, Interfaces, Models)                 │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                       Domain                                │
+│           (Entities, Enums, Constants)                       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│                   Infrastructure                            │
+│    (Persistence, Repositories, Email, Identity,            │
+│                   Logging, External Services)              │
+└─────────────────────────────────────────────────────────────┘
+```
 
-### **1. Application**
-Contiene la l�gica de aplicaci�n y define las interfaces, DTOs y servicios necesarios para interactuar con otras capas.
+## Project Structure / Estructura del Proyecto
 
-- `DTOs/` 
-   Objetos de transferencia de datos utilizados para encapsular y transportar datos entre capas.
+### 1. Application
 
-- `Interfaces/` 
-   Contratos que definen la l�gica que deben implementar las clases concretas.
+Contiene la lógica de aplicación y define las interfaces, DTOs y servicios necesarios para interactuar con otras capas.
 
-- `Models/` 
-   Modelos que representan estructuras utilizadas en el contexto de la l�gica de aplicaci�n.
+- `DTOs/`
+   Objetos de transferencia de datos utilizados para encapsular y transportar datos entre capas. 
 
-- `Resources/` 
-   Archivos de recursos como cadenas localizadas o configuraciones espec�ficas.
+- `Interfaces/`
+   Contratos que definen la lógica que deben implementar las clases concretas. 
 
-- `Services/` 
-   Servicios de aplicaci�n que implementan la l�gica espec�fica del negocio.
+- `Models/`
+   Modelos que representan estructuras utilizadas en el contexto de la lógica de aplicación. 
 
-- `DependencyInjection.cs` 
-   Configuraci�n para registrar los servicios de Application en el contenedor de dependencias.
+- `Resources/`
+   Archivos de recursos como cadenas localizadas o configuraciones específicas. 
 
-- `GlobalUsings.cs` 
-   Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `Services/`
+   Servicios de aplicación que implementan la lógica específica del negocio. 
+
+- `DependencyInjection.cs`
+   Configuración para registrar los servicios de Application en el contenedor de dependencias. 
+
+- `GlobalUsings.cs`
+   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
 
 ---
 
-### **2. Domain**
-Representa el n�cleo del negocio y contiene las entidades, valores constantes y enumeraciones.
+### 2. Domain
 
-- `Constants/` 
-   Valores constantes que son utilizados en toda la aplicaci�n.
+Representa el núcleo del negocio y contiene las entidades, valores constantes y enumeraciones. 
 
-- `Entities/` 
-   Clases que representan las entidades del dominio con sus propiedades y comportamientos.
+- `Constants/`
+   Valores constantes que son utilizados en toda la aplicación.
 
-- `Enums/` 
-   Enumeraciones que representan conjuntos de valores predefinidos.
+- `Entities/`
+   Clases que representan las entidades del dominio con sus propiedades y comportamientos. 
 
-- `GlobalUsings.cs` 
-   Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `Enums/`
+   Enumeraciones que representan conjuntos de valores predefinidos. 
+
+- `GlobalUsings.cs`
+   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
 
 ---
 
-### **3. Infrastructure**
-Proporciona implementaciones concretas para las interfaces definidas en `Application`. Incluye servicios para correo electr�nico, identidad, logging, persistencia y m�s.
+### 3. Infrastructure
 
-- `Email/` 
-  L�gica relacionada con el env�o de correos electr�nicos.
+Proporciona implementaciones concretas para las interfaces definidas en `Application`. Incluye servicios para correo electrónico, identidad, logging, persistencia y más. Provides concrete implementations for the interfaces defined in `Application`. 
 
-- `Identity/` 
-  Manejo de autenticaci�n y autorizaci�n.
+- `Email/`
+   Lógica relacionada con el envío de correos electrónicos.
 
-- `Logging/` 
-  Configuraci�n y servicios relacionados con el registro de eventos.
+- `Identity/`
+   Manejo de autenticación y autorización. 
+
+- `Logging/`
+   Configuración y servicios relacionados con el registro de eventos. 
 
 - `Persistence:`
-    - `Data/` 
-      Contiene el `DbContext` para interactuar con la base de datos.
+   - `Data/`
+     Contiene el `DbContext` para interactuar con la base de datos. 
 
-    - `Repositories/` 
-      Implementaciones de repositorios para acceder a los datos.
+   - `Repositories/`
+     Implementaciones de repositorios para acceder a los datos. 
 
-- `DependencyInjection.cs` 
-  Configuraci�n para registrar los servicios de Infrastructure en el contenedor de dependencias.
+- `DependencyInjection.cs`
+   Configuración para registrar los servicios de Infrastructure en el contenedor de dependencias. 
 
-- `GlobalUsings.cs` 
-  Archivo para declarar los using globales que simplifican las referencias en esta capa.
+- `GlobalUsings.cs`
+   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
 
 ---
 
-### **4. Web**
-Proyecto ASP.NET Core en .NET 8 que act�a como punto de entrada de la aplicaci�n. Incluye controladores, middlewares, y configuraciones espec�ficas para la interacci�n con los usuarios y servicios externos.
-- `Pages/`  
-  Contiene las Razor Pages que definen la UI y la l�gica de presentaci�n.
+### 4. Web
 
-- `Controllers/`  
-  Incluye controladores para endpoints adicionales, como APIs o acciones especializadas.
+Proyecto ASP.NET Core en .NET 8 que actúa como punto de entrada de la aplicación. Incluye controladores, middlewares, y configuraciones específicas para la interacción con los usuarios y servicios externos. 
 
-- `Views/`  
-  Vistas compartidas y parciales, as� como layouts reutilizables.
+- `Pages/`
+   Contiene las Razor Pages que definen la UI y la lógica de presentación. 
 
-- `wwwroot/`  
-  Archivos est�ticos (CSS, JS, im�genes, plantillas).
-  
-- `Template/`  
-    Recursos de plantillas, scripts personalizados y plugins.
+- `Controllers/`
+   Incluye controladores para endpoints adicionales, como APIs o acciones especializadas. 
 
-- `Media/Logos/`  
-    Almacena logotipos y recursos gr�ficos.
+- `Views/`
+   Vistas compartidas y parciales, así como layouts reutilizables. 
+
+- `wwwroot/`
+   Archivos estáticos (CSS, JS, imágenes, plantillas). 
+
+- `Template/`
+   Recursos de plantillas, scripts personalizados y plugins. 
+
+- `Media/Logos/`
+   Almacena logotipos y recursos gráficos. 
+
 ---
 
-## **Consideraciones Generales**
-- La separaci�n en capas asegura una alta cohesi�n dentro de cada capa y un bajo acoplamiento entre ellas.
-- `DependencyInjection.cs` en cada capa se utiliza para registrar sus servicios espec�ficos en el contenedor de dependencias global de ASP.NET Core.
-- `GlobalUsings.cs` simplifica la gesti�n de espacios de nombres en los archivos de cada capa.
+## General Considerations / Consideraciones Generales
 
-Esta estructura permite que el c�digo sea modular, testable y f�cilmente extensible, facilitando la colaboraci�n en equipos grandes y el mantenimiento a largo plazo.
+- La separación en capas asegura una alta cohesión dentro de cada capa y un bajo acoplamiento entre ellas.
 
+- `DependencyInjection.cs` en cada capa se utiliza para registrar sus servicios específicos en el contenedor de dependencias global de ASP.NET Core. 
 
-# Documentaci�n
+- `GlobalUsings.cs` simplifica la gestión de espacios de nombres en los archivos de cada capa. 
 
-## Configuraci�n del archivo `appsettings.json`
+- Esta estructura permite que el código sea modular, testeable y fácilmente extensible, facilitando la colaboración en equipos grandes y el mantenimiento a largo plazo. 
+
+## Tech Stack / Stack Tecnológico
+
+| Component | Technology |
+|-----------|------------|
+| Framework | .NET 8 |
+| Web | ASP.NET Core MVC |
+| ORM | Entity Framework Core |
+| Database | SQL Server |
+| Frontend | Bootstrap, JavaScript |
+| Charts | Chart.js |
+| Auth | ASP.NET Core Identity |
+| Architecture | Clean Architecture |
+
+## Quick Start / Inicio Rápido
+
+### Prerequisites / Requisitos
+
+- .NET 8 SDK
+- SQL Server (Local or Docker)
+- Visual Studio 2022 / VS Code
+
+### Configuration / Configuración
+
 1. Copia el archivo `appsettings.json` del repositorio.
-2. Rellena los valores necesarios, como la cadena de conexi�n y cuenta de correo.
+2. Rellena los valores necesarios, como la cadena de conexión y cuenta de correo. 
+3. Ejecuta las migraciones de Entity Framework Core si es necesario. 
+
+### Running / Ejecución
+
+```bash
+cd Web
+dotnet restore
+dotnet build
+dotnet run
+```
+
+Accede a la aplicación en `https://localhost:5001` o `http://localhost:5000`. 
+
+## Resources / Recursos
+
+- [.NET Documentation](https://learn.microsoft.com/dotnet/)
+- [ASP.NET Core](https://learn.microsoft.com/aspnet/core/)
+- [Entity Framework Core](https://learn.microsoft.com/ef/core/)
+- [Clean Architecture](https://learn.microsoft.com/azure/architecture/dotnet-apps/)
+- [Bootstrap](https://getbootstrap.com/)
+- [Chart.js](https://www.chartjs.org/)
