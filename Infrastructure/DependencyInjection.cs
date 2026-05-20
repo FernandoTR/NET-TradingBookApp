@@ -8,6 +8,7 @@ using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -30,7 +31,12 @@ public static class DependencyInjection
         builder.Services.AddDbContext<LoggingDbContext>(options => options.UseSqlServer(connectionString));
 
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+        });
 
         // Permite acceder al contexto HTTP actual sin necesidad de inyectar explícitamente el HttpContext en cada controlador o servicio.
         builder.Services.AddHttpContextAccessor();
