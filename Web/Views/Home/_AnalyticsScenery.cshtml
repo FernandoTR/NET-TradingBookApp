@@ -1,89 +1,88 @@
 ﻿@model Web.Models.AnalyticsSceneryViewModel
 
-
-<!--begin::List widget 12-->
-<div class="card card-flush h-xl-100">
-	<!--begin::Header-->
-	<div class="card-header pt-7">
-		<!--begin::Title-->
-		<h3 class="card-title align-items-start flex-column">
-			<span class="card-label fw-bold text-gray-800">Análisis por escenario</span>
-			<span class="text-gray-500 mt-1 fw-semibold fs-6">@Model.TotalValidRecords escenarios con una efectividad superior al 70%</span>
-		</h3>
-		<!--end::Title-->
-
-	</div>
-	<!--end::Header-->
-	<!--begin::Body-->
-	<div class="card-body d-flex align-items-start">
-		<!--begin::Wrapper-->
-		<div class="w-100">
-			@{               
-					
-				foreach (var scenery in Model.AnalyticsSceneryList)
-				{
-					string color = (scenery.TP1P >= 70) ? "success" : "danger";
-					string icon = (scenery.TP1P >= 70) ? "up" : "down";
-
-					<!--begin::Item-->
-					<div class="d-flex align-items-center">						
-						<!--begin::Container-->
-						<div class="d-flex align-items-center flex-stack flex-wrap d-grid gap-1 flex-row-fluid">
-							<!--begin::Content-->
-							<div class="me-5">
-								<!--begin::Title-->
-								<a href="#" class="text-gray-800 fw-bold text-hover-primary fs-6">@scenery.Code</a>
-								<!--end::Title-->
-								<!--begin::Desc-->
-								<span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">@scenery.Quantity Trades</span>
-								<!--end::Desc-->
-							</div>
-							<!--end::Content-->
-							<!--begin::Wrapper-->
-							<div class="d-flex align-items-center">
-								<!--begin::Number-->
-								<!--<span class="text-gray-800 fw-bold fs-4 me-3">@scenery.Quantity</span>-->							
-
-								@if(scenery.Quantity < 30){
-									<span class="fw-semibold fs-7 d-block text-start text-danger ps-0 me-3">No confiable</span>
-								}else if(scenery.Quantity >= 30 && scenery.Quantity <= 100){
-									<span class="fw-semibold fs-7 d-block text-start text-primary  ps-0 me-3">En validación</span>
-								}
-								else
+<div class="col-span-1">
+	<div class="flex flex-col gap-5 lg:gap-7.5">
+		<div class="flex flex-col gap-5 lg:gap-7.5">
+			<div class="kt-card">
+				<div class="kt-card-header">
+					<h3 class="kt-card-title"> Análisis por Escenario </h3>
+				</div>
+				<div class="kt-card-table kt-scrollable-x-auto">
+					<table class="kt-table table-fixed">
+						<thead>
+							<tr>
+								<th class="text-start w-[100px]">
+									Nombre
+								</th>
+								<th class="text-end w-[80px]">
+									Trades
+								</th>
+								<th class="text-end w-[100px]">
+									Status
+								</th>
+								<th class="text-end w-[80px]">
+									%
+								</th>
+              
+							</tr>
+						</thead>
+						<tbody>
+							@{
+								foreach (var scenery in Model.AnalyticsSceneryList)
 								{
-									<span class="fw-semibold fs-7 d-block text-start text-success ps-0 me-3">Confiable</span>
+									string color = (scenery.TP1P >= 70) ? "green-500" : "destructive";
+									string icon = (scenery.TP1P >= 70) ? "up" : "down";
+									<tr>
+										<td class="text-start">
+											<div class="flex flex-col" bis_skin_checked="1">
+												<a class="text-sm font-semibold text-mono hover:text-primary mb-px" href="#">
+													@scenery.Code
+												</a>
+												<span class="text-xs font-normal text-secondary-foreground">
+													@scenery.Quantity Trades
+												</span>
+											</div>											
+										</td>
+										<td class="text-sm text-foreground text-end">
+											@scenery.Quantity
+										</td>
+										<td class="text-end">
+											@if (scenery.Quantity < 30)
+											{
+												<div class="kt-badge kt-badge-sm kt-badge-primary kt-badge-outline">No confiable</div>
+											}
+											else if (scenery.Quantity >= 30 && scenery.Quantity <= 100)
+											{
+												<div class="kt-badge kt-badge-sm kt-badge-warning  kt-badge-outline">En validación</div>
+											}
+											else
+											{
+												<div class="kt-badge kt-badge-sm kt-badge-success kt-badge-outline">Confiable</div>
+											}
+										</td>
+										<td class="text-sm text-foreground text-end">
+											<i class="ki-filled ki-arrow-@icon text-@color">
+											</i>
+											@scenery.TP1P.ToString("0")%
+										</td>
+               
+									</tr>
 								}
-
-								<!--end::Number-->
-								<!--begin::Info-->
-								<!--begin::label-->
-								<span class="badge badge-light-@color fs-base">
-									<i class="ki-duotone ki-arrow-@icon fs-5 text-@color ms-n1">
-										<span class="path1"></span>
-										<span class="path2"></span>
-									</i>@scenery.TP1P.ToString("0")%
-								</span>
-								<!--end::label-->
-								<!--end::Info-->
-							</div>
-							<!--end::Wrapper-->
-						</div>
-						<!--end::Container-->
-					</div>
-					<!--end::Item-->
-					if (scenery != Model.AnalyticsSceneryList.Last())
-					{
-						<!--begin::Separator-->
-						<div class="separator separator-dashed my-3"></div>
-						<!--end::Separator-->
-					}
-				}
-			}
-
-				
+							}
+            
+						</tbody>
+					</table>
+				</div>
+				<div class="kt-card-footer justify-center" bis_skin_checked="1">
+					<a class="kt-link kt-link-underlined kt-link-dashed " href="#">
+						@Model.TotalValidRecords escenarios con una efectividad superior al 70%
+					</a>
+				</div>
+			</div>
+          
 		</div>
-		<!--end::Wrapper-->
 	</div>
-	<!--end::Body-->
 </div>
-<!--end::List widget 12-->
+
+
+

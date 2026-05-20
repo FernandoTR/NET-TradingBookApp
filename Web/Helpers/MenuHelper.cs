@@ -14,10 +14,10 @@ public static class MenuHelper
         oListMenuId = new HashSet<int>();
 
         var builder = new TagBuilder("div");
-        builder.AddCssClass("menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6");
-        builder.Attributes.Add("id", "#kt_app_sidebar_menu");
+        builder.AddCssClass("kt-menu flex flex-col grow gap-1");
+        builder.Attributes.Add("id", "sidebar_menu");
         builder.Attributes.Add("data-kt-menu", "true");
-        builder.Attributes.Add("data-kt-menu-expand", "false");
+        builder.Attributes.Add("data-kt-menu-accordion-expand-all", "false");
 
 
         // Recorremos y ordenamos los elementos de menú
@@ -45,40 +45,40 @@ public static class MenuHelper
     private static TagBuilder RenderMenuItemTittle(GetMenuByUserIdDto menuItem)
     {
         var itemBuilder = new TagBuilder("div");
-        itemBuilder.AddCssClass("menu-item");
+        itemBuilder.AddCssClass("kt-menu-item pt-2.25 pb-px");
 
-        var menuContentBuilder = new TagBuilder("div");
-        menuContentBuilder.AddCssClass("menu-content");
+        //var menuContentBuilder = new TagBuilder("div");
+        //menuContentBuilder.AddCssClass("kt-menu-content");
 
         var tittleBuilder = new TagBuilder("span");
-        tittleBuilder.AddCssClass("menu-heading fw-bold text-uppercase fs-7");
+        tittleBuilder.AddCssClass("kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]");
         tittleBuilder.InnerHtml.Append(menuItem.Name);
 
-        menuContentBuilder.InnerHtml.AppendHtml(tittleBuilder);
-        itemBuilder.InnerHtml.AppendHtml(menuContentBuilder);        
+        //menuContentBuilder.InnerHtml.AppendHtml(tittleBuilder);
+        itemBuilder.InnerHtml.AppendHtml(tittleBuilder);        
 
         return itemBuilder;
     }
     private static TagBuilder RenderMenuItem(GetMenuByUserIdDto menuItem)
     {
         var itemBuilder = new TagBuilder("div");
-        itemBuilder.AddCssClass("menu-item");
+        itemBuilder.AddCssClass("kt-menu-item");
 
         var linkBuilder = new TagBuilder("a");
-        linkBuilder.AddCssClass("menu-link");
+        linkBuilder.AddCssClass("kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg");
         if (!string.IsNullOrEmpty(menuItem.URL))
         {
             linkBuilder.Attributes.Add("href", menuItem.URL);
         }
 
         var iconBuilder = new TagBuilder("span");
-        iconBuilder.AddCssClass("menu-icon");
+        iconBuilder.AddCssClass("kt-menu-icon items-start text-muted-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary w-[20px]");
         var iconTag = new TagBuilder("i");
-        iconTag.AddCssClass(menuItem.Icon ?? "fa-default fs-6");
+        iconTag.AddCssClass(menuItem.Icon ?? "ki-filled ki-calendar-tick text-lg");
         iconBuilder.InnerHtml.AppendHtml(iconTag);
 
         var titleBuilder = new TagBuilder("span");
-        titleBuilder.AddCssClass("menu-title");
+        titleBuilder.AddCssClass("kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary");
         titleBuilder.InnerHtml.Append(menuItem.Name);
 
         linkBuilder.InnerHtml.AppendHtml(iconBuilder);
@@ -90,24 +90,45 @@ public static class MenuHelper
     private static TagBuilder RenderMenuItemParents(GetMenuByUserIdDto menuItem, List<GetMenuByUserIdDto> menuItems)
     {
         var itemBuilder = new TagBuilder("div");
-        itemBuilder.AddCssClass("menu-item menu-accordion");
-        itemBuilder.Attributes.Add("data-kt-menu-trigger", "click");
+        itemBuilder.AddCssClass("kt-menu-item");
+        itemBuilder.Attributes.Add("data-kt-menu-item-toggle", "accordion");
+        itemBuilder.Attributes.Add("data-kt-menu-item-trigger", "click");
+
 
         var linkBuilder = new TagBuilder("span");
-        linkBuilder.AddCssClass("menu-link");
+        linkBuilder.AddCssClass("kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]");
+        linkBuilder.Attributes.Add("tabindex", "0");
 
         var iconBuilder = new TagBuilder("span");
-        iconBuilder.AddCssClass("menu-icon");
+        iconBuilder.AddCssClass("kt-menu-icon items-start text-muted-foreground w-[20px]");
         var iconTag = new TagBuilder("i");
-        iconTag.AddCssClass(menuItem.Icon ?? "fa-default fs-6");
+        iconTag.AddCssClass(menuItem.Icon ?? "ki-filled ki-element-11 text-lg");
         iconBuilder.InnerHtml.AppendHtml(iconTag);
 
         var titleBuilder = new TagBuilder("span");
-        titleBuilder.AddCssClass("menu-title");
+        titleBuilder.AddCssClass("kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary");
         titleBuilder.InnerHtml.Append(menuItem.Name);
 
         var arrowBuilder = new TagBuilder("span");
-        arrowBuilder.AddCssClass("menu-arrow");
+        arrowBuilder.AddCssClass("kt-menu-arrow text-muted-foreground w-[20px] shrink-0 justify-end ms-1 me-[-10px]");
+
+        var arrowBuilderMenu1 = new TagBuilder("span");
+        arrowBuilderMenu1.AddCssClass("inline-flex kt-menu-item-show:hidden");
+        var iconTagMenu1 = new TagBuilder("i");
+        iconTagMenu1.AddCssClass("ki-filled ki-plus text-[11px]");
+        arrowBuilderMenu1.InnerHtml.AppendHtml(iconTagMenu1);
+
+        var arrowBuilderMenu2 = new TagBuilder("span");
+        arrowBuilderMenu2.AddCssClass("hidden kt-menu-item-show:inline-flex");
+        var iconTagMenu2 = new TagBuilder("i");
+        iconTagMenu2.AddCssClass("ki-filled ki-minus text-[11px]\"");
+        arrowBuilderMenu2.InnerHtml.AppendHtml(iconTagMenu2);
+
+        arrowBuilder.InnerHtml.AppendHtml(arrowBuilderMenu1);
+        arrowBuilder.InnerHtml.AppendHtml(arrowBuilderMenu2);
+
+
+
 
         linkBuilder.InnerHtml.AppendHtml(iconBuilder);
         linkBuilder.InnerHtml.AppendHtml(titleBuilder);
@@ -117,8 +138,8 @@ public static class MenuHelper
         if (menuItems.Any())
         {
             var subMenuBuilder = new TagBuilder("div");
-            subMenuBuilder.AddCssClass("menu-sub menu-sub-accordion menu-active-bg");
-            subMenuBuilder.Attributes.Add("style", "display: none; overflow: hidden;");
+            subMenuBuilder.AddCssClass("kt-menu-accordion gap-1 ps-[10px] relative before:absolute before:start-[20px] before:top-0 before:bottom-0 before:border-s before:border-border");
+            //subMenuBuilder.Attributes.Add("style", "display: none; overflow: hidden;");
 
             foreach (var subMenuItem in menuItems
                                         .Where(a => a.ParentMenuId.Equals(Convert.ToInt32(menuItem.MenuId)))
