@@ -1,10 +1,11 @@
 ﻿using Application.Interfaces;
 using Application.Services;
 using Domain.Enums;
-using Infrastructure.Logging;
 using Infrastructure;
+using Infrastructure.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.Design;
+using Web.Enums;
 using Web.Helpers;
 using Web.Models;
 using Web.Models.Enums;
@@ -105,12 +106,12 @@ public class UsersController : Controller
                                 {
                                      new ActionOptionMenuModel
                                      {
-                                         Title = "Editar",
+                                         ActionType = ActionType.Edit,
                                          JavaScriptAction = (x.AspNetUser.UserTypeId == 1 ? "showModalForModifyRoles" : string.Empty),
                                      },
                                      new ActionOptionMenuModel
                                      {
-                                         Title = (x.AspNetUser.Enable ? "Deshabilitar": "Habilitar"),
+                                         ActionType = (x.AspNetUser.Enable ? ActionType.Deactivate : ActionType.Activate),
                                          JavaScriptAction = "toDeleteUser",
                                      }                                 
                                 }

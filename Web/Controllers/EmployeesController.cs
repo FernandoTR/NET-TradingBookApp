@@ -1,14 +1,15 @@
 ﻿using Application.Interfaces;
 using Application.Services;
 using Domain.Enums;
-using Infrastructure.Logging;
 using Infrastructure;
+using Infrastructure.Email.Services;
+using Infrastructure.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.Design;
+using Web.Enums;
 using Web.Helpers;
 using Web.Models;
 using Web.Models.Enums;
-using Infrastructure.Email.Services;
 
 namespace Web.Controllers;
 
@@ -105,22 +106,22 @@ public class EmployeesController : Controller
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = (x.Employee.StatusEmployeeId == 1 ? "Deshabilitar": "Habilitar"),
+                                     ActionType =(x.Employee.StatusEmployeeId == 1 ? ActionType.Deactivate : ActionType.Activate),
                                      JavaScriptAction = "toDeleteEmployee",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Generar usuario",
+                                     ActionType = ActionType.CreateUser,
                                      JavaScriptAction = (x.Employee.ConfirmedEmail && x.AspNetUser?.UserName == null ? "showModalForCreateUser" : string.Empty),
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Reenviar correo de verificación",
+                                     ActionType = ActionType.ResendEmail,
                                      JavaScriptAction = (!x.Employee.ConfirmedEmail ? "showModalForResendMail" : string.Empty),
                                  }
                                 }
