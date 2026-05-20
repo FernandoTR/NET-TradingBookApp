@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-05-20
+
+### Added
+- Metronic Tailwind template framework with core CSS/JS bundles.
+- Vendor libraries for ApexCharts, TinyMCE v6, Leaflet, Dropzone, and KeenIcons.
+- Updated template media assets, illustrations, and avatars.
+
+### Changed
+- Layout upgraded to load Tailwind CSS/JS alongside existing Bootstrap assets.
+- Home/Index and SignIn views adapted for hybrid Bootstrap/Tailwind coexistence.
+- Dashboard partials, menu helper, and DI registration updated for new framework.
+
+### Removed
+- Old Metronic Bootstrap plugins: CKEditor, DataTables, Cropper, jKanban, jstree, FlotCharts, FullCalendar, Draggable, and FS Lightbox.
+- Legacy FontAwesome, Line-Awesome, and KeenIcons icon font files.
+- Deprecated template stock images, SVG shapes, and illustration sets.
+
 ## [1.0.0] - 2026-05-15
 
 ### Added
