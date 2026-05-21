@@ -448,75 +448,37 @@
 	<!--begin::Modals-->
 	<!--begin::Modal-->
 	<div class="kt-modal" data-kt-modal="true" id="vModal">
-		<div class="kt-modal-content max-w-[400px] top-[5%]">
-			<div class="kt-modal-header">
+        <div class="kt-modal-content max-w-[600px] top-[15%]">
+            <div class="kt-modal-header py-4 px-5">
 				<h3 class="kt-modal-title" id="title-modal">Modal Title</h3>
 				<h6 id="subtitle-modal"></h6>
-				<button type="button"
-						class="kt-modal-close"
-						aria-label="Close modal"
-						data-kt-modal-dismiss="#modal">
-					<svg xmlns="http://www.w3.org/2000/svg"
-						 width="24"
-						 height="24"
-						 viewBox="0 0 24 24"
-						 fill="none"
-						 stroke="currentColor"
-						 stroke-width="2"
-						 stroke-linecap="round"
-						 stroke-linejoin="round"
-						 class="lucide lucide-x"
-						 aria-hidden="true">
-						<path d="M18 6 6 18"></path>
-						<path d="m6 6 12 12"></path>
-					</svg>
-				</button>
-			</div>
-			<div class="kt-modal-body max-h-[200px] pe-2">
-				<div class="rounded-lg bg-muted w-full grow h-[200px]">
+                <button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-dim shrink-0" data-kt-modal-dismiss="true">
+                    <i class="ki-filled ki-cross">
+                    </i>
+                </button>
+
+            </div>
+            <div class="kt-modal-body p-0">
+                <div class="kt-scrollable-y-auto" data-kt-scrollable="true" data-kt-scrollable-max-height="auto" data-kt-scrollable-offset="300px" data-kt-scrollable-initialized="true" style="max-height: 202px;" bis_skin_checked="1">
 					<div id="contentvModal"></div>
-				</div>
-			</div>
-			<div class="kt-modal-footer gap-2.5 justify-end">
-				<div></div>
-				<div class="flex gap-4">
-					<button class="kt-btn kt-btn-secondary"
-							data-kt-modal-dismiss="#modal">
-						Cancel
-					</button><button class="kt-btn">Submit</button>
-				</div>
-			</div>
-		</div>
-	</div>	
+                </div>
+            </div>
+        </div>
+    </div>
 	<!--end::Modal-->
 	<!--begin::Modal-Confirmation-->
 	<div class="kt-modal" data-kt-modal="true" id="confirmDialog">
-		<div class="kt-modal-content max-w-[400px] top-[5%]">
-			<div class="kt-modal-header">
+		<div class="kt-modal-content max-w-[600px] top-[15%]">
+			<div class="kt-modal-header py-4 px-5">
 				<h3 class="kt-modal-title" id="confirmTitle">Modal Title</h3>
-				<button type="button"
-						class="kt-modal-close"
-						aria-label="Close modal"
-						data-kt-modal-dismiss="#modal">
-					<svg xmlns="http://www.w3.org/2000/svg"
-						 width="24"
-						 height="24"
-						 viewBox="0 0 24 24"
-						 fill="none"
-						 stroke="currentColor"
-						 stroke-width="2"
-						 stroke-linecap="round"
-						 stroke-linejoin="round"
-						 class="lucide lucide-x"
-						 aria-hidden="true">
-						<path d="M18 6 6 18"></path>
-						<path d="m6 6 12 12"></path>
-					</svg>
+				<button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-dim shrink-0" data-kt-modal-dismiss="true">
+					<i class="ki-filled ki-cross">
+					</i>
 				</button>
 			</div>
-			<div class="kt-modal-body">
-				<div class="rounded-lg bg-muted w-full grow h-[200px]">
-					<div id="confirmDialogContent"></div>
+			<div class="kt-modal-body p-0">
+				<div class="kt-scrollable-y-auto" data-kt-scrollable="true" data-kt-scrollable-max-height="auto" data-kt-scrollable-offset="300px" data-kt-scrollable-initialized="true" style="max-height: 202px;" bis_skin_checked="1">
+					<div class="kt-card-content grid gap-5" id="confirmDialogContent"></div>
 				</div>
 			</div>
 			<div class="kt-modal-footer">
@@ -545,12 +507,10 @@
 	<script src="~/Template/assets/js/custom/helpers/select.helper.js"></script>
 
 
-	<!--
-	<script src="~/Template/custom/js/datatables/datatables.min.js"></script>
 
 	<script src="~/Template/custom/js/Notifications.js"></script>
 	<script src="~/Template/custom/js/Utilities.js"></script>
-	<script src="~/Template/custom/js/Select2_es.js"></script>
+	<!--<script src="~/Template/custom/js/Select2_es.js"></script>
 	<script src="~/Template/custom/js/Flatpickr_es.js"></script>
 	<script src="~/Template/custom/js/moment_es.min.js"></script>-->
 	
