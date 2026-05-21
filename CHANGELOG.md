@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 - CatAccountType views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as CatFigure.
 - CatFrame views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as CatCategory.
 - Shared badge render functions (renderStatus, renderStatusEmployee, renderAccountType, renderStatusAnalytics) in Utilities.js converted from Bootstrap badges to kt-badge.
+- CatInstruments views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as CatFigure.
+- renderIconCoin in Utilities.js migrated from Bootstrap symbol classes to Tailwind rounded-full size-9.
 
 ## [1.1.0] - 2026-05-20
 
