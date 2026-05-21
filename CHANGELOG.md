@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-05-21
+
+### Changed
+- Employees views (Index, New, Edit) migrated to Metronic Tailwind with kt-card, kt-input, kt-btn, and kt-form-label.
+- Row action menus replaced with Tailwind kt-menu dropdown across all modules via ActionButtonHelper.
+- Shared layout modals updated to kt-modal structure with scrollable body and simplified close button.
+- DataTables filter inputs and selects converted from Bootstrap form-control to Metronic Tailwind kt-input.
+
 ## [1.1.0] - 2026-05-20
 
 ### Added
