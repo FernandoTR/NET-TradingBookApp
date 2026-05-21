@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Row action menus replaced with Tailwind kt-menu dropdown across all modules via ActionButtonHelper.
 - Shared layout modals updated to kt-modal structure with scrollable body and simplified close button.
 - DataTables filter inputs and selects converted from Bootstrap form-control to Metronic Tailwind kt-input.
+- CatCategory views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as Employees.
 
 ## [1.1.0] - 2026-05-20
 

@@ -1,4 +1,5 @@
 ﻿@model Web.Models.CatCategoryViewModel
+
 @{
     Layout = null;
 }
@@ -6,88 +7,94 @@
 @using (Html.BeginForm("Update", "CatCategory", FormMethod.Post, new { id = "frmdata" }))
 {
     @Html.AntiForgeryToken()
+     <div class="kt-card-content grid gap-5">
+        <!--begin::Input group-->
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5" bis_skin_checked="1">
+                @Html.LabelFor(d => d.Name, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.Name, new { @class = "kt-input" })
 
+            </div>
+        </div>
+        <!--end::Input group-->
+     </div>
 
-    <!--begin::Input group-->
-    <div class="d-flex flex-column mb-8 fv-row">
-        @Html.LabelFor(d => d.Name, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
-        @Html.TextBoxFor(d => d.Name, new { @class = "form-control form-control-solid" })
-    </div>
-    <!--end::Input group-->
     <!--begin::Actions-->
-    <div class="text-center">
-        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" id="btnSave" class="btn btn-primary">
-            <span class="indicator-label">Guardar</span>
-            <span class="indicator-progress">
-                Espere por favor...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-            </span>
-        </button>
+    <div class="kt-modal-footer gap-2.5 justify-end">
+        <button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#vModal">Cancelar</button>
+        <button type="button" id="btnSave" class="kt-btn kt-btn-primary">Guardar</button>
     </div>
     <!--end::Actions-->
     <div hidden>
         @Html.HiddenFor(d => d.Id)
     </div>
 }
-<script type="text/javascript">
-     $(document).ready(function() {
-            // Define form element
-            let form = document.getElementById('frmdata');
 
-            // Init form validation rules.
-            var validator = FormValidation.formValidation(
-                form,
-                {
-                    fields: {
-                        'Name': {
-                            validators: {
-                                notEmpty: {
-                                    message: 'El nombre es obligatorio'
-                                },
-                                stringLength: {
-                                    min: 1,
-                                    max: 50,
-                                    message: 'Debe tener entre 1 y 50 caracteres'
-                                },
-                            }
-                        },
-                    },
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger(),
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: '.fv-row',
-                            eleInvalidClass: '',
-                            eleValidClass: ''
-                        }),
-                    }
 
-                }
-            );
+<script>
 
-            // Submit button handler
+    $(document).ready(function () {
+            const form = document.getElementById('frmdata');
             const submitButton = document.getElementById('btnSave');
-            submitButton.addEventListener('click', function (e) {
-                // Prevent default button action
-                e.preventDefault();
 
-                // Validate form before submit
-                if (validator) {
-                    validator.validate().then(function (status) {
-                        if (status == 'Valid') {
-                            // Show loading indication
-                            submitButton.setAttribute('data-kt-indicator', 'on');
+            const validator = FormValidation.formValidation(form,
+                            {
+                                fields: {
+                                            'Name': {
+                                                validators: {
+                                                    notEmpty: {
+                                                        message: 'El nombre es obligatorio'
+                                                    },
+                                                    stringLength: {
+                                                        min: 1,
+                                                        max: 50,
+                                                        message: 'Debe tener entre 1 y 50 caracteres'
+                                                    },
+                                                }
+                                            },
+                                        },
 
-                            // Disable button to avoid multiple click
-                            submitButton.disabled = true;
+                                plugins: {
+                                        trigger:
+                                                new FormValidation.plugins.Trigger(),
+                                        submitButton:
+                                                new FormValidation.plugins.SubmitButton(),
+                                        message:
+                                                new FormValidation.plugins.Message({
+                                                    clazz: 'text-red-500 text-sm mt-1',
+                                                    container: function (field, element) {
+                                                    return element.closest('.fv-row');
+                                                    }
+                                                }),
+                                }
+                            }
+            )
+            .on('core.element.validated', function (e) {
 
-                            form.submit(); // Submit form
-                        }
-                    });
-                }
+                    if (e.valid) {
+                        e.element.classList.remove('border-destructive','ring-1','ring-red-500');
+                        e.element.classList.add('border-green-500');
+                    } else {
+                        e.element.classList.remove('border-green-500');
+                        e.element.classList.add('border-destructive','ring-1','ring-red-500');
+                    }
             });
 
+        submitButton.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                validator.validate().then(function (status) {
+
+                if (status === 'Valid') {
+
+                    submitButton.disabled = true;
+
+                    form.submit();
+                }
+            });
+        });
 
 
     });
+
 </script>
