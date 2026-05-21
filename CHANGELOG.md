@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - DataTables filter inputs and selects converted from Bootstrap form-control to Metronic Tailwind kt-input.
 - CatCategory views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as Employees.
 - CatFigure views (Index, New, Edit) migrated to Metronic Tailwind with kt-badge status column and KTModal dialogs.
+- CatAccountType views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as CatFigure.
+- Shared badge render functions (renderStatus, renderStatusEmployee, renderAccountType, renderStatusAnalytics) in Utilities.js converted from Bootstrap badges to kt-badge.
 
 ## [1.1.0] - 2026-05-20
 
