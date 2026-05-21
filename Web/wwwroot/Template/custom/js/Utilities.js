@@ -16,15 +16,15 @@ var validationPasswordRegexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@
 // Funcion para cambiar la etiqueta del empleado dependiendo del estatus que se asigna en el dataTable
 var renderStatusEmployee = function (data) {
     return data == "Activo" ?
-        '<div class="badge py-3 px-4 fs-7 badge-light-success">Activo</div>' :
-        '<div class="badge py-3 px-4 fs-7 badge-light-danger">Inactivo</div>';
+        '<div class="kt-badge kt-badge-success">Activo</div>' :
+        '<div class="kt-badge kt-badge-danger">Inactivo</div>';
 }
 
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderStatus = function (data) {
     return data ?
-        '<div class="badge py-3 px-4 fs-7 badge-light-success">Activo</div>' :
-        '<div class="badge py-3 px-4 fs-7 badge-light-danger">Inactivo</div>';
+        '<div class="kt-badge kt-badge-success">Activo</div>' :
+        '<div class="kt-badge kt-badge-danger">Inactivo</div>';
 }
 
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
@@ -51,16 +51,16 @@ var renderAccountType = function (data) {
     let badge;
     switch (data) {
         case "Back Testing":
-            badge = '<div class="badge py-3 px-4 fs-7 badge-light-danger">Back Testing</div>';
+            badge = '<div class="kt-badge kt-badge-danger">Back Testing</div>';
             break;
         case "Paper Trading":
-            badge = '<div class="badge py-3 px-4 fs-7 badge-light-warning">Paper Trading</div>';
+            badge = '<div class="kt-badge kt-badge-warning">Paper Trading</div>';
             break;
         case "Real Trading":
-            badge = '<div class="badge py-3 px-4 fs-7 badge-light-success">Real Trading</div>';
+            badge = '<div class="kt-badge kt-badge-success">Real Trading</div>';
             break;
         default:
-            badge = '<div class="badge py-3 px-4 fs-7 badge-light-warning">Desconocido</div>';
+            badge = '<div class="kt-badge kt-badge-warning">Desconocido</div>';
             break;
     }
     return badge;
@@ -87,8 +87,8 @@ var renderAccountBalance= function (data) {
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderStatusAnalytics = function (data) {
     return data ?
-        '<div class="badge py-3 px-4 fs-7 badge-light-success">Válido</div>' :
-        '<div class="badge py-3 px-4 fs-7 badge-light-warning">Pausa</div>';
+        '<div class="kt-badge kt-badge-success">Válido</div>' :
+        '<div class="kt-badge kt-badge-warning">Pausa</div>';
 }
 
 
