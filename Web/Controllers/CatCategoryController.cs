@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Web.Helpers;
 using Web.Models.Enums;
 using Web.Models;
+using Web.Enums;
 
 namespace Web.Controllers;
 
@@ -86,12 +87,12 @@ public class CatCategoryController : Controller
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Eliminar",
+                                     ActionType = ActionType.Delete,
                                      JavaScriptAction = "showModaltoDelete",
                                  },
                                 }

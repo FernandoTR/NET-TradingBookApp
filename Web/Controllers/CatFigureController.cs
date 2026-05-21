@@ -5,6 +5,7 @@ using Infrastructure;
 using Infrastructure.Logging;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.Design;
+using Web.Enums;
 using Web.Helpers;
 using Web.Models;
 using Web.Models.Enums;
@@ -91,12 +92,12 @@ public class CatFigureController : Controller
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Eliminar",
+                                     ActionType = ActionType.Delete,
                                      JavaScriptAction = "showModaltoDelete",
                                  },                                 
                                 }
