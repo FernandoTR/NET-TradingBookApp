@@ -43,7 +43,7 @@ var renderFlag = function (data) {
 
 // Funcion para colocar imagen dependiendo del valor del dato obtenido por el dataTable
 var renderIconCoin = function (data) {
-    return '<div class="symbol symbol-circle symbol-50px overflow-hidden me-3"><div class="symbol-label"><img src="' + data + '" alt="IconCoin" class="w-100"></div></div > ';
+    return '<img alt="IconCoin" class="rounded-full size-9 shrink-0" src="' + data + '">';
 }
 
 // Funcion para cambiar la etiqueta del tipo de cuenta dependiendo del valor que se asigna en el dataTable
