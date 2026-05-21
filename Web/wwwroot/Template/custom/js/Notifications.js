@@ -8,34 +8,39 @@
 
     const { icon, confirmButton } = notificationTypes[pType] || { icon: "info", confirmButton: "btn btn-default" };
 
-    Swal.fire({
-        html: pMessage,
-        icon,
-        buttonsStyling: false,
-        confirmButtonText: "Ok",
-        customClass: {
-            confirmButton
-        }
+    KTToast.show({
+        message: pMessage,
+        progress: true,
+        pauseOnHover: true,
+        variant: icon,
+        appearance: 'outline',
+        size: 'lg',
+        beep: true,
+        duration: 10000,
+        position: 'top-end',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
     });
+    // Swal.fire({
+    //     html: pMessage,
+    //     icon,
+    //     buttonsStyling: false,
+    //     confirmButtonText: "Ok",
+    //     customClass: {
+    //         confirmButton
+    //     }
+    // });
 }
 
 function ConfigToastNotification() {
     // Configuración de notificaciones
     toastr.options = {
-        closeButton: true,
-        debug: false,
-        newestOnTop: false,
-        progressBar: true,
-        positionClass: "toastr-top-right",
-        preventDuplicates: false,
-        onclick: null,
-        showDuration: 300,
-        hideDuration: 1000,
-        timeOut: 5000,
-        extendedTimeOut: 1000,
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut"
+        progress: true,
+        pauseOnHover: true,
+        appearance: 'outline',
+        size: 'lg',
+        beep: true,
+        duration: 10000,
+        position: 'top-end',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
     };
 }
