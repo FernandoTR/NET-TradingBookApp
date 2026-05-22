@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 - Roles views (Index, New, Edit) migrated to Metronic Tailwind following the same pattern as CatFigure; jsTree permission tree wrapped in Tailwind kt-form-label container.
 - Users views (Index, Edit) migrated to Metronic Tailwind with kt-card table, KTModal dialogs, and CatFigure-style FormValidation for role assignment checkboxes.
 - renderTrueFalse and renderFlag icon functions in Utilities.js converted from Bootstrap sizing/color classes to Tailwind text-green-600 text-2xl and text-destructive.
+- Logs Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer date range filter.
+
+### Added
+- Flatpickr date picker integrated with dedicated dark theme CSS and KTFlatpickr helper utility.
 
 ## [1.1.0] - 2026-05-20
 
