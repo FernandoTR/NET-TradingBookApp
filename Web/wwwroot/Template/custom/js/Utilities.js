@@ -17,28 +17,28 @@ var validationPasswordRegexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@
 var renderStatusEmployee = function (data) {
     return data == "Activo" ?
         '<div class="kt-badge kt-badge-success">Activo</div>' :
-        '<div class="kt-badge kt-badge-danger">Inactivo</div>';
+        '<div class="kt-badge kt-badge-destructive">Inactivo</div>';
 }
 
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderStatus = function (data) {
     return data ?
         '<div class="kt-badge kt-badge-success">Activo</div>' :
-        '<div class="kt-badge kt-badge-danger">Inactivo</div>';
+        '<div class="kt-badge kt-badge-destructive">Inactivo</div>';
 }
 
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderTrueFalse = function (data) {
     return data == true ?
-        '<i class="ki-duotone ki-verify text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
-        '<i class="ki-duotone ki-minus-circle text-danger fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
+        '<i class="ki-duotone ki-verify text-green-600 text-2xl"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
+        '<i class="ki-duotone ki-minus-circle text-destructive text-2xl"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 }
 
 // Funcion para cambiar el icono de bandera dependiendo del valor booleano del dato obtenido por el dataTable
 var renderFlag = function (data) {
     return data == true ?
-        '<i class="ki-duotone ki-flag text-success fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
-        '<i class="ki-duotone ki-flag text-danger fs-3x"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
+        '<i class="ki-duotone ki-flag text-green-600 text-2xl"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' :
+        '<i class="ki-duotone ki-flag text-destructive text-2xl"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 }
 
 // Funcion para colocar imagen dependiendo del valor del dato obtenido por el dataTable
