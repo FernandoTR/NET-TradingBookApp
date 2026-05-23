@@ -157,23 +157,19 @@
 					data: data
 				},
 				columns: [
-					{ name: "code", title: "Código", data: "code", autoWidth: true,  className: "min-w-[50px]" },
-					{ name: "description", title: "Descripción", data: "description", autoWidth: true,  className: "text-center min-w-[200px]" },
-					{ name: "quantity", title: "Cantidad", data: "quantity", autoWidth: true,  className: "text-center min-w-[50px]" },
-					{ name: "sl", title: "SL", data: "sl", autoWidth: true,  className: "text-center min-w-[30px]" },
-					{ name: "tP1", title: "TP1", data: "tP1", autoWidth: true,  className: "text-center min-w-[30px]" },
-					{ name: "tP2", title: "TP2", data: "tP2", autoWidth: true,  className: "text-center min-w-[30px]" },
-					{ name: "tP3", title: "TP3", data: "tP3", autoWidth: true,  className: "text-center min-w-[30px]" },
-					{ name: "slp", title: "SL %", data: "slp", autoWidth: true,  className: "text-center min-w-[100px]", render: renderSLPChart },
-					{ name: "tP1P", title: "TP1 %", data: "tP1P", autoWidth: true,  className: "text-center min-w-[100px]", render: renderTP1PChart },
-					{ name: "tP2P", title: "TP2 %", data: "tP2P", autoWidth: true,  className: "text-center min-w-[100px]", render: renderTP2PChart },
-					{ name: "tP3P", title: "TP3 %", data: "tP3P", autoWidth: true,  className: "text-center min-w-[100px]", render: renderTP3PChart },
-					{ name: "valid", title: "Estatus", data: "valid", autoWidth: true, orderable: false,  className: "text-end min-w-[30px]", render: renderStatusAnalytics  }
+					{ name: "code", title: "Código", data: "code", autoWidth: true,  className: "min-w-[50px] w-[80px]" },
+					{ name: "description", title: "Descripción", data: "description", autoWidth: true,  className: "text-center min-w-[200px] w-[250px]" },
+					{ name: "quantity", title: "Cantidad", data: "quantity", autoWidth: true,  className: "text-center min-w-[50px] w-[100px]" },
+					{ name: "sl", title: "SL", data: "sl", autoWidth: true, orderable: false,  className: "text-center min-w-[30px]", render: renderSLPChart },
+					{ name: "tP1", title: "TP1", data: "tP1", autoWidth: true, orderable: false,  className: "text-center min-w-[30px]", render: renderTP1PChart },
+					{ name: "tP2", title: "TP2", data: "tP2", autoWidth: true, orderable: false,  className: "text-center min-w-[30px]", render: renderTP2PChart},
+					{ name: "tP3", title: "TP3", data: "tP3", autoWidth: true, orderable: false,  className: "text-center min-w-[30px]", render: renderTP3PChart },
+					{ name: "valid", title: "Estatus", data: "valid", autoWidth: true, orderable: false,  className: "text-end min-w-[80px] w-[80px]", render: renderStatusAnalytics  }
 				],
 				processing: true,
 				serverSide: true,
 				pageLength: 10,
-				searching: true,
+				searching: false,
 				info: true,
 				layout: {
 					topStart: [],
@@ -214,7 +210,7 @@
 						id="dt-search-0"
 						type="text"
 						class="w-full "
-						placeholder="Buscar figuras..."
+						placeholder="Buscar gatillos..."
 					/>
 					</div>
 					`);
@@ -228,8 +224,25 @@
 				},
 				drawCallback: function () {
 					KTMenu.createInstances();
+
+						// animacion progress
+						requestAnimationFrame(() => {
+							setTimeout(() => {
+
+								document
+									.querySelectorAll('.kt-progress-indicator')
+									.forEach(el => {
+
+										el.style.width = el.dataset.width + '%';
+
+									});
+
+							}, 200);
+						});
 				},
 			});
+
+		
 		}
 	</script>
 }

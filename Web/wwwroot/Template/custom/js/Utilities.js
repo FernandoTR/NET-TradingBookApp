@@ -87,8 +87,18 @@ var renderAccountBalance= function (data) {
 // Funcion para cambiar la etiqueta dependiendo del valor booleano del dato obtenido por el dataTable
 var renderStatusAnalytics = function (data) {
     return data ?
-        '<div class="kt-badge kt-badge-success">Válido</div>' :
-        '<div class="kt-badge kt-badge-warning">Pausa</div>';
+        `<div class="relative size-[44px] shrink-0" >            
+             <div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+              <i class="ki-filled ki-check-circle text-md ps-px text-green-600">
+              </i>
+             </div>
+        </div>` :
+        `<div class="relative size-[44px] shrink-0" >
+            <div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4"  >
+                <i class="ki-filled ki-minus-circle text-md ps-px text-yellow-600">
+                </i>
+            </div>              
+        </div>`;
 }
 
 
@@ -99,17 +109,39 @@ var renderStatusAnalytics = function (data) {
  * @param {string} backgroundColor - Clase CSS para el color de fondo de la barra.
  * @returns {string} - HTML de la barra de progreso.
  */
-const renderProgressBar = (data, backgroundColor) => {
-    const value = parseFloat(data).toFixed(0); 
+const renderProgressBar = (value, valuePercent, color, opacity = '') => {
+    const percent = parseFloat(valuePercent).toFixed(0); 
 
     return `
-    <span class="kt-badge kt-badge-light   kt-badge-${backgroundColor} w-[40px]">${value}%</span
-       
-    `;
-};
+    <div class="flex flex-col gap-1 min-w-[90px]">
 
+        <div class="flex items-center justify-between">
+            
+            <span class="text-xs font-medium text-white">
+                ${value}
+            </span>
+
+            <span class="text-[11px] text-muted-foreground">
+                ${percent}%
+            </span>
+
+        </div>
+
+        <div class="kt-progress h-[3px] bg-white/10 kt-progress-${color} ${opacity}">
+            
+            <div 
+                class="kt-progress-indicator rounded-full transition-all duration-700 ease-out"
+                data-width="${percent}"
+                style="width:0%">
+            </div>
+
+        </div>
+
+    </div>
+`;
+};
 // Funciones específicas para diferentes tipos de barras de progreso dependiendo del valor del dato obtenido por el dataTable
-const renderSLPChart = (data) => renderProgressBar(data, 'destructive');
-const renderTP1PChart = (data) => renderProgressBar(data, 'success');
-const renderTP2PChart = (data) => renderProgressBar(data, 'warning');
-const renderTP3PChart = (data) => renderProgressBar(data, 'primary');
+const renderSLPChart = (data, type, row) => renderProgressBar(row.sl, row.slp, 'destructive');
+const renderTP1PChart = (data, type, row) => renderProgressBar(row.tP1, row.tP1P, 'primary', 'opacity-90');
+const renderTP2PChart = (data, type, row) => renderProgressBar(row.tP2, row.tP2P, 'primary', 'opacity-80');
+const renderTP3PChart = (data, type, row) => renderProgressBar(row.tP3, row.tP3P, 'primary', 'opacity-60');

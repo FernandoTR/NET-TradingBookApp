@@ -29,7 +29,7 @@ li.jstree-node > a.jstree-anchor:hover {
 }
 
 /* Se utiliza para cambiar el color, tamaño y grosor de las letras de las tablas */
-tbody, thead {
+/*tbody, thead {
     color: var(--bs-text-muted) !important;
     font-size: 1.075rem !important;
     font-weight: 500 !important;
@@ -39,7 +39,7 @@ sizeColumnCheckBox {
     width: 10px !important;
     padding-left: 0px !important;
     padding-right: 0px !important;
-}
+}*/
 
 .flatpickr-calendar.open {
     display: inline-block;
