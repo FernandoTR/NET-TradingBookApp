@@ -96,31 +96,20 @@ var renderStatusAnalytics = function (data) {
 /**
  * Función para generar una barra de progreso con porcentaje.
  * @param {number|string} data - El valor del porcentaje a mostrar.
- * @param {string} progressBarColor - Clase CSS para el color de la barra de progreso.
  * @param {string} backgroundColor - Clase CSS para el color de fondo de la barra.
  * @returns {string} - HTML de la barra de progreso.
  */
-const renderProgressBar = (data, progressBarColor, backgroundColor) => {
-    const value = parseFloat(data).toFixed(0);
+const renderProgressBar = (data, backgroundColor) => {
+    const value = parseFloat(data).toFixed(0); 
+
     return `
-        <div class="d-flex align-items-center w-100">
-            <div class="progress h-6px w-100 me-2 ${backgroundColor}">
-                <div 
-                    class="progress-bar ${progressBarColor}" 
-                    role="progressbar" 
-                    style="width: ${value}%" 
-                    aria-valuenow="${value}" 
-                    aria-valuemin="0" 
-                    aria-valuemax="100">
-                </div>
-            </div>
-            <span class="text-gray-500 fw-semibold">${value}%</span>
-        </div>
+    <span class="kt-badge kt-badge-light   kt-badge-${backgroundColor} w-[40px]">${value}%</span
+       
     `;
 };
 
 // Funciones específicas para diferentes tipos de barras de progreso dependiendo del valor del dato obtenido por el dataTable
-const renderSLPChart = (data) => renderProgressBar(data, 'bg-danger', 'bg-light-danger');
-const renderTP1PChart = (data) => renderProgressBar(data, 'bg-primary', 'bg-light-primary');
-const renderTP2PChart = (data) => renderProgressBar(data, 'bg-warning', 'bg-light-warning');
-const renderTP3PChart = (data) => renderProgressBar(data, 'bg-success', 'bg-light-success');
+const renderSLPChart = (data) => renderProgressBar(data, 'destructive');
+const renderTP1PChart = (data) => renderProgressBar(data, 'success');
+const renderTP2PChart = (data) => renderProgressBar(data, 'warning');
+const renderTP3PChart = (data) => renderProgressBar(data, 'primary');
