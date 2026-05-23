@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/engineering/spec-impl/SKILL.md",
       "computedHash": "4a7f430d99adf4fdcb6930c6004ed71b4f5fbc93c866d6a70c8161f27d74b54f"
+    },
+    "conventional-commits": {
+      "source": "project",
+      "sourceType": "project",
+      "skillPath": ".agents/skills/conventional-commits/SKILL.md",
+      "computedHash": "8647e695e083ea5f875ea97c7899a217d1d10146bb02c8062b8d7b9cb2158138"
     }
   }
 }
