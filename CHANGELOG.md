@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - renderTrueFalse and renderFlag icon functions in Utilities.js converted from Bootstrap sizing/color classes to Tailwind text-green-600 text-2xl and text-destructive.
 - Logs Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer date range filter.
 - AnalyticsTrigger Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
+- AnalyticsScenery Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 - renderProgressBar in Utilities.js migrated from Bootstrap progress bars to Tailwind flex h-1.5 rounded-full with mapped color classes.
 
 ### Added
