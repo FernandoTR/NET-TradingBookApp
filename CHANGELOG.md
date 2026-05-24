@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-05-24
+
+### Added
+- AnalyticsDay Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
+
+### Changed
+- Columnar percentage values (SL%, TP1%, TP2%, TP3%) consolidated into main columns (SL, TP1, TP2, TP3) using progress bar rendering.
+- DataTables configuration updated to 2.x standard with modern layout and search controls.
+
 ## [1.2.0] - 2026-05-21
 
 ### Changed
