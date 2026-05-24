@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - AnalyticsTrigger Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 - AnalyticsScenery Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 - renderProgressBar in Utilities.js migrated from Bootstrap progress bars to Tailwind flex h-1.5 rounded-full with mapped color classes.
+- AnalyticsFigure Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select, removing percentage columns (SL%, TP1%, TP2%, TP3%).
 
 ### Added
 - Flatpickr date picker integrated with dedicated dark theme CSS and KTFlatpickr helper utility.
