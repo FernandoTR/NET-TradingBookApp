@@ -302,6 +302,23 @@
 			
 		});
 
+		function AnimatedProgress(){
+			requestAnimationFrame(() => {
+				setTimeout(() => {
+
+					document
+						.querySelectorAll('.kt-progress-indicator')
+						.forEach(el => {
+
+							el.style.width = el.dataset.width + '%';
+
+						});
+
+				}, 500);
+			});
+		}
+
+
 		function ClearFilterData() {
 			KTSelectHelper.setValue('#CategoryId',1);
 			KTSelectHelper.clear('#AccountTypeId');
@@ -314,6 +331,9 @@
 			LoadAnalyticsSceneryAutoScoreView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
+
+			AnimatedProgress();
+						
 		}
 
 		function SearchData() {
@@ -322,6 +342,8 @@
 			LoadAnalyticsSceneryAutoScoreView();
 			LoadAnalyticsTriggerChart();
 			LoadAnalyticsLastBlocks();
+
+			AnimatedProgress();
 		}
 
 		function LoadAnalyticsTriggerView(){
