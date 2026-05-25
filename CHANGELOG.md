@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - AnalyticsDay Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 - AnalyticsDirection Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 - AnalyticsStage Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
+- AnalyticsTime Index view migrated to Metronic Tailwind with kt-card, kt-table, and kt-drawer filter using kt-select.
 
 ### Changed
 - Columnar percentage values (SL%, TP1%, TP2%, TP3%) consolidated into main columns (SL, TP1, TP2, TP3) using progress bar rendering.
