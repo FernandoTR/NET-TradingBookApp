@@ -131,6 +131,7 @@ public class OrdersController : Controller
                         {
                             Id = x.Id,
                             StatusId = x.StatusId,
+                            DirectionId = x.DirectionId,
                             CategoryName = x.CategoryName,
                             AccountTypeName = x.AccountTypeName,
                             SymbolName = x.SymbolName,
@@ -150,7 +151,21 @@ public class OrdersController : Controller
                             TP3Style = x.TP3Style,
                             Target = x.Target,
                             Chart = x.Chart,
-                            Task = (x.StatusId != 1) ? "" : ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
+                            Task = (x.StatusId != 1)
+                            ? (x.DirectionId != 0) ? ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
+                                                        {
+                                                            Id = x.Id.ToString(),
+                                                            ActionOptionMenus = new List<ActionOptionMenuModel>
+                                                            {
+                                                             new ActionOptionMenuModel
+                                                             {
+                                                                 ActionType = ActionType.View,
+                                                                 JavaScriptAction = "showModalForUpdate",
+                                                             },
+                                                            }
+                                                        }) 
+                                                    : "" 
+                            : ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
                             {
                                 Id = x.Id.ToString(),
                                 ActionOptionMenus = new List<ActionOptionMenuModel>
