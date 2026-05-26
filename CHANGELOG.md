@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-05-25
+
+### Changed
+- Orders/Index migrated to Metronic Tailwind with header container, kt-drawer filters using kt-select, DataTables 2.x configuration, and KTModal API.
+- Orders/New migrated to Metronic Tailwind with KTScrollspy sidebar, kt-card section layout, kt-select dropdowns, unified FormValidation, and InputMaskHelper.decimal.
+- Orders/Edit migrated to Metronic Tailwind with KTScrollspy sidebar, kt-card section layout, kt-select dropdowns, and FormValidation following CatFigure pattern.
+- Orders/Close migrated to Metronic Tailwind with KTScrollspy sidebar, kt-card section layout, and kt-checkbox replacing Bootstrap checkboxes.
+- Non-open order action column restricted to View only when direction data is present.
+- Shared layout kt-modal body padding removed for cleaner rendering.
+
 ## [1.3.0] - 2026-05-24
 
 ### Added

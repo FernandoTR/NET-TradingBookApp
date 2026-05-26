@@ -66,7 +66,7 @@ public static class ActionCatalog
             [ActionType.Close] = new()
             {
                 Title = "Cerrar",
-                Icon = "ki-close",
+                Icon = "ki-toggle-off",
                 CssClass = "text-danger"
             }
     };
