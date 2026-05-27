@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-05-27
+
+### Changed
+- Manage/Index tab navigation migrated from Bootstrap tabs to kt-tabs with Tailwind styling.
+- Manage/_Overview profile details migrated to kt-card with kt-table-auto layout.
+- Manage/_Balance account cards, date range picker, and DataTable migrated to Metronic Tailwind with KTFlatpickr and updated DataTables 2.x configuration.
+- Manage/_Settings email and password change forms migrated to kt-input with Tailwind layout; 2FA section migrated to kt-card-group.
+- Manage/EnableAuthenticator migrated to Metronic Tailwind with kt-card structure.
+- Two-factor authentication modal switched from Bootstrap modal to KTModal API.
+- Badge render functions in Utilities.js updated to kt-badge-light kt-badge-{color} and balance display classes converted to Tailwind utilities.
+
 ## [1.4.0] - 2026-05-25
 
 ### Changed
