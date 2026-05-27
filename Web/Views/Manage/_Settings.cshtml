@@ -1,225 +1,236 @@
 ﻿@model Web.Models.OverviewViewModel
 
-<!--begin::Sign-in Method-->
-<div class="card mb-5 mb-xl-10">
-	<!--begin::Card header-->
-	<div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse" data-bs-target="#kt_account_signin_method">
-		<div class="card-title m-0">
-			<h3 class="fw-bold m-0">
-				Método de inicio de sesión
-			</h3>
-		</div>
-	</div>
-	<!--end::Card header-->
-	<!--begin::Content-->
-	<div id="kt_account_settings_signin_method" class="collapse show">
-		<!--begin::Card body-->
-		<div class="card-body border-top p-9">
-			<!--begin::Email Address-->
-			<div class="d-flex flex-wrap align-items-center">
-				<!--begin::Label-->
-				<div id="kt_signin_email">
-					<div class="fs-6 fw-bold mb-1">
-						Dirección de correo electrónico
-					</div>
-					<div class="fw-semibold text-gray-600" id="kt_signin_email_lbl">@Model.Email</div>
-				</div>
-				<!--end::Label-->
-				<!--begin::Edit-->
-				<div id="kt_signin_email_edit" class="flex-row-fluid d-none">
-					<!--begin::Form-->
-					<form id="kt_signin_change_email" class="form" novalidate="novalidate">
-						@Html.AntiForgeryToken()
-						<div class="row mb-6">
-							<div class="col-lg-6 mb-4 mb-lg-0">
-								<div class="fv-row mb-0">
-									<label for="emailaddress" class="form-label fs-6 fw-bold mb-3">Ingrese una nueva dirección de correo electrónico</label>
-									<input type="email" class="form-control form-control-lg form-control-solid" id="emailaddress" placeholder="Dirección de correo electrónico" name="emailaddress" value="@Model.Email" />
-									<input type="email" class="form-control form-control-lg form-control-solid" id="emailaddresstemp" placeholder="Dirección de correo electrónico" name="emailaddresstemp" value="@Model.Email" hidden />
-
-								</div>
-							</div>
-							<div class="col-lg-6">
-								<div class="fv-row mb-0">
-									<label for="confirmemailpassword" class="form-label fs-6 fw-bold mb-3">Confirmar Contraseña</label>
-									<input type="password" class="form-control form-control-lg form-control-solid" name="confirmemailpassword" id="confirmemailpassword" autocomplete="off" />
-								</div>
-							</div>
-						</div>
-						<div class="d-flex">
-							<button id="kt_signin_submit" type="button" class="btn btn-primary me-2 px-6">
-								<span class="indicator-label">Actualizar correo electrónico</span>
-								<span class="indicator-progress">
-									Espere por favor...
-									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-								</span>
-							</button>
-							<button id="kt_signin_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancelar</button>
-						</div>
-					</form>
-					<!--end::Form-->
-				</div>
-				<!--end::Edit-->
-				<!--begin::Action-->
-				<div id="kt_signin_email_button" class="ms-auto">
-					<button class="btn btn-light btn-active-light-primary">
-						Cambiar correo electrónico
-					</button>
-				</div>
-				<!--end::Action-->
-			</div>
-			<!--end::Email Address-->
-			<!--begin::Separator-->
-			<div class="separator separator-dashed my-6"></div>
-			<!--end::Separator-->
-			<!--begin::Password-->
-			<div class="d-flex flex-wrap align-items-center mb-10">
-				<!--begin::Label-->
-				<div id="kt_signin_password">
-					<div class="fs-6 fw-bold mb-1">Contraseña</div>
-					<div class="fw-semibold text-gray-600">************</div>
-				</div>
-				<!--end::Label-->
-				<!--begin::Edit-->
-				<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
-					<!--begin::Form-->
-					<form id="kt_signin_change_password" class="form" novalidate="novalidate">						
-						<div class="row mb-1">
-							<div class="col-lg-4">
-								<div class="fv-row mb-0">
-									<label for="currentpassword" class="form-label fs-6 fw-bold mb-3">Contraseña actual</label>
-									<input type="password" class="form-control form-control-lg form-control-solid" name="currentpassword" id="currentpassword" />
-								</div>
-							</div>
-							<div class="col-lg-4">
-								<div class="fv-row mb-0">
-									<label for="newpassword" class="form-label fs-6 fw-bold mb-3">Nueva Contraseña</label>
-									<input type="password" class="form-control form-control-lg form-control-solid" name="newpassword" id="newpassword" />
-								</div>
-							</div>
-							<div class="col-lg-4">
-								<div class="fv-row mb-0">
-									<label for="confirmpassword" class="form-label fs-6 fw-bold mb-3">Confirmar Nueva Contraseña</label>
-									<input type="password" class="form-control form-control-lg form-control-solid" name="confirmpassword" id="confirmpassword" />
-								</div>
-							</div>
-						</div>
-						<div class="form-text mb-5">La contraseña debe tener al menos 8 caracteres con una combinación de letras, números y simbolos.</div>
-						<div class="d-flex">
-							<button id="kt_password_submit" type="button" class="btn btn-primary me-2 px-6">
-								<span class="indicator-label">Actualizar contraseña</span>
-								<span class="indicator-progress">
-									Espere por favor...
-									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-								</span>
-							</button>
-							<button id="kt_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancelar</button>
-						</div>
-					</form>
-					<!--end::Form-->
-				</div>
-				<!--end::Edit-->
-				<!--begin::Action-->
-				<div id="kt_signin_password_button" class="ms-auto">
-					<button class="btn btn-light btn-active-light-primary">Restablecer contraseña</button>
-				</div>
-				<!--end::Action-->
-			</div>
-			<!--end::Password-->
-			<!--begin::Separator-->
-			<div class="separator separator-dashed my-6"></div>
-			<!--end::Separator-->
-			@if(Model.TwoFactor)
-			{
-				<!--begin::TwoFactor-->
-				<div class="d-flex flex-wrap align-items-center mb-10">
-					<!--begin::Label-->
-					<div id="kt_signin_password">
-						<div class="fs-6 fw-bold mb-1">Autenticación de dos factores</div>
-						<div class="fw-semibold text-gray-600">Activa</div>
-					</div>
-					<!--end::Label-->
-					<!--begin::Edit-->
-					<div id="kt_signin_password_edit" class="flex-row-fluid d-none">
-					</div>
-					<!--end::Edit-->
-					<!--begin::Action-->
-					<div id="kt_signin_password_button" class="ms-auto">
-						<a href="javascript:DisableTwoFactor()" class="btn btn-light btn-active-light-primary">Deshabilitar</a>
-
-					</div>
-					<!--end::Action-->
-				</div>
-				<!--end::TwoFactor-->
-			}
-			else
-			{
-				<!--begin::Notice-->
-				<div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-6">
-					<!--begin::Icon-->
-					<i class="ki-duotone ki-shield-tick fs-2tx text-primary me-4">
-						<span class="path1"></span>
-						<span class="path2"></span>
-					</i>
-					<!--end::Icon-->
-					<!--begin::Wrapper-->
-					<div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
-						<!--begin::Content-->
-						<div class="mb-3 mb-md-0 fw-semibold">
-							<h4 class="text-gray-900 fw-bold">
-								Asegure su cuenta
-							</h4>
-							<div class="fs-6 text-gray-700 pe-7">La autenticación de dos factores agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, además deberás proporcionar un código de 6 dígitos</div>
-						</div>
-						<!--end::Content-->
-						<!--begin::Action-->
-						<a href="javascript:showModalForEnableAuthenticator()" class="btn btn-primary px-6 align-self-center text-nowrap">Habilitar</a>
-						<!--end::Action-->
-					</div>
-					<!--end::Wrapper-->
-				</div>
-				<!--end::Notice-->
-			}
-			
-			
-		</div>
-		<!--end::Card body-->
-	</div>
-	<!--end::Content-->
-</div>
-<!--end::Sign-in Method-->
-<!--begin::Modal-->
-<div class="modal fade" id="kt_modal_two_factor_authentication" tabindex="-1" aria-hidden="true">
-	<!--begin::Modal header-->
-	<div class="modal-dialog modal-dialog-centered mw-650px">
-		<!--begin::Modal content-->
-		<div class="modal-content">
-			<!--begin::Modal header-->
-			<div class="modal-header flex-stack">
-				<!--begin::Title-->
-				<h2 id="title-modal2"></h2>
-				<!--end::Title-->
-				<!--begin::Close-->
-				<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-					<i class="ki-duotone ki-cross fs-1">
-						<span class="path1"></span>
-						<span class="path2"></span>
+<div class="kt-card" >
+	<!--begin::Email Address-->
+	<div class="kt-card-group flex items-center flex-wrap sm:flex-nowrap justify-between py-4 gap-2.5" id="kt_account_settings_signin_method">
+		<div class="flex items-center gap-3.5" >
+			<div class="relative size-[50px] shrink-0" >
+				<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+					<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+						18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+						39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+					</path>
+					<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+						18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+						39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+					</path>
+				</svg>
+				<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+					<i class="ki-filled ki-user text-xl text-muted-foreground">
 					</i>
 				</div>
-				<!--end::Close-->
 			</div>
-			<!--begin::Modal header-->
-			<!--begin::Modal body-->
-			<div class="modal-body scroll-y pt-10 pb-15 px-lg-17" id="contentvModal2">
-				
-			</div>
-			<!--begin::Modal body-->
+			<div class="flex flex-col gap-1.5" id="kt_signin_email">
+				<span class="flex items-center gap-1.5 leading-none font-medium text-sm text-mono">
+					Dirección de correo electrónico					
+				</span>
+				<span class="text-sm text-secondary-foreground" id="kt_signin_email_lbl">
+					@Model.Email
+				</span>
+			</div>		
 		</div>
-		<!--end::Modal content-->
+		<div class="flex items-center gap-2.5"  >
+			<button type="button" class="kt-link kt-link-underlined kt-link-dashed" id="kt_signin_email_button">
+				<i class="ki-filled ki-notepad-edit">
+				</i>
+			</button>
+		</div>
+		<!--begin::Edit-->
+		<div class="flex flex-col gap-1.5 hidden" id="kt_signin_email_edit">
+			<!--begin::Form-->
+			<form id="kt_signin_change_email" novalidate="novalidate">
+				@Html.AntiForgeryToken()
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Nuevo correo:</label>
+							<input type="email" class="kt-input" id="emailaddress" placeholder="Dirección de correo electrónico" name="emailaddress" value="@Model.Email" />
+							<input type="email" class="kt-input" id="emailaddresstemp" placeholder="Dirección de correo electrónico" name="emailaddresstemp" value="@Model.Email" hidden />
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Confirmar Contraseña:</label>
+							<input type="password" class="kt-input" name="confirmemailpassword" id="confirmemailpassword" autocomplete="off" />
+						</div>
+					</div>
+				</div>
+			</form>
+			<!--end::Form-->
+		</div>
+		<div class="flex items-center gap-2.5 hidden" id="kt_signin_email_edit_buttons">
+			<button class="kt-btn kt-btn-outline kt-btn-primary shrink-0" id="kt_signin_submit" type="button">
+				Actualizar
+			</button>
+			<button class="kt-btn kt-btn-outline shrink-0" id="kt_signin_cancel" type="button">
+				Cancelar
+			</button>
+		</div>
+
+			
+		<!--end::Edit-->
 	</div>
-	<!--end::Modal header-->
+	<!--end::Email Address-->
+	<!--begin::Password-->
+	<div class="kt-card-group flex items-center flex-wrap sm:flex-nowrap justify-between py-4 gap-2.5" id="kt_account_settings_signin_method">
+		<div class="flex items-center gap-3.5">
+			<div class="relative size-[50px] shrink-0">
+				<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+					<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+						18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+						39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+					</path>
+					<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+						18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+						39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+					</path>
+				</svg>
+				<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
+					<i class="ki-filled ki-lock-2 text-xl text-muted-foreground">
+					</i>
+				</div>
+			</div>
+			<div class="flex flex-col gap-1.5" id="kt_signin_password">
+				<span class="flex items-center gap-1.5 leading-none font-medium text-sm text-mono">
+					Contraseña
+				</span>
+				<span class="text-sm text-secondary-foreground">
+					************
+				</span>
+			</div>
+		</div>
+		<div class="flex items-center gap-2.5">
+			<button type="button" class="kt-link kt-link-underlined kt-link-dashed" id="kt_signin_password_button">
+				<i class="ki-filled ki-notepad-edit">
+				</i>
+			</button>
+		</div>
+		<!--begin::Edit-->
+		<div class="flex flex-col gap-1.5 hidden" id="kt_signin_password_edit">
+			<!--begin::Form-->
+			<form id="kt_signin_change_password" novalidate="novalidate">
+				@Html.AntiForgeryToken()
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Contraseña actual:</label>
+							<input type="password" class="kt-input" name="currentpassword" id="currentpassword" />							
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Nueva Contraseña:</label>
+							<input type="password" class="kt-input" name="newpassword" id="newpassword" />
+							
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Confirmar Nueva Contraseña:</label>
+							<input type="password" class="kt-input" name="confirmpassword" id="confirmpassword" />
+						</div>
+					</div>
+					<span class="kt-form-description text-2sm text-primary">
+						La contraseña debe tener al menos 8 caracteres con una combinación de letras, números y simbolos.
+					</span>
+				</div>
+			</form>
+			<!--end::Form-->
+		</div>
+		<div class="flex items-center gap-2.5 hidden" id="kt_signin_password_edit_buttons">
+			<button class="kt-btn kt-btn-outline kt-btn-primary shrink-0" id="kt_password_submit" type="button">
+				Actualizar
+			</button>
+			<button class="kt-btn kt-btn-outline shrink-0" id="kt_password_cancel" type="button">
+				Cancelar
+			</button>
+		</div>
+
+			
+		<!--end::Edit-->
+	</div>
+	<!--end::Password-->
+	<!--begin::TwoFactor-->
+	@if (Model.TwoFactor)
+	{
+		<div class="kt-card-group flex items-center flex-wrap sm:flex-nowrap justify-between py-4 gap-2.5">
+				<div class="flex items-center gap-3.5">
+					<div class="relative size-[50px] shrink-0">
+						<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+							<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+								18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+								39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+							</path>
+							<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+								18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+								39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+							</path>
+						</svg>
+						<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
+							<i class="ki-filled ki-shield-tick text-xl text-muted-foreground">
+							</i>
+						</div>
+					</div>
+					<div class="flex flex-col gap-0.5">
+						<span class="flex items-center gap-1.5 leading-none font-medium text-sm text-mono">
+							Autenticación de dos factores<span class="kt-badge kt-badge-success kt-badge-outline">
+							Activa
+						</span>
+					</span>
+				</div>
+			</div>
+			<div class="flex items-center gap-2.5">
+				<a class="kt-btn kt-btn-outline kt-btn-destructive shrink-0" href="javascript:DisableTwoFactor()">
+					Deshabilitar
+				</a>
+			</div>
+		</div>
+	} 
+	else
+	{
+		<div class="kt-card-group flex items-center flex-wrap sm:flex-nowrap justify-between py-4 gap-2.5">
+			<div class="flex items-center gap-3.5">
+				<div class="relative size-[50px] shrink-0">
+					<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+						<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+							18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+							39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+						</path>
+						<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+							18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+							39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+						</path>
+					</svg>
+					<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
+						<i class="ki-filled ki-shield-tick text-xl text-muted-foreground">
+						</i>
+					</div>
+				</div>
+				<div class="flex flex-col gap-0.5">
+					<span class="flex items-center gap-1.5 leading-none font-medium text-sm text-mono">
+						Autenticación de dos factores
+					</span>
+					<span class="text-sm text-secondary-foreground">
+						La autenticación de 2FA agrega una capa adicional de seguridad a su cuenta. Para iniciar sesión, además deberás proporcionar un código de 6 dígitos
+					</span>
+				</div>
+			</div>
+			<div class="flex items-center gap-2.5">
+				<a class="kt-btn kt-btn-outline shrink-0" href="javascript:showModalForEnableAuthenticator()">
+					Habilitar
+				</a>
+			</div>
+		</div>
+	}
+	
+	
+<!--end::TwoFactor-->
+
 </div>
-<!--end::Modal-->
+
+
+
+
 
 <script>
 	$(document).ready(function () {
@@ -229,9 +240,11 @@
 			// Prevent default button action
 			e.preventDefault();
 
-			document.getElementById('kt_signin_email').classList.add("d-none");
-			document.getElementById('kt_signin_email_button').classList.add("d-none");
-			document.getElementById('kt_signin_email_edit').classList.remove("d-none");
+			document.getElementById('kt_signin_email').classList.add("hidden");
+			document.getElementById('kt_signin_email_button').classList.add("hidden");
+			document.getElementById('kt_signin_email_edit').classList.remove("hidden");
+			document.getElementById('kt_signin_email_edit_buttons').classList.remove("hidden");
+
 
 			document.querySelector('#confirmemailpassword').value = '';
 		});
@@ -240,9 +253,11 @@
 			// Prevent default button action
 			e.preventDefault();
 
-			document.getElementById('kt_signin_email').classList.remove("d-none");
-			document.getElementById('kt_signin_email_button').classList.remove("d-none");
-			document.getElementById('kt_signin_email_edit').classList.add("d-none");
+			document.getElementById('kt_signin_email').classList.remove("hidden");
+			document.getElementById('kt_signin_email_button').classList.remove("hidden");
+			document.getElementById('kt_signin_email_edit').classList.add("hidden");
+			document.getElementById('kt_signin_email_edit_buttons').classList.add("hidden");
+
 		});
 				
 		// Define form element kt_signin_change_email
@@ -287,10 +302,12 @@
 
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
+					submitButton: new FormValidation.plugins.SubmitButton(),
+					message: new FormValidation.plugins.Message({
+						clazz: 'text-red-500 text-sm mt-1',
+						container: function (field, element) {
+							return element.closest('.fv-row');
+						}
 					}),
 				}
 
@@ -307,9 +324,7 @@
 			if (validatorSigninEmail) {
 				validatorSigninEmail.validate().then(function (status) {
 
-					if (status == 'Valid') {
-						// Show loading indication
-						submitSignInEmailButton.setAttribute('data-kt-indicator', 'on');
+					if (status == 'Valid') {					
 
 						// Disable button to avoid multiple click
 						submitSignInEmailButton.disabled = true;
@@ -343,9 +358,7 @@
 			}).then(res => res.json())
 			.catch(error => console.error('Error:', error))
 			.then((data) => {
-				// Show loading indication
-				submitSignInEmailButton.setAttribute('data-kt-indicator', 'off');
-
+				
 				// Disable button to avoid multiple click
 				submitSignInEmailButton.disabled = false;
 
@@ -353,9 +366,11 @@
 
 				if(data.success)
 				{				
-					document.getElementById('kt_signin_email').classList.remove("d-none");
-					document.getElementById('kt_signin_email_button').classList.remove("d-none");
-					document.getElementById('kt_signin_email_edit').classList.add("d-none");
+					document.getElementById('kt_signin_email').classList.remove("hidden");
+					document.getElementById('kt_signin_email_button').classList.remove("hidden");
+					document.getElementById('kt_signin_email_edit').classList.add("hidden");
+					document.getElementById('kt_signin_email_edit_buttons').classList.add("hidden");
+
 
 					document.getElementById('lbl-email-header').innerText = newEmail;
 					document.getElementById('lbl_email_Overview').innerText = newEmail;
@@ -372,9 +387,10 @@
 			// Prevent default button action
 			e.preventDefault();
 
-			document.getElementById('kt_signin_password').classList.add("d-none");
-			document.getElementById('kt_signin_password_button').classList.add("d-none");
-			document.getElementById('kt_signin_password_edit').classList.remove("d-none");
+			document.getElementById('kt_signin_password').classList.add("hidden");
+			document.getElementById('kt_signin_password_button').classList.add("hidden");
+			document.getElementById('kt_signin_password_edit').classList.remove("hidden");
+			document.getElementById('kt_signin_password_edit_buttons').classList.remove("hidden");
 
 			document.querySelector('#currentpassword').value = '';
 			document.querySelector('#newpassword').value = '';
@@ -387,9 +403,11 @@
 			// Prevent default button action
 			e.preventDefault();
 
-			document.getElementById('kt_signin_password').classList.remove("d-none");
-			document.getElementById('kt_signin_password_button').classList.remove("d-none");
-			document.getElementById('kt_signin_password_edit').classList.add("d-none");
+			document.getElementById('kt_signin_password').classList.remove("hidden");
+			document.getElementById('kt_signin_password_button').classList.remove("hidden");
+			document.getElementById('kt_signin_password_edit').classList.add("hidden");
+			document.getElementById('kt_signin_password_edit_buttons').classList.add("hidden");
+
 		});
 
 		
@@ -438,10 +456,12 @@
 
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
+					submitButton: new FormValidation.plugins.SubmitButton(),
+					message: new FormValidation.plugins.Message({
+						clazz: 'text-red-500 text-sm mt-1',
+						container: function (field, element) {
+							return element.closest('.fv-row');
+						}
 					}),
 				}
 
@@ -504,9 +524,12 @@
 
 				if(data.success)
 				{
-					document.getElementById('kt_signin_password').classList.remove("d-none");
-					document.getElementById('kt_signin_password_button').classList.remove("d-none");
-					document.getElementById('kt_signin_password_edit').classList.add("d-none");
+					document.getElementById('kt_signin_password').classList.remove("hidden");
+					document.getElementById('kt_signin_password_button').classList.remove("hidden");
+					document.getElementById('kt_signin_password_edit').classList.add("hidden");
+					document.getElementById('kt_signin_password_edit_buttons').classList.add("hidden");
+
+					
 				}
 
 
@@ -552,13 +575,17 @@
 			});
 	}
 
-	function showModalTwoFactor(urlContent, title) {
+	function showModalTwoFactor(urlContent, title) {			
 			fetch(urlContent).then((response) => {
 				return response.text();
 			}).then((data) => {
-				$("#contentvModal2").html(data);
-				$('#title-modal2').html(title);
-				$("#kt_modal_two_factor_authentication").modal("show");
+				$("#contentvModal").html(data);
+				$('#title-modal').html(title);
+				// $('#subtitle-modal').html(subtitle);
+
+				const modalEl = document.querySelector('#vModal');
+				const modal = KTModal.getInstance(modalEl);
+				modal.show();
 			});
 	}
 

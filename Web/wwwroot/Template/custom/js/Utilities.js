@@ -51,16 +51,16 @@ var renderAccountType = function (data) {
     let badge;
     switch (data) {
         case "Back Testing":
-            badge = '<div class="kt-badge kt-badge-danger">Back Testing</div>';
+            badge = '<div class="kt-badge kt-badge-light kt-badge-destructive">Back Testing</div>';
             break;
         case "Paper Trading":
-            badge = '<div class="kt-badge kt-badge-warning">Paper Trading</div>';
+            badge = '<div class="kt-badge kt-badge-light kt-badge-warning">Paper Trading</div>';
             break;
         case "Real Trading":
-            badge = '<div class="kt-badge kt-badge-success">Real Trading</div>';
+            badge = '<div class="kt-badge kt-badge-light kt-badge-success">Real Trading</div>';
             break;
         default:
-            badge = '<div class="kt-badge kt-badge-warning">Desconocido</div>';
+            badge = '<div class="kt-badge kt-badge-light kt-badge-warning">Desconocido</div>';
             break;
     }
     return badge;
@@ -76,9 +76,9 @@ var renderAccountBalance= function (data) {
     }).format(parseFloat(data));
 
     if (parseFloat(data) >= 0) {
-        badge = '<span class="text-white min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount +'</span>';
+        badge = '<span class="text-sm font-medium text-secondary-foreground text-end">' + formattedAmount +'</span>';
     } else {
-        badge = '<span class="text-white min-w-60px d-block text-end fw-bold fs-6">' + formattedAmount + '</span>';
+        badge = '<span class="text-sm font-medium text-secondary-foreground text-end">' + formattedAmount + '</span>';
     }
     
     return badge;

@@ -1,172 +1,152 @@
 ﻿@model Web.Models.BalanceViewModel
 
-
-
 <!--begin::Payment methods-->
-<div class="card mb-5 mb-xl-10">
-	<!--begin::Card header-->
-	<div class="card-header card-header-stretch pb-0">
-		<!--begin::Title-->
-		<div class="card-title">
-			<h3 class="m-0">Mis Cuentas</h3>
+<div class="kt-card mb-10" >
+	<div class="kt-card-header gap-2" id="auth_social_sign_in" >
+		<h3 class="kt-card-title">
+			Mis Cuentas
+		</h3>
+		<div class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost" data-kt-tooltip="true" data-kt-tooltip-initialized="true" >
+			<i class="ki-filled ki-information-2">
+			</i>
+			<span class="kt-tooltip hidden" data-kt-tooltip-content="true" style="z-index: 100;">
+				Análisis de saldo de cuentas
+			</span>
 		</div>
-		<!--end::Title-->
 	</div>
-	<!--end::Card header-->
-	<!--begin::Tab content-->
-	<div id="kt_billing_payment_tab_content" class="card-body tab-content">
-		<!--begin::Row-->
-		<div class="row gx-9 gy-6">
+	<div class="kt-card-content lg\:py-5 py-5" >
+		<div class="grid gap-5">
 			@foreach (var account in Model.Accounts)
 			{
-                var color = account.CatAccountTypeId switch
-                {
-                    1 => "danger",
-                    2 => "warning",
-                    3 => "success",
-                    _ => "primary"
-                };
-				<!--begin::Col-->
-				<div class="col-xl-6" data-kt-billing-element="card">
-					<!--begin::Card-->
-					<div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
-						<!--begin::Info-->
-						<div class="d-flex flex-column py-2">
-							<!--begin::Owner-->
-							<div class="d-flex align-items-center fs-4 fw-bold mb-5 text-@color">
-								@account.CatAccountType.Description
+				var color = account.CatAccountTypeId switch
+				{
+					1 => "destructive",
+					2 => "warning",
+					3 => "success",
+					_ => "primary"
+				};
+
+				<div class="flex items-center justify-between border border-border rounded-xl gap-2 px-4 py-4 bg-secondary-transparent">
+					<div class="flex items-center gap-3.5">
+						<div class="relative size-[50px] shrink-0">
+							<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+								<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+									18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+									39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+								</path>
+								<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+									18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+									39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+								</path>
+							</svg>
+							<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
+								<i class="ki-filled ki-dollar text-xl text-muted-foreground">
+								</i>
 							</div>
-							<!--end::Owner-->
-							<!--begin::Wrapper-->
-							<div class="d-flex align-items-center">
-								<!--begin::Icon-->
-								<div class="d-flex flex-center w-45px h-45px rounded-3 bg-light-@color bg-opacity-90 me-4">
-									<i class="ki-duotone ki-dollar text-@color fs-2x">
-										<span class="path1"></span>
-										<span class="path2"></span>
-										<span class="path3"></span>
-										<span class="path4"></span>
-									</i>
-								</div>
-								<!--end::Icon-->
-								<!--begin::Details-->
-								<div>
-									<div class="fs-4 fw-bold" >@account.CurrentBalance.ToString("c2") @account.Currency</div>
-									<div class="fs-6 fw-semibold text-gray-500">Última fecha de actualización: @account.UpdatedAt.ToString("d 'de' MMMM 'de' yyyy, 'a las' hh:mm tt")</div>
-								</div>
-								<!--end::Details-->
-							</div>
-							<!--end::Wrapper-->
 						</div>
-						<!--end::Info-->
-						<!--begin::Actions-->
-						<div class="d-flex align-items-center py-2">
-							<a class="btn btn-sm btn-light btn-active-light-primary me-3" href="javascript:showModalForWithdrawCash('@account.Id','@account.CatAccountType.Description')">Retirar</a>
-							<a class="btn btn-sm btn-light btn-active-light-primary" href="javascript:showModalForAddCash('@account.Id','@account.CatAccountType.Description')">Agregar</a>
+						<div class="flex flex-col">
+							<a class="text-xl font-semibold text-mono hover:text-primary mb-px" href="#">
+								@account.CurrentBalance.ToString("c2") @account.Currency
+								<span class="kt-badge kt-badge-sm kt-badge-@color kt-badge-outline">
+									@account.CatAccountType.Description
+								</span>
+							</a>
+							<span class="text-sm text-muted-foreground">
+								Última fecha de actualización: @account.UpdatedAt.ToString("d 'de' MMMM 'de' yyyy, 'a las' hh:mm tt")
+							</span>
 						</div>
-						<!--end::Actions-->
 					</div>
-					<!--end::Card-->
+					<div class="flex items-center gap-5">
+
+						<div class="flex gap-2.5">
+							<a class="kt-btn kt-btn-outline kt-btn-destructive shrink-0" href="javascript:showModalForWithdrawCash('@account.Id','@account.CatAccountType.Description')">
+								Retirar
+							</a>
+							<a class="kt-btn kt-btn-outline  shrink-0" href="javascript:showModalForAddCash('@account.Id','@account.CatAccountType.Description')">
+								Agregar
+							</a>
+						</div>
+					</div>
 				</div>
-				<!--end::Col-->
-			}			
-			
+			}
+
+
 		</div>
-		<!--end::Row-->
-		
+			
+
 	</div>
-	<!--end::Tab content-->
 </div>
 <!--end::Payment methods-->
 
+
 <!--begin::Balance History-->
-<div class="card">
-	<!--begin::Card header-->
-	<div class="card-header card-header-stretch border-bottom border-gray-200">
-		<!--begin::Title-->
-		<div class="card-title">
-			<h3 class="fw-bold m-0">Estado de Cuenta</h3>
-		</div>
-		<!--end::Title-->
-		<!--begin::Toolbar-->
-		<div class="card-toolbar m-0">
-			<!--begin::Input-->
-			<div class="my-4 me-4">
-				<input class="form-control form-control-solid" placeholder="Elegir rango de fechas" id="kt_daterangepicker_4" />
+<div class="kt-card" >
+    <div class="kt-card-header" >
+        <h3 class="kt-card-title">
+            Estado de Cuenta
+        </h3>
+		<div class="flex flex-wrap gap-2 lg:gap-5">
+			<div class="kt-input">
+				<i class="ki-outline ki-calendar">
+				</i>
+				<input id="kt_daterangepicker_4" class="input ps-10 flatpickr-input active" type="text" placeholder="Seleccionar rango de fechas" readonly="readonly">
 			</div>
-			<!--end::Input-->
 		</div>
-		<!--end::Toolbar-->
-	</div>
-	<!--end::Card header-->
-	<!--begin::Card body-->
-	<div class="card-body pt-6">
-		<!--begin::Table-->
-		<table id="dtTable" class="table align-middle table-row-dashed fs-6 gy-5"></table>
-		<!--end::Table-->
-	</div>
-	<!--end::Card body-->
+
+		
+    </div>
+    <div class="kt-card-table kt-scrollable-x-auto" >
+		<table class="kt-table" data-kt-datatable-table="true" id="dtTable"></table>
+    </div>
+   
 </div>
+
+
 <!--end::Balance Address-->
 <script>
 	$(document).ready(function () {
-	// Inicialización de valores iniciales
-			const start = moment().subtract(29, "days");
-			const end = moment();
-			let fechaInicio = moment();
-			let fechaFin = moment();
+		// Inicialización de valores iniciales
+		let fechaInicio = moment().subtract(7, "days");
+		let fechaFin = moment();
 
+		KTFlatpickrHelper.initRange("#kt_daterangepicker_4",
+			{
+				onChange: ({ formattedDates }) => {
 
-			// Función para actualizar el campo y cargar la tabla
-			function updateDateRange(start, end) {
-				const startDate = start.format("DD/MM/YYYY");
-				const endDate = end.format("DD/MM/YYYY");
+					if (formattedDates.length < 2) {
+						return;
+					}
 
-				// Actualizar el campo del selector de rango
-				$("#kt_daterangepicker_4").val(`${startDate} - ${endDate}`);
+					updateDateRange();
+					loadTableDate();
+				}
+		});
+		KTFlatpickrHelper.setRange("#kt_daterangepicker_4",fechaInicio,fechaFin);
 
-				fechaInicio = startDate;
-				fechaFin = endDate;
+		// Función para actualizar el campo
+		function updateDateRange() {
+			const range = KTFlatpickrHelper.getRange("#kt_daterangepicker_4");
 
-				// Recargar datos de la tabla
-			    loadTableDate();
+			if (range.startFormatted && range.endFormatted) {
+				fechaInicio = range.startFormatted;
+				fechaFin = range.endFormatted;
 			}
 
-			// Inicializar el daterangepicker
-			$("#kt_daterangepicker_4").daterangepicker({
-				autoUpdateInput: false,
-				locale: {
-					format: "DD/MM/YYYY",
-					applyLabel: "Aplicar",
-					cancelLabel: "Cancelar",
-					fromLabel: "Desde",
-					toLabel: "Hasta",
-					customRangeLabel: "Personalizado",
-					daysOfWeek: moment.weekdaysShort(),
-					monthNames: moment.months(),
-					firstDay: 1
-				},
-				startDate: start,
-				endDate: end,
-				ranges: {
-					"Hoy": [moment(), moment()],
-					"Ayer": [moment().subtract(1, "days"), moment().subtract(1, "days")],
-					"Últimos 7 Días": [moment().subtract(6, "days"), moment()],
-					"Últimos 30 Días": [moment().subtract(29, "days"), moment()],
-					"Este Mes": [moment().startOf("month"), moment().endOf("month")],
-					"Último Mes": [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")]
-				}
-			}).on('apply.daterangepicker', function (ev, picker) {
-				updateDateRange(picker.startDate, picker.endDate);
-			}).on('cancel.daterangepicker', function () {
-				$(this).val('');
-			});
+			console.log("fecha1: " + fechaInicio);
+			console.log("fecha2: " + fechaFin);
+
+				
+		}		
 
 
 			// Función para cargar datos en la tabla
 			function loadTableDate() {
+				// Evita reinicialización incorrecta
+				if ($.fn.DataTable.isDataTable('#dtTable')) {
+					$('#dtTable').DataTable().destroy();
+				}
+
 				$('#dtTable').DataTable({
-					destroy: true, // Destruir instancia previa para evitar conflictos
 					ajax: {
 						url: "@Url.Content("~/Manage/JsonDataTable")",
 						type: "POST",
@@ -174,14 +154,15 @@
 						data: { fecha1: fechaInicio, fecha2: fechaFin }
 					},
 					columns: [
-						{ name: "id", title: "ID", data: "id", autoWidth: true,  className: "min-w-50px " },
-						{ name: "orderId", title: "ID Orden", data: "orderId", autoWidth: true,  className: "min-w-50px " },
+						{ name: "id", title: "#", data: "id", autoWidth: false,  className: "min-w-[50px] w-[60px]" },
+						{ name: "orderId", title: "ID Orden", data: "orderId", autoWidth: false,orderable: false,  className: "min-w-[50px] w-[100px]" },
 						{
 							name: "updateAt",
 							title: "Fecha",
 							data: "updateAt",
-							autoWidth: true,
-							className: "min-w-50px ",
+							autoWidth: false,
+							orderable: false,
+							className: "min-w-[50px] w-[120px]",
 							render: function (data, type, row) {
 								// Formatear la fecha solo en las celdas visibles
 								return type === 'display' || type === 'filter'
@@ -189,45 +170,77 @@
 									: data;
 							}
 						},
-						{ name: "reference", title: "Detalle", data: "reference", autoWidth: true, className: "min-w-100px " },
-						{ name: "balance", title: "Cantidad", data: "balance", autoWidth: true, className: "text-end min-w-100px ", render: renderAccountBalance },
-						{ name: "accountTypeName", title: "Cuenta", data: "accountTypeName", autoWidth: false,  className: "text-end min-w-50px ", render: renderAccountType }
+						{ name: "reference", title: "Detalle", data: "reference", autoWidth: false,orderable: false, className: "min-w-[100px] w-[280px]" },
+						{ name: "balance", title: "Cantidad", data: "balance", autoWidth: false,orderable: false, className: "text-end min-w-[100px] w-[80px]", render: renderAccountBalance },
+						{ name: "accountTypeName", title: "Cuenta", data: "accountTypeName", autoWidth: false,orderable: false,  className: "text-end min-w-[50px] w-[120px]", render: renderAccountType }
 					],
 					processing: true,
 					serverSide: true,
 					pageLength: 10,
-					filter: true,
+					searching: false,
 					language: {
-						sProcessing: "Procesando...",
-						sLengthMenu: "Mostrar _MENU_ registros",
-						sZeroRecords: "No se encontraron resultados",
-						sEmptyTable: "Ningún dato disponible en esta tabla",
-						sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-						sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-						sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
-						sSearch: "Buscar:",
-						sLoadingRecords: "Cargando...",
-						oPaginate: {
-							sFirst: "Primero",
-							sLast: "Último",
-							sNext: "Siguiente",
-							sPrevious: "Anterior"
+						processing: "Procesando...",
+						lengthMenu: "Mostrar _MENU_ registros",
+						zeroRecords: "No se encontraron resultados",
+						emptyTable: "Ningún dato disponible en esta tabla",
+						info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+						infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+						infoFiltered: "(filtrado de un total de _MAX_ registros)",
+						search: "",
+						searchPlaceholder: "Buscar eventos...",
+						paginate: {
+							first: "Primero",
+							last: "Último",
+							next: "›",
+							previous: "‹"
 						},
-						buttons: {
-							copy: "Copiar",
-							colvis: "Visibilidad"
+						aria: {
+							orderable: "Activar para ordenar ascendente",
+							orderableReverse: "Activar para ordenar descendente"
 						}
 					},
+					layout: {
+						topStart: [],
+						topEnd: 'search',
+						bottomStart: ['pageLength', 'info'],
+						bottomEnd: 'paging'
+					},
+					initComplete: function () {
+
+						const searchContainer = $('.dt-search');
+
+						searchContainer.find('label').remove();
+
+						searchContainer.html(`
+							<div class="kt-input max-w-48 relative">
+							<i class="ki-filled ki-magnifier text-sm text-secondary-foreground"></i>
+							<input
+								id="dt-search-0"
+								type="text"
+								class="w-full "
+								placeholder="Buscar eventos..."
+							/>
+							</div>
+						`);
+
+						searchContainer.find('input').on('keyup', function () {
+							$('#dtTable').DataTable().search(this.value).draw();
+						});
+
+					},
 					drawCallback: function () {
-						$('[data-toggle="tooltip"]').tooltip();
+						KTMenu.createInstances();
 					},
 					order: [[0, "desc"]]
 				});
 			}
 
-
-
 			// Llamar a la función inicial con valores predeterminados
-			updateDateRange(start, end);			
+			updateDateRange();
+
+			// Recargar datos de la tabla
+			loadTableDate();
+
+					
 	});
 </script>
