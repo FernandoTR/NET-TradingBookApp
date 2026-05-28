@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2026-05-28
+
+### Security
+- Hardcoded credentials removed; sensitive data moved to config/secrets.json excluded from git.
+- Rate limiting added to Account endpoints with AccountPolicy (10 requests per 5 seconds per IP).
+- ModelState validation enabled in AccountController.Login (previously commented out).
+- ForgotPassword confirmed to protect against user enumeration by always redirecting to confirmation.
+
+### Changed
+- Connection strings updated to use Encrypt=true instead of TrustServerCertificate=True.
+- TrustServerCertificate and Persist Security Info removed from all connection strings.
+
 ## [1.6.0] - 2026-05-28
 
 ### Changed
