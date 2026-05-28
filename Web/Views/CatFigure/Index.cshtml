@@ -1,160 +1,186 @@
 ﻿@model List<Web.Models.CatFigureViewModel>
-
 @{
-	ViewData["Title"] = "Figuras";
+    ViewBag.Title = "Figuras";
 }
 
-<!--begin::Content wrapper-->
-<div class="d-flex flex-column flex-column-fluid">
-	<!--begin::Toolbar-->
-	<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-		<!--begin::Toolbar container-->
-		<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-			<!--begin::Page title-->
-			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-				<!--begin::Title-->
-				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Catálogo de Figuras</h1>
-				<!--end::Title-->
-				<!--begin::Breadcrumb-->
-				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-					<!--begin::Item-->
-					<li class="breadcrumb-item text-muted">
-						<a href="index.html" class="text-muted text-hover-primary">Configuración</a>
-					</li>
-					<!--end::Item-->
-					<!--begin::Item-->
-					<li class="breadcrumb-item">
-						<span class="bullet bg-gray-500 w-5px h-2px"></span>
-					</li>
-					<!--end::Item-->
-					<!--begin::Item-->
-					<li class="breadcrumb-item text-muted">
-						<a href="index.html" class="text-muted text-hover-primary">Catálogos</a>
-					</li>
-					<!--end::Item-->
-					<!--begin::Item-->
-					<li class="breadcrumb-item">
-						<span class="bullet bg-gray-500 w-5px h-2px"></span>
-					</li>
-					<!--end::Item-->
-					<!--begin::Item-->
-					<li class="breadcrumb-item text-muted">Figuras</li>
-					<!--end::Item-->
-				</ul>
-				<!--end::Breadcrumb-->
+<!-- Header Container -->
+<div class="kt-container-fixed">
+	<div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+		<div class="flex flex-col justify-center gap-2">
+			<h1 class="text-xl font-medium leading-none text-mono">
+				Figuras
+			</h1>
+			<div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+				Gestiona catálogos de figuras del sistema.
 			</div>
-			<!--end::Page title-->
-			<!--begin::Actions-->
-			<div class="d-flex align-items-center gap-2 gap-lg-3">				
-				<!--begin::Primary button-->
-				<a href="javascript:showModalForNew()" class="btn btn-sm fw-bold btn-primary" data-toggle='tooltip' data-placement='top' title='Agregar nueva figura'>Nuevo</a>
-				<!--end::Primary button-->
-			</div>
-			<!--end::Actions-->
 		</div>
-		<!--end::Toolbar container-->
-	</div>
-	<!--end::Toolbar-->
-	<!--begin::Content-->
-	<div id="kt_app_content" class="app-content flex-column-fluid">
-		<!--begin::Content container-->
-		<div id="kt_app_content_container" class="app-container container-fluid">
-			<!--begin::Card-->
-			<div class="card">				
-				<!--begin::Card body-->
-				<div class="card-body pt-6">
-					<!--begin::Table-->
-					<table id="dtTable" class="table align-middle table-row-dashed fs-6 gy-5"></table>
-					<!--end::Table-->
-				</div>
-				<!--end::Card body-->
-			</div>
-			<!--end::Card-->
+		<div class="flex items-center gap-2.5">
 
+			<a class="kt-btn kt-btn-primary" href="javascript:showModalForNew()">
+				<i class="ki-filled ki-plus text-sm"></i>
+				Nuevo
+			</a>
 		</div>
-		<!--end::Content container-->
 	</div>
-	<!--end::Content-->
 </div>
-<!--end::Content wrapper-->
-@section scripts{
+<!-- End of Header Container -->
+<!-- Container -->
+<div class="kt-container-fixed">
+	<div class="grid" bis_skin_checked="1">
+		<div class="kt-card  kt-card-grid h-full min-w-full border border-white/5 shadow-2xs" bis_skin_checked="1">
+            <div class="kt-card-table kt-scrollable-x-auto" bis_skin_checked="1">
+				<table class="kt-table" data-kt-datatable-table="true" id="dtTable"></table>
+            </div>
+
+        </div>
+	</div>
+</div>
+<!-- End of Container -->
+
+
+
+
+@section scripts {
+	<script src="~/Template/assets/vendors/datatables-net/dataTables.min.js"></script>
 	<script>
 		$(document).ready(function () {
-			
 
 			// Función para cargar datos en la tabla
 			function loadTableDate() {
-				$('#dtTable').DataTable({
-					destroy: true, // Destruir instancia previa para evitar conflictos
-					ajax: {
-						url: "@Url.Content("~/CatFigure/JsonDataTable")",
-						type: "POST",
-						dataType: "json"
-					},
-					columns: [
-						{ name: "id", title: "Número", data: "id", autoWidth: true,  className: "min-w-50px " },
-						{ name: "code", title: "Código", data: "code", autoWidth: true,  className: "min-w-100px " },
-						{ name: "description", title: "Descripción", data: "description", autoWidth: true,  className: "text-center min-w-200px " },
-						{ name: "isActived", title: "Estado", data: "isActived", autoWidth: true,  className: "text-center min-w-100px ", render: renderStatus },
-						{ name: "task", title: "Acciones", data: "task", autoWidth: true, orderable: false,  className: "text-end min-w-100px "  }
-					],
-					processing: true,
-					serverSide: true,
-					pageLength: 10,
-					filter: true,
-					language: {
-						sProcessing: "Procesando...",
-						sLengthMenu: "Mostrar _MENU_ registros",
-						sZeroRecords: "No se encontraron resultados",
-						sEmptyTable: "Ningún dato disponible en esta tabla",
-						sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-						sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-						sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
-						sSearch: "Buscar:",
-						sLoadingRecords: "Cargando...",
-						oPaginate: {
-							sFirst: "Primero",
-							sLast: "Último",
-							sNext: "Siguiente",
-							sPrevious: "Anterior"
+
+					// Evita reinicialización incorrecta
+					if ($.fn.DataTable.isDataTable('#dtTable')) {
+						$('#dtTable').DataTable().destroy();
+					}
+
+					$('#dtTable').DataTable({
+						ajax: {
+							url: "@Url.Content("~/CatFigure/JsonDataTable")",
+							type: "POST",
+							dataType: "json"
 						},
-						oAria: {
-							sSortAscending: ": Activar para ordenar la columna de manera ascendente",
-							sSortDescending: ": Activar para ordenar la columna de manera descendente"
+						columns: [
+							{
+								name: "id",
+								title: "Número",
+								data: "id",
+								className: "min-w-[50px]"
+							},
+							{
+								name: "code",
+								title: "Código",
+								data: "code",
+								className: "min-w-[100px]"
+							},
+							{
+								name: "description",
+								title: "Descripción",
+								data: "description",
+								className: "min-w-[200px]"
+							},
+							{
+								name: "isActived",
+								title: "Estado",
+								data: "isActived",
+								className: "text-center min-w-[100px]",
+								render: function (data) {
+									return data
+										? '<span class="kt-badge kt-badge-success">Activo</span>'
+										: '<span class="kt-badge kt-badge-danger">Inactivo</span>';
+								}
+							},
+							{
+								name: "task",
+								title: "",
+								data: "task",
+								orderable: false,
+								className: "text-center min-w-[40px] w-[60px]"
+							}
+						],
+						processing: true,
+						serverSide: true,
+						pageLength: 10,
+						searching: true,
+						language: {
+							processing: "Procesando...",
+							lengthMenu: "Mostrar _MENU_ registros",
+							zeroRecords: "No se encontraron resultados",
+							emptyTable: "Ningún dato disponible en esta tabla",
+							info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+							infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+							infoFiltered: "(filtrado de un total de _MAX_ registros)",
+							search: "",
+							searchPlaceholder: "Buscar figuras...",
+							paginate: {
+								first: "Primero",
+								last: "Último",
+								next: "›",
+								previous: "‹"
+							},
+							aria: {
+								orderable: "Activar para ordenar ascendente",
+								orderableReverse: "Activar para ordenar descendente"
+							}
 						},
-						buttons: {
-							copy: "Copiar",
-							colvis: "Visibilidad"
+						layout: {
+							topStart: [],
+							topEnd: 'search',
+							bottomStart: ['pageLength', 'info'],
+							bottomEnd: 'paging'
+						},
+						initComplete: function () {
+
+								const searchContainer = $('.dt-search');
+
+								searchContainer.find('label').remove();
+
+								searchContainer.html(`
+								<div class="kt-input max-w-48 relative">
+								<i class="ki-filled ki-magnifier text-sm text-secondary-foreground"></i>
+								<input
+									id="dt-search-0"
+									type="text"
+									class="w-full "
+									placeholder="Buscar figuras..."
+								/>
+								</div>
+								`);
+
+								searchContainer.find('input').on('keyup', function () {
+									$('#dtTable').DataTable().search(this.value).draw();
+								});
+
+						},
+						drawCallback: function () {
+							KTMenu.createInstances();
 						}
-					},
-					drawCallback: function () {
-						$('[data-toggle="tooltip"]').tooltip();
-						KTMenu.createInstances(); // Reinitialize Keenthemes menu
-					},					
-				});
+					});
 			}
 
 			// Recargar datos de la tabla
 			loadTableDate();
 		});
 
-		
+
 		function showModal(urlContent, title, subtitle) {
+
 			fetch(urlContent).then((response) => {
 				return response.text();
 			}).then((data) => {
 				$("#contentvModal").html(data);
 				$('#title-modal').html(title);
 				$('#subtitle-modal').html(subtitle);
-				$("#vModal").modal("show");
+
+				const modalEl = document.querySelector('#vModal');
+				const modal = KTModal.getInstance(modalEl);
+				modal.show();
 			});
 		}
 
 
 		function showModalForNew() {
 			urlContentModal = "@Url.Content("~/CatFigure/New")";
-			showModal(urlContentModal, 'Nueva Figuera','');
-			$('[data-toggle="tooltip"]').tooltip()
+			showModal(urlContentModal, 'Nueva Figura','');
 		}
 
 
@@ -164,22 +190,24 @@
 		}
 
 		function showModaltoDelete(id) {
-			console.log(id)
+			const modalEl = document.querySelector('#confirmDialog');
+			const modal = KTModal.getInstance(modalEl);
+
 			$("#confirmButtonYes").bind('click', () => {
 				$("#confirmButtonYes").unbind('click');
-				$("#confirmDialog").modal("hide");
+				modal.hide();
 				processingDelete(id);
 			});
 			$('#confirmDialogContent').html('¿Esta usted seguro de eliminar la figura?')
 			$('#confirmTitle').html('Dar de baja la figura');
-			$("#confirmDialog").modal("show");
+			modal.show();
 		}
 
 		function processingDelete(id) {
 			var urlConfirmModal = "@Url.Content("~/CatFigure/Delete")";
 			fetch(urlConfirmModal, {
 				method: 'POST',
-				body: JSON.stringify(id), 
+				body: JSON.stringify(id),
 				headers: {
 					'Content-Type': 'application/json'
 				}
@@ -196,4 +224,6 @@
 		}
 
 	</script>
+
+
 }

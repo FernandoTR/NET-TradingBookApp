@@ -9,6 +9,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Web.Enums;
 using Web.Helpers;
 using Web.Models;
 using Web.Models.Enums;
@@ -130,6 +131,7 @@ public class OrdersController : Controller
                         {
                             Id = x.Id,
                             StatusId = x.StatusId,
+                            DirectionId = x.DirectionId,
                             CategoryName = x.CategoryName,
                             AccountTypeName = x.AccountTypeName,
                             SymbolName = x.SymbolName,
@@ -149,24 +151,38 @@ public class OrdersController : Controller
                             TP3Style = x.TP3Style,
                             Target = x.Target,
                             Chart = x.Chart,
-                            Task = (x.StatusId != 1) ? "" : ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
+                            Task = (x.StatusId != 1)
+                            ? (x.DirectionId != 0) ? ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
+                                                        {
+                                                            Id = x.Id.ToString(),
+                                                            ActionOptionMenus = new List<ActionOptionMenuModel>
+                                                            {
+                                                             new ActionOptionMenuModel
+                                                             {
+                                                                 ActionType = ActionType.View,
+                                                                 JavaScriptAction = "showModalForUpdate",
+                                                             },
+                                                            }
+                                                        }) 
+                                                    : "" 
+                            : ActionButtonHelper.GenerateActionMenu(new ActionMenuModel
                             {
                                 Id = x.Id.ToString(),
                                 ActionOptionMenus = new List<ActionOptionMenuModel>
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Eliminar",
+                                     ActionType = ActionType.Delete,
                                      JavaScriptAction = "toDeleteOrder",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Cerrar",
+                                     ActionType = ActionType.Close,
                                      JavaScriptAction = "showModalForClose",
                                  },
                                 }

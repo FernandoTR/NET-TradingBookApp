@@ -15,704 +15,486 @@
 
 }
 
+<form id="kt_modal_stepper_form" novalidate="novalidate">
+	<div class="flex grow gap-5 lg:gap-7.5">
 
-<!--begin::Stepper-->
-<div class="stepper stepper-links d-flex flex-column gap-5" id="kt_modal_top_up_wallet_stepper">
-	<!--begin::Nav-->
-	<div class="stepper-nav justify-content-center py-2">
-		<!--begin::Step 1-->
-		<div class="stepper-item current" data-kt-stepper-element="nav">
-			<h3 class="stepper-title">Información General</h3>
-		</div>
-		<!--end::Step 1-->
-		<!--begin::Step 2-->
-		<div class="stepper-item" data-kt-stepper-element="nav">
-			<h3 class="stepper-title">Información Compra</h3>
-		</div>
-		<!--end::Step 2-->
-	</div>
-	<!--end::Nav-->
-	<!--begin::Form-->
-	<form class="mx-auto w-100 mw-600px pt-2 pb-10" novalidate="novalidate" id="kt_modal_top_up_wallet_stepper_form">
-		
-		<!--begin::Step 1-->
-		<div class="current" data-kt-stepper-element="content">
-			<!--begin::Wrapper-->
-			<div class="w-100">
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Categoría:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderCategoryId", CategoryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
+		<!-- Sidebar -->
+		<div class="hidden lg:block w-[230px] shrink-0">
+			<div class="w-[230px] fixed z-10 kt-scrollable-y-auto" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="225px" data-kt-scrollable-wrappers="#modal_orders_content">
+				<div class="flex flex-col grow relative before:absolute before:left-[11px] before:top-0 before:bottom-0 before:border-l before:border-border" data-kt-scrollspy="true" data-kt-scrollspy-offset="110px" data-kt-scrollspy-target="#modal_orders_body">
+
+					<div class="flex flex-col">
+						<div class="pl-6 pr-2.5 py-2.5 text-sm font-semibold text-mono">
+							Setup
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-5">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Cuenta:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderAccountTypeId", AccountTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-4">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Instrumento:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderInstrumentId", InstrumentItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">					
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Fecha:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="CreationDate" name="CreationDate" class="form-control form-control-solid" />
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-5">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tiempo:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Time" name="Time" class="form-control form-control-solid" />
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-4">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Día:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("DayId", DayItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					
-				</div>
-
-				<!--begin::Separator-->
-				<div class="separator d-flex flex-center mt-10">
-					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Contexto de Mercado</span>
-				</div>
-				<!--end::Separator-->
-
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Etapa:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("StageId", StageItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Dirección:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("DirectionId", DirectionItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
-								<span class="required">Ubicación en la estructura:</span>
-								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica dónde estás operando dentro de la estructura: Soporte (mejor), Medio (neutral), Resistencia (riesgo).">
-									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-										<span class="path1"></span>
-										<span class="path2"></span>
-										<span class="path3"></span>
-									</i>
+						<div class="flex flex-col">
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 active border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_general">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-							</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="LocationType" name="LocationType" aria-hidden="true">
-									<option selected="selected" value="" data-select2-id="select2-data-31-ug7m"></option>
-									<option value="1">SOPORTE</option>
-									<option value="2">MEDIO</option>
-									<option value="3">RESISTENCIA</option>
-								</select>
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->								
-				</div>
-
-				<div class="row pt-2">					
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
-								<span class="required">¿Tu trade va con la tendencia?</span>
-								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica si tu operación va a favor de la tendencia principal. A favor suma probabilidad, en contra la reduce.">
-									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-										<span class="path1"></span>
-										<span class="path2"></span>
-										<span class="path3"></span>
-									</i>
+								Información Básica
+							</a>
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_context">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-							</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="IsTrendAligned" name="IsTrendAligned" aria-hidden="true">
-									<option selected="selected" value=""></option>
-									<option value="0">EN CONTRA</option>
-									<option value="1">A FAVOR</option>
-								</select>
-							</div>
-							<!--end::Col-->
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
-								<span class="required">Zona de indecisión:</span>
-								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Indica si el precio está en zona de indecisión o rango.">
-									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-										<span class="path1"></span>
-										<span class="path2"></span>
-										<span class="path3"></span>
-									</i>
+								Contexto de Mercado
+							</a>
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_structure">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-							</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="IsPivotZone" name="IsPivotZone" aria-hidden="true">
-									<option selected="selected" value=""></option>
-									<option value="0">NO</option>
-									<option value="1">SI</option>
-								</select>
-							</div>
-							<!--end::Col-->
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-
-				<!--begin::Separator-->
-				<div class="separator d-flex flex-center  mt-10">
-					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Estructura </span>
-				</div>
-				<!--end::Separator-->
-
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Figura:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("FigureId", FigureItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Frame:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderFrameId", FrameItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-
-
-				<!--begin::Separator-->
-				<div class="separator d-flex flex-center  mt-10">
-					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Entrada  </span>
-				</div>
-				<!--end::Separator-->
-
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Gatillo:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("TriggerId", TriggerItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="d-flex align-items-center col-form-label fw-bold fs-6">
-								<span class="required">Tipo de confirmación:</span>
-								<span class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Define el tipo de confirmación antes de entrar. Canal Desc: Long → Reversal o Short → Continuation">
-									<i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-										<span class="path1"></span>
-										<span class="path2"></span>
-										<span class="path3"></span>
-									</i>
+								Estructura
+							</a>
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_entry">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-							</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="ConfirmationType" name="ConfirmationType" aria-hidden="true">
-									<option selected="selected" value=""></option>
-									<option value="0">NONE</option>
-									<option value="1">CONTINUATION BREAK</option>
-									<option value="2">CONTINUATION RETEST</option>
-									<option value="3">REVERSAL BREAK</option>
-									<option value="4">REVERSAL RETEST</option>
-								</select>
-							</div>
-							<!--end::Col-->
+								Entrada
+							</a>
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_evaluation">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
+								</span>
+								Evaluación
+							</a>
 						</div>
-
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
-				</div>
-
-				<!--begin::Separator-->
-				<div class="separator d-flex flex-center  mt-10">
-					<span class="text-uppercase bg-body fs-7 fw-semibold text-muted px-3">Evaluación   </span>
-				</div>
-				<!--end::Separator-->
-
-				<div class="row pt-2">					
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Escenario:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("SceneryId", SceneryItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
+					<div class="flex flex-col">
+						<div class="pl-6 pr-2.5 py-2.5 text-sm font-semibold text-mono">
+							Trade
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Grade:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" class="form-control form-control-solid" placeholder="Grade" disabled />
-							</div>
-							<!--end::Col-->
+						<div class="flex flex-col">
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_trade">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
+								</span>
+								Órden y Costos
+							</a>
 						</div>
-
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Score:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" class="form-control form-control-solid" placeholder="Score" disabled />
-							</div>
-							<!--end::Col-->
-						</div>
 
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
 				</div>
 			</div>
-			<!--end::Wrapper-->
 		</div>
-		<!--end::Step 1-->
-		<!--begin::Step 2-->
-		<div data-kt-stepper-element="content">
-			<!--begin::Wrapper-->
-			<div class="w-100">
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Orden:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderTypeId", OrderTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
+		<!-- End of Sidebar -->
 
-						<!--end::Row-->
+		<!-- Content -->
+		<div id="modal_orders_body" class="flex flex-col items-stretch grow gap-5 lg:gap-7.5" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="200px" id="modal_orders_content">
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_general">
+					<h3 class="kt-card-title">
+						Información Básica
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Categoría:</label>
+							@Html.DropDownList("OrderCategoryId", CategoryItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
 					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Trade:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="TradeTypeId" name="TradeTypeId">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Tipo de Cuenta:</label>
+							@Html.DropDownList("OrderAccountTypeId", AccountTypeItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Instrumento:</label>
+							@Html.DropDownList("OrderInstrumentId", InstrumentItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Fecha:</label>
+							<input type="text" id="CreationDate" name="CreationDate" class="kt-input" />
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Tiempo:</label>
+							<input type="text" id="Time" name="Time" class="kt-input" />
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Día:</label>
+							@Html.DropDownList("DayId", DayItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_context">
+					<h3 class="kt-card-title">
+						Contexto de Mercado
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Etapa:</label>
+							@Html.DropDownList("StageId", StageItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Dirección:</label>
+							@Html.DropDownList("DirectionId", DirectionItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Ubicación en la estructura:</label>
+							<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="LocationType" name="LocationType">
+								<option value="1">SOPORTE</option>
+								<option value="2">MEDIO</option>
+								<option value="3">RESISTENCIA</option>
+							</select>
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">¿Tu trade va con la tendencia?</label>
+							<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="IsTrendAligned" name="IsTrendAligned">
+								<option value="0">EN CONTRA</option>
+								<option value="1">A FAVOR</option>
+							</select>
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Zona de indecisión:</label>
+							<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="IsPivotZone" name="IsPivotZone">
+								<option value="0">NO</option>
+								<option value="1">SI</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_structure">
+					<h3 class="kt-card-title">
+						Estructura
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Figura:</label>
+							@Html.DropDownList("FigureId", FigureItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Frame:</label>
+							@Html.DropDownList("OrderFrameId", FrameItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_entry">
+					<h3 class="kt-card-title">
+						Entrada
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Gatillo:</label>
+							@Html.DropDownList("TriggerId", TriggerItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Tipo de confirmación:</label>
+							<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="ConfirmationType" name="ConfirmationType">
+								<option value="0">NONE</option>
+								<option value="1">CONTINUATION BREAK</option>
+								<option value="2">CONTINUATION RETEST</option>
+								<option value="3">REVERSAL BREAK</option>
+								<option value="4">REVERSAL RETEST</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_evaluation">
+					<h3 class="kt-card-title">
+						Evaluación
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Escenario:</label>
+							@Html.DropDownList("SceneryId", SceneryItems, new
+							{
+								@class = "kt-select",
+								data_kt_select = "true",
+								data_kt_select_enable_search = "true",
+								data_kt_select_search_placeholder = "Buscar...",
+								data_kt_select_placeholder = "Selecciona uno...",
+								data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+							})
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Grade:</label>
+							<input type="text" class="kt-input" placeholder="Grade" disabled />
+						</div>
+					</div>
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Score:</label>
+							<input type="text" class="kt-input" placeholder="Score" disabled />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5 mb-10">
+				<div class="kt-card-header" id="order_trade">
+					<h3 class="kt-card-title">
+						Órden y Costos
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Tipo de Orden:</label>
+								@Html.DropDownList("OrderTypeId", OrderTypeItems, new
+								{
+									@class = "kt-select",
+									data_kt_select = "true",
+									data_kt_select_enable_search = "true",
+									data_kt_select_search_placeholder = "Buscar...",
+									data_kt_select_placeholder = "Selecciona uno...",
+									data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+								})
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Tipo de Trade:</label>
+								<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="true" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="TradeTypeId" name="TradeTypeId">
 									<option value=""></option>
-									<option selected="selected"  value="Buy">Compra</option>
+									<option selected="selected" value="Buy">Compra</option>
 								</select>
 							</div>
-							<!--end::Col-->
 						</div>
-
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
-					
-				</div>
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Cantidad:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Quantity" name="Quantity" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0"  />
+					<div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Cantidad:</label>
+								<input type="text" id="Quantity" name="Quantity" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
-							<!--end::Col-->
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Precio:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Price" name="Price" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Precio:</label>
+								<input type="text" id="Price" name="Price" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
-							<!--end::Col-->
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Comisión:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="CommissionRate" name="CommissionRate" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0.001" />
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Comisión:</label>
+								<input type="text" id="CommissionRate" name="CommissionRate" class="kt-input" autocomplete="off" maxlength="18" value="0.001" />
 							</div>
-							<!--end::Col-->
 						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Total:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Total" name="Total" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Total:</label>
+								<input type="text" id="Total" name="Total" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
-							<!--end::Col-->
 						</div>
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
 				</div>
 			</div>
-			<!--end::Wrapper-->
+
 		</div>
-		<!--end::Step 2-->
-		<!--begin::Actions-->
-		<div class="d-flex flex-stack pt-10">
-			<!--begin::Wrapper-->
-			<div class="me-2">
-				<button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
-					<i class="ki-duotone ki-arrow-left fs-3 me-1">
-						<span class="path1"></span>
-						<span class="path2"></span>
-					</i>Atrás
-				</button>
-			</div>
-			<!--end::Wrapper-->
-			<!--begin::Wrapper-->
-			<div>
-				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit" id="submitButton">
-					<span class="indicator-label">
-						Guardar
-						<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
-							<span class="path1"></span>
-							<span class="path2"></span>
-						</i>
-					</span>
-					<span class="indicator-progress">
-						Espere por favor...
-						<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-					</span>
-				</button>
-				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="next">
-					Continuar
-					<i class="ki-duotone ki-arrow-right fs-3 ms-1 me-0">
-						<span class="path1"></span>
-						<span class="path2"></span>
-					</i>
-				</button>
-			</div>
-			<!--end::Wrapper-->
-		</div>
-		<!--end::Actions-->
-	</form>
-	<!--end::Form-->
-</div>
-<!--end::Stepper-->
+		<!-- End of Content -->
+	</div>
+
+	<div class="kt-modal-footer gap-2.5 justify-end px-2 pb-0 pt-4">
+		<button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#modal_orders">Cancelar</button>
+		<button type="button" class="kt-btn kt-btn-primary" id="submitButton">
+			Guardar
+		</button>
+	</div>
+</form>
+
+
+
 <script>
-    $(document).ready(function () {
-		// Define form element
-		let form = document.getElementById('kt_modal_top_up_wallet_stepper_form');
+	$(document).ready(function () {	
+		InitSelect();
 
-		 // Init form validation rules.
-		var validatorStep1 = FormValidation.formValidation(
+		let form = document.getElementById('kt_modal_stepper_form');
+		const submitButton = document.getElementById('submitButton');
+
+		const validator = FormValidation.formValidation(
 			form,
 			{
 				fields: {
-					'CategoryId': {
+					'OrderCategoryId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'La categoría es obligatoria'
 							},
 						}
 					},
-					'AccountTypeId': {
+					'OrderAccountTypeId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El tipo de cuenta es obligatorio'
 							},
 						}
 					},
-					'InstrumentId': {
+					'OrderInstrumentId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El instrumento es obligatorio'
 							},
 						}
 					},
 					'DayId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El día es obligatorio'
 							},
 						}
 					},
 					'StageId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'La etapa es obligatoria'
 							},
 						}
 					},
 					'FigureId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'La figura es obligatoria'
 							},
 						}
 					},
-					'FrameId': {
+					'OrderFrameId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El frame es obligatorio'
 							},
 						}
 					},
 					'TriggerId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El gatillo es obligatorio'
 							},
 						}
 					},
 					'DirectionId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'La dirección es obligatoria'
 							},
 						}
 					},
 					'SceneryId': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El escenario es obligatorio'
 							},
 						}
 					},
-				},
-				plugins: {
-					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
-					}),
-				}
-
-			}
-		);
-
-		// Init form validation rules.
-		var validatorStep2 = FormValidation.formValidation(
-			form,
-			{
-				fields: {
 					'Total': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El total es obligatorio'
 							},
 							callback: {
-								message: 'Obligatorio',
+								message: 'El total debe ser mayor a 0',
 								callback: function (input) {
-									const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0; // Convierte a número
-
+									const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0;
 									return cashValue > 0;
 								},
 							},
@@ -721,86 +503,82 @@
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
+					submitButton: new FormValidation.plugins.SubmitButton(),
+					message: new FormValidation.plugins.Message({
+						clazz: 'text-red-500 text-sm mt-1',
+						container: function (field, element) {
+							return element.closest('.fv-row');
+						}
 					}),
 				}
-
 			}
-		);
-
-		// Stepper lement
-		var element = document.querySelector("#kt_modal_top_up_wallet_stepper");
-
-		// Initialize Stepper
-		var stepper = new KTStepper(element);
-
-		// Handle next step
-		stepper.on("kt.stepper.next", function (stepper) {			
-			if (validatorStep1) {
-				validatorStep1.validate().then(function (status) {
-					if (status == 'Valid') {
-						stepper.goNext(); // go next step
+		)
+		.on('core.element.validated', function (e) {
+			if (e.element.tagName === 'SELECT' && e.element.classList.contains('kt-select')) {
+				const wrapper = e.element.closest('.kt-select');
+				if (wrapper) {
+					if (e.valid) {
+						wrapper.classList.remove('border-destructive', 'ring-1', 'ring-red-500');
+						wrapper.classList.add('border-green-500');
+					} else {
+						wrapper.classList.remove('border-green-500');
+						wrapper.classList.add('border-destructive', 'ring-1', 'ring-red-500');
 					}
-				});
+				}
+			} else {
+				if (e.valid) {
+					e.element.classList.remove('border-destructive', 'ring-1', 'ring-red-500');
+					e.element.classList.add('border-green-500');
+				} else {
+					e.element.classList.remove('border-green-500');
+					e.element.classList.add('border-destructive', 'ring-1', 'ring-red-500');
+				}
 			}
 		});
 
-		// Handle previous step
-		stepper.on("kt.stepper.previous", function (stepper) {
-			stepper.goPrevious(); // go previous step
+		// Initialize all scrollspys
+		KTScrollspy.init();
+
+		// Initialzie pending scrollspys
+		KTScrollspy.createInstances();
+
+		// Get scrollspy object
+		const scrollspyEl = document.querySelector('#modal_orders_content');
+		const scrollspy = KTScrollspy.getInstance(scrollspyEl);
+
+		 submitButton.addEventListener('click', function (e) {
+				e.preventDefault();
+
+				validator.validate().then(function (status) {
+
+				if (status === 'Valid') {
+
+					submitButton.disabled = true;
+
+					AddOrder();
+				}
+			});
 		});
-
-		const submitButton = document.getElementById('submitButton');
-		submitButton.addEventListener("click", function () {
-			// Prevent default button action
-			// e.preventDefault();
-
-			// Validate form before submit
-			if (validatorStep2) {
-				validatorStep2.validate().then(function (status) {
-					if (status == 'Valid') {
-						// Show loading indication
-						submitButton.setAttribute('data-kt-indicator', 'on');
-
-						// Disable button to avoid multiple click
-						submitButton.disabled = true;
-
-						AddOrder();
-					}
-				});
-			}
-
-		});
-
 
 
 		function AddOrder() {
-			// Parser seguro para booleanos
 			const parseBool = (val) => {
 				if (typeof val === 'boolean') return val;
-
 				if (typeof val === 'string') {
-				const normalized = val.trim().toLowerCase();
-				return ['true', '1', 'yes', 'on'].includes(normalized);
+					const normalized = val.trim().toLowerCase();
+					return ['true', '1', 'yes', 'on'].includes(normalized);
 				}
-
 				if (typeof val === 'number') {
-				return val !== 0;
+					return val !== 0;
 				}
-
 				return false;
 			};
 
-			// Helper para obtener valores de los inputs con conversión segura
 			const getValue = (selector, parser = (val) => val, defaultValue = null) => {
 				const element = document.querySelector(selector);
 				return element ? parser(element.value || defaultValue) : defaultValue;
 			};
 
-			// Obtener los valores del formulario
 			const data = {
 				CategoryId: getValue('#OrderCategoryId', parseInt, 0),
 				AccountTypeId: getValue('#OrderAccountTypeId', parseInt, 0),
@@ -826,8 +604,6 @@
 				ConfirmationType: getValue('#ConfirmationType', parseInt, 0),
 			};
 
-            console.log('Datos a enviar:', data);
-
 			var url = "@Url.Content("~/Orders/AddOrder")";
 			fetch(url, {
 				method: 'POST',
@@ -837,82 +613,84 @@
 				}
 			}).then(res => res.json())
 			.catch(error => console.error('Error:', error))
-			.then((data) => {
-				// Show loading indication
-				submitButton.setAttribute('data-kt-indicator', 'off');
-
-				// Disable button to avoid multiple click
+			.then((data) => {				
 				submitButton.disabled = false;
 
 				ShowNotification(data.notificationType, data.message);
 
 				if(data.success)
 				{
-				   $("#vModal").modal("hide");
-				   LoadDataTable();
+					const modalEl = document.querySelector('#modal_orders');
+					const modal = KTModal.getInstance(modalEl);
+					modal.hide();
+					LoadDataTable();
 				}
-
-
 			});
-
-
 		}
 
 	});
 
-	//Script para que funcione el select2 en el modal
-	$('#OrderCategoryId, #OrderAccountTypeId, #OrderInstrumentId, #DayId, #DayId, #StageId, #FigureId, #OrderFrameId, #TriggerId, #DirectionId, #SceneryId, #OrderTypeId, #TradeTypeId, #LocationType, #IsTrendAligned, #IsPivotZone, #ConfirmationType')
-	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
 
-    $("#Time").flatpickr({
+	function InitSelect(){
+		KTSelectHelper.clear('#OrderCategoryId');
+		KTSelectHelper.clear('#OrderAccountTypeId');
+		KTSelectHelper.clear('#OrderInstrumentId');
+		KTSelectHelper.clear('#DayId');
+		KTSelectHelper.clear('#StageId');
+		KTSelectHelper.clear('#DirectionId');
+		KTSelectHelper.clear('#IsTrendAligned');
+		KTSelectHelper.clear('#IsPivotZone');
+		KTSelectHelper.clear('#FigureId');
+		KTSelectHelper.clear('#OrderFrameId');
+		KTSelectHelper.clear('#TriggerId');
+		KTSelectHelper.clear('#ConfirmationType');
+		KTSelectHelper.clear('#SceneryId');
+		KTSelectHelper.clear('#LocationType');
+		KTSelectHelper.clear('#IsTrendAligned');
+		KTSelectHelper.clear('#OrderTypeId');
+		KTSelectHelper.clear('#TradeTypeId');
+
+		
+	}
+
+
+
+	$("#Time").flatpickr({
 		enableTime: true,
 		noCalendar: true,
-		dateFormat: "H:i", // Formato hora:minutos
+		dateFormat: "H:i",
 		defaultDate: new Date(),
-		minuteIncrement: 1, // <-- Esto hace que avance de 1 en 1 minuto
-		allowInput: true    // Permite escribir manualmente la hora
-    });
+		minuteIncrement: 1,
+		allowInput: true
+	});
 
 	$("#CreationDate").flatpickr({
 		enableTime: false,
 		noCalendar: false,
 		locale: "es",
 		defaultDate: new Date(),
-		allowInput: true,    // Permite escribir manualmente la fecha
+		allowInput: true,
 		onReady: function(selectedDates, dateStr, instance) {
 			if (selectedDates.length > 0) {
-				// Obtén la fecha seleccionada como objeto Date
 				const selectedDate = selectedDates[0];
-
-				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
 				const dayOfWeek = selectedDate.getDay();
-
-				// Establece el valor del día de la semana en el select
-				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
+				const value = dayOfWeek == 0 ? 7 : dayOfWeek;
+				KTSelectHelper.setValue('#DayId', value.toString());
 			}
 		},
 		onChange: function(selectedDates, dateStr, instance) {
 			if (selectedDates.length > 0) {
-				// Obtén la fecha seleccionada como objeto Date
 				const selectedDate = selectedDates[0];
-
-				// Obtén el número del día de la semana (0 = domingo, 6 = sábado)
 				const dayOfWeek = selectedDate.getDay();
-
-                // Establece el valor del día de la semana en el select
-				$('#DayId').val(dayOfWeek == 0 ? 7 : dayOfWeek).trigger('change');
+				const value = dayOfWeek == 0 ? 7 : dayOfWeek;
+				KTSelectHelper.setValue('#DayId', value.toString());
 			}
 		}
 	});
 
-	Inputmask("decimal", {
-		groupSeparator: ",",         // Separador de miles
-		digits: 4,                   // Número de decimales
-		digitsOptional: false,       // Obliga a mostrar los decimales
-		prefix: "",                  // Prefijo de moneda
-		rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
-		allowMinus: false,           // No permitir números negativos
-		autoUnmask: true,            // Devuelve el valor sin formato al enviar
-	}).mask("#Quantity, #Price, #CommissionRate, #Total");
-	
+	InputMaskHelper.decimal('#Quantity');
+	InputMaskHelper.decimal('#Price');
+	InputMaskHelper.decimal('#CommissionRate');
+	InputMaskHelper.decimal('#Total');
+
 </script>
