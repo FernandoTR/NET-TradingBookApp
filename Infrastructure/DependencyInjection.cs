@@ -23,6 +23,12 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
+        
+        var configPath = Path.GetFullPath(
+            Path.Combine(builder.Environment.ContentRootPath, "..", "config", "secrets.template.json")
+        );
+        builder.Configuration.AddJsonFile(configPath, optional: true, reloadOnChange: true);
+
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         Guard.Against.Null(connectionString, message: "Connection string 'DefaultConnection' not found.");       
 

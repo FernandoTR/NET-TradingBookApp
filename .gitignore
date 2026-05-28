@@ -10,8 +10,9 @@
 *.userosscache
 *.sln.docstates
 
-# Ignorar archivos de configuración con datos sensibles
+# Ignorar archivos de configuraciï¿½n con datos sensibles
 appsettings.*.json
+config/secrets.json
 
 # Ignorar todo en Logs excepto Index.cshtml
 Views/Logs/*
