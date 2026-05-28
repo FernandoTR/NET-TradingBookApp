@@ -19,7 +19,7 @@
 - Repositories call database objects such as `usp_GetOrdersDataTable` and view `View_Orders`; build can pass without those objects, but runtime analytics/order flows need a compatible database.
 
 ## App Settings And Runtime Gotchas
-- `Web/appsettings*.json` carries connection string, SMTP, and app URL settings; `.gitignore` excludes `appsettings.*.json`, so avoid adding new real secrets there.
+- Real credentials (connection strings, SMTP) go in `config/secrets.json` (excluded from git). Use `config/secrets.template.json` as reference. `appsettings*.json` contains only `__CHANGE_ME__` placeholders.
 - Authentication cookies use `CookieSecurePolicy.Always`; use the HTTPS launch profile when checking sign-in/auth flows.
 - Request localization is hard-coded to `es-MX` in `Web/Program.cs`; date/number UI behavior follows that culture.
 - Static JS/CSS libraries are vendored under `Web/wwwroot/Template`; there is no npm/package manifest in this repo.
