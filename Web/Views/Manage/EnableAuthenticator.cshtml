@@ -6,115 +6,157 @@
 <!--begin::Modal - Two-factor authentication-->
 <!--begin::Options-->
 <div data-kt-element="options">
-	<!--begin::Notice-->
-	<p class="text-muted fs-5 fw-semibold mb-10">Además de su nombre de usuario y contraseña, deberá ingresar un código (entregado a través de la aplicación o SMS) para iniciar sesión en su cuenta.</p>
-	<!--end::Notice-->
-	<!--begin::Wrapper-->
-	<div class="pb-10">
-		<!--begin::Option-->
-		<input type="radio" class="btn-check" name="auth_option" value="apps" checked="checked" id="kt_modal_two_factor_authentication_option_1" />
-		<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5" for="kt_modal_two_factor_authentication_option_1">
-			<i class="ki-duotone ki-setting-2 fs-4x me-4">
-				<span class="path1"></span>
-				<span class="path2"></span>
-			</i>
-			<span class="d-block fw-semibold text-start">
-				<span class="text-gray-900 fw-bold d-block fs-3">Aplicaciones de autenticación</span>
-				<span class="text-muted fw-semibold fs-6">Obtenga códigos de una aplicación como Google Authenticator, Microsoft Authenticator, Authy o 1Password.</span>
-			</span>
-		</label>
-		<!--end::Option-->
-		<!--begin::Option-->
-		<input type="radio" class="btn-check" name="auth_option" value="sms" id="kt_modal_two_factor_authentication_option_2" disabled />
-		<label class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center" for="kt_modal_two_factor_authentication_option_2">
-			<i class="ki-duotone ki-message-text-2 fs-4x me-4">
-				<span class="path1"></span>
-				<span class="path2"></span>
-				<span class="path3"></span>
-			</i>
-			<span class="d-block fw-semibold text-start">
-				<span class="text-gray-900 fw-bold d-block fs-3">SMS</span>
-				<span class="text-muted fw-semibold fs-6">Le enviaremos un código por SMS si necesita utilizar su método de inicio de sesión de respaldo.</span>
-			</span>
-		</label>
-		<!--end::Option-->
+	<div class="kt-card-content grid gap-5">
+		<div class="kt-form-description pb-5 text-2sm" >
+			Además de su nombre de usuario y contraseña, deberá ingresar un código (entregado a través de la aplicación o SMS) para iniciar sesión en su cuenta.
+		</div>
+		<div class="grid grid-cols-1 lg:grid-cols-1 gap-5 lg:gap-7.5" >
+			<label class="flex align-stretch cursor-pointer bg-center h-24 bg-no-repeat border border-input rounded-xl border-dashed has-checked:border-primary bg-[length:500px] sso-active singl-sign-on-bg">
+				<div class="flex flex-wrap items-center justify-between gap-5" >
+					<div class="flex items-center gap-2.5 ml-5">
+						<div class="relative size-[44px] shrink-0" >
+							<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+								<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+									18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+									39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+								</path>
+								<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+									18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+									39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+								</path>
+							</svg>
+							<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+								<i class="ki-filled ki-scan-barcode text-xl text-muted-foreground">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</div>
+						</div>
+						<div class="flex flex-col gap-0.5" >
+							<span class="leading-none font-medium text-base text-mono">
+								Aplicaciones de autenticación
+							</span>
+							<span class="text-sm text-secondary-foreground">
+								Obtenga códigos de una aplicación como Google Authenticator, Microsoft Authenticator, Authy o 1Password.
+							</span>
+						</div>
+						<input class="appearance-none" name="auth_option" type="radio" value="apps" checked="checked" id="kt_modal_two_factor_authentication_option_1">
+					</div>
+				</div>
+				
+			</label>
+			<label class="flex align-stretch cursor-pointer bg-center h-24 bg-no-repeat border border-input rounded-xl border-dashed has-checked:border-primary bg-[length:500px] sso-active singl-sign-on-bg">
+				<div class="flex flex-wrap items-center justify-between gap-5" >
+					<div class="flex items-center gap-2.5 ml-5" >
+						<div class="relative size-[44px] shrink-0" >
+							<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+								<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+									18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+									39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+								</path>
+								<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+									18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+									39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+								</path>
+							</svg>
+							<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+								<i class="ki-filled ki-message-text-2 text-xl text-muted-foreground">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</div>
+						</div>
+						<div class="flex flex-col gap-0.5" >
+							<span class="leading-none font-medium text-base text-mono">
+								SMS
+							</span>
+							<span class="text-sm text-secondary-foreground">
+								Le enviaremos un código por SMS si necesita utilizar su método de inicio de sesión de respaldo.
+							</span>
+						</div>
+						<input class="appearance-none" name="auth_option" type="radio" value="sms"  id="kt_modal_two_factor_authentication_option_2" disabled>
+					</div>
+				</div>
+			</label>
+		</div>
 	</div>
-	<!--end::Options-->
-	<!--begin::Action-->
-	<button class="btn btn-primary w-100" data-kt-element="options-select" id="kt_auth_options_button">Continuar</button>
-	<!--end::Action-->
+	<!--begin::Actions-->
+	<div class="kt-modal-footer gap-2.5 justify-end">
+		<button type="button" id="kt_auth_options_button" class="kt-btn kt-btn-secondary" data-kt-element="options-select">Continuar</button>
+	</div>
+	<!--end::Actions-->
 </div>
 <!--end::Options-->
 <!--begin::Apps-->
-<div class="d-none" data-kt-element="apps">
-	<!--begin::Heading-->
-	<h3 class="text-gray-900 fw-bold mb-7">
-		Aplicaciones de autenticación
-	</h3>
-	<!--end::Heading-->
-	<!--begin::Description-->
-	<div class="text-gray-500 fw-semibold fs-6 mb-10">
-		Usando una aplicación de autenticación como
-		<a href="https://support.google.com/accounts/answer/1066447?hl=en" target="_blank">Google Authenticator</a>,
-		<a href="https://www.microsoft.com/en-us/account/authenticator" target="_blank">Microsoft Authenticator</a>,
-		<a href="https://authy.com/download/" target="_blank">Authy</a>, or
-		<a href="https://support.1password.com/one-time-passwords/" target="_blank">1Password</a>,
-		escanea el código QR. Generará un código de 6 dígitos para que lo ingrese a continuación.
-		<!--begin::QR code image-->
-		<div class="pt-5 text-center">
-			<img src="@Url.Action("Generate", "Manage", new { content = Model.AuthenticatorUri ?? string.Empty })" alt="Código QR" class="mw-150px" />
-		</div>
-		<!--end::QR code image-->
-	</div>
-	<!--end::Description-->
-	<!--begin::Notice-->
-	<div class="notice d-flex bg-light-warning rounded border-warning border border-dashed mb-10 p-6">
-		<!--begin::Icon-->
-		<i class="ki-duotone ki-information fs-2tx text-warning me-4">
-			<span class="path1"></span>
-			<span class="path2"></span>
-			<span class="path3"></span>
-		</i>
-		<!--end::Icon-->
-		<!--begin::Wrapper-->
-		<div class="d-flex flex-stack flex-grow-1">
-			<!--begin::Content-->
-			<div class="fw-semibold">
-				<div class="fs-6 text-gray-700">
-					Si tiene problemas para usar el código QR, seleccione la entrada manual en su aplicación e ingrese su nombre de usuario y el código:
-					<div class="fw-bold text-gray-900 pt-2" id="kt_twofactor_code">@Model.SharedKey</div>
-				</div>
-			</div>
-			<!--end::Content-->
-		</div>
-		<!--end::Wrapper-->
-	</div>
-	<!--end::Notice-->
+<div class="hidden" data-kt-element="apps">
 	<!--begin::Form-->
 	<form class="form" action="#" id="apps-form">
-		<!--begin::Input group-->
-		<div class="mb-10 fv-row">
-			<input type="text" class="form-control form-control-lg form-control-solid" placeholder="Introduzca el código de autenticación" id="codeAuthentication" name="codeAuthentication" maxlength="6" />
+		<div class="kt-card-content grid gap-5">
+			<div class="kt-form-description pb-5 text-2sm text-foreground" bis_skin_checked="1">
+				Usando una aplicación de autenticación como
+				<a class="kt-link" href="https://support.google.com/accounts/answer/1066447?hl=en" target="_blank">Google Authenticator</a>,
+				<a class="kt-link" href="https://www.microsoft.com/en-us/account/authenticator" target="_blank">Microsoft Authenticator</a>,
+				<a class="kt-link" href="https://authy.com/download/" target="_blank">Authy</a>, o
+				<a class="kt-link" href="https://support.1password.com/one-time-passwords/" target="_blank">1Password</a>,
+				escanea el código QR. Generará un código de 6 dígitos para que lo ingrese a continuación.
+			</div>
+			<div class="flex flex-col items-center gap-2 lg:gap-3.5 py-4 lg:pt-5 lg:pb-5">
+				<img class="h-56 " src="@Url.Action("Generate", "Manage", new { content = Model.AuthenticatorUri ?? string.Empty })" alt="Código QR">
+			</div>
+			<label class="flex align-stretch cursor-pointer bg-center h-24 bg-no-repeat border border-input rounded-xl border-dashed has-checked:border-primary bg-[length:500px] sso-active singl-sign-on-bg">
+				<div class="flex flex-wrap items-center justify-between gap-5">
+					<div class="flex items-center gap-2.5 ml-5">
+						<div class="relative size-[44px] shrink-0">
+							<svg class="w-full h-full stroke-border fill-muted/30" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
+								<path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
+									18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
+									39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
+								</path>
+								<path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
+									18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
+									39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
+								</path>
+							</svg>
+							<div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
+								<i class="ki-filled ki-information text-xl text-muted-foreground">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</div>
+						</div>
+						<div class="flex flex-col gap-0.5">
+							<span class="kt-form-description text-2sm text-muted-foreground mb-1">
+								Si tiene problemas para usar el código QR, seleccione la entrada manual en su aplicación e ingrese su nombre de usuario y el código:
+							</span>
+							<span class="text-base font-medium text-mono hover:text-primary" id="kt_twofactor_code">
+								@Model.SharedKey
+							</span>
+						</div>
+					</div>
+				</div>
+			</label>
+			<div class="w-full fv-row">
+				<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5" >				
+					<input class="kt-input" placeholder="Introduzca el código de autenticación" type="text" value="" id="codeAuthentication" name="codeAuthentication" maxlength="6">
+				</div>
+			</div>
+		
+
 		</div>
-		<!--end::Input group-->
+
 		<!--begin::Actions-->
-		<div class="d-flex flex-center">
-			<button type="button" id="apps-cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
-			<button type="button" id="apps-submit" class="btn btn-primary">
-				<span class="indicator-label">Enviar</span>
-				<span class="indicator-progress">
-					Espere por favor...
-					<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-				</span>
-			</button>
+		<div class="kt-modal-footer gap-2.5 justify-end">
+			<button type="button" id="apps-cancel" class="kt-btn kt-btn-secondary">Cancelar</button>
+			<button type="button" id="apps-submit" class="kt-btn kt-btn-primary">Enviar</button>
 		</div>
 		<!--end::Actions-->
+		
 	</form>
 	<!--end::Form-->
 </div>
 <!--end::Options-->
 <!--begin::SMS-->
-<div class="d-none" data-kt-element="sms">
+<div class="hidden" data-kt-element="sms">
 	<!--begin::Heading-->
 	<h3 class="text-gray-900 fw-bold fs-3 mb-5">SMS: Verify Your Mobile Number</h3>
 	<!--end::Heading-->
@@ -147,23 +189,85 @@
 <!--end::Modal - Two-factor authentication-->
 <script>
 	$(document).ready(function () {
-		document.getElementById('kt_auth_options_button').addEventListener('click', function (e) {
-				// Prevenir la acción predeterminada del botón
-				e.preventDefault();
+		const optionsSection = document.querySelector('[data-kt-element="options"]');
+		const appsSection = document.querySelector('[data-kt-element="apps"]');
+		const smsSection = document.querySelector('[data-kt-element="sms"]');
 
-				// Obtener la opción seleccionada
-				const selectedOption = document.querySelector('input[name="auth_option"]:checked')?.value;
+		const continueBtn = document.querySelector('[data-kt-element="options-select"]');
 
-				// Ocultar todas las opciones
-				const elements = document.querySelectorAll('[data-kt-element]');
-				elements.forEach(element => element.classList.add("d-none"));
+		const appsCancelBtn = document.getElementById('apps-cancel');
+		const smsCancelBtn = document.getElementById('sms-cancel');
 
-				// Mostrar la opción seleccionada si existe
-				if (selectedOption) {
-					document.querySelector(`[data-kt-element="${selectedOption}"]`)?.classList.remove("d-none");
-				}
+		const appsSubmitBtn = document.getElementById('apps-submit');
+		const smsSubmitBtn = document.getElementById('sms-submit');
 
+		function showOptions() {
+			optionsSection.classList.remove('hidden');
+			appsSection.classList.add('hidden');
+			smsSection.classList.add('hidden');
+		}
+
+		function showApps() {
+			optionsSection.classList.add('hidden');
+			appsSection.classList.remove('hidden');
+			smsSection.classList.add('hidden');
+		}
+
+		function showSms() {
+			optionsSection.classList.add('hidden');
+			appsSection.classList.add('hidden');
+			smsSection.classList.remove('hidden');
+		}
+
+		// CONTINUAR
+		continueBtn.addEventListener('click', () => {
+			// Obtener la opción seleccionada
+			const selected = document.querySelector(
+				'input[name="auth_option"]:checked'
+			);
+
+			if (!selected) {
+				alert('Seleccione una opción');
+				return;
+			}
+
+			// Mostrar la opción seleccionada
+			switch (selected.value) {
+				case 'apps':
+					showApps();
+					break;
+
+				case 'sms':
+					showSms();
+					break;
+			}
 		});
+
+		// CANCELAR
+		appsCancelBtn?.addEventListener('click', showOptions);
+		smsCancelBtn?.addEventListener('click', showOptions);
+
+		// ENVIAR APPS
+		appsSubmitBtn?.addEventListener('click', async () => {
+			// Validate form before submit
+			if (validator) {
+				validator.validate().then(function (status) {
+
+					if (status == 'Valid') {
+
+						// Disable button to avoid multiple click
+						appsSubmitBtn.disabled = true;
+
+						EnableTwoFactor();
+					}
+				});
+			}
+		});
+
+		// ENVIAR SMS
+		// smsSubmitBtn?.addEventListener('click', async () => {
+
+		// });
 
 
 		// Define form element kt_signin_change_email
@@ -187,38 +291,19 @@
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
+					submitButton: new FormValidation.plugins.SubmitButton(),
+					message: new FormValidation.plugins.Message({
+						clazz: 'text-red-500 text-sm mt-1',
+						container: function (field, element) {
+							return element.closest('.fv-row');
+						}
 					}),
 				}
 
 			}
 		);
 
-		// Submit button apps-submit
-		const submitButton = document.getElementById('apps-submit');
-		submitButton.addEventListener('click', function (e) {
-			// Prevent default button action
-			e.preventDefault();
-
-			// Validate form before submit
-			if (validator) {
-				validator.validate().then(function (status) {
-
-					if (status == 'Valid') {
-						// Show loading indication
-						submitButton.setAttribute('data-kt-indicator', 'on');
-
-						// Disable button to avoid multiple click
-						submitButton.disabled = true;
-
-						EnableTwoFactor();
-					}
-				});
-			}
-		});
+	
 
 		function EnableTwoFactor() {
 			const code = document.querySelector('#codeAuthentication').value;
@@ -236,11 +321,10 @@
 			}).then(res => res.json())
 			.catch(error => console.error('Error:', error))
 			.then((data) => {
-				// Show loading indication
-				submitButton.setAttribute('data-kt-indicator', 'off');
+				
 
 				// Disable button to avoid multiple click
-				submitButton.disabled = false;
+				appsSubmitBtn.disabled = false;
 
 				ShowNotification(data.notificationType, data.message);
 
@@ -256,10 +340,12 @@
 				
 
 			});
-
-
 		}
 
+
+
+		// Estado inicial
+		showOptions();
 
 	});
 </script>

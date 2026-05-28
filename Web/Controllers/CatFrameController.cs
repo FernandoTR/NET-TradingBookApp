@@ -6,6 +6,7 @@ using Web.Helpers;
 using Web.Models.Enums;
 using Web.Models;
 using Infrastructure;
+using Web.Enums;
 
 namespace Web.Controllers;
 
@@ -87,12 +88,12 @@ public class CatFrameController : Controller
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Eliminar",
+                                     ActionType = ActionType.Delete,
                                      JavaScriptAction = "showModaltoDelete",
                                  },
                                 }

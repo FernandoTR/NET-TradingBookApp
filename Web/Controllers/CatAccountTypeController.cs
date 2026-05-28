@@ -1,11 +1,12 @@
 ﻿using Application.Interfaces;
 using Application.Services;
 using Domain.Enums;
-using Microsoft.AspNetCore.Mvc;
-using Web.Helpers;
-using Web.Models.Enums;
-using Web.Models;
 using Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using Web.Enums;
+using Web.Helpers;
+using Web.Models;
+using Web.Models.Enums;
 
 namespace Web.Controllers;
 
@@ -88,12 +89,12 @@ public class CatAccountTypeController : Controller
                                 {
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Editar",
+                                     ActionType = ActionType.Edit,
                                      JavaScriptAction = "showModalForUpdate",
                                  },
                                  new ActionOptionMenuModel
                                  {
-                                     Title = "Eliminar",
+                                     ActionType = ActionType.Delete,
                                      JavaScriptAction = "showModaltoDelete",
                                  },
                                 }

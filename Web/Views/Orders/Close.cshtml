@@ -6,324 +6,197 @@
 	var OrderTypeItems = (List<SelectListItem>)ViewBag.OrderTypeItems;
 }
 
-<!--begin::Stepper-->
-<div class="stepper stepper-links d-flex flex-column gap-5" id="kt_modal_top_up_wallet_stepper">
-	<!--begin::Nav-->
-	<div class="stepper-nav justify-content-center py-2">
-		<!--begin::Step 1-->
-		<div class="stepper-item current" data-kt-stepper-element="nav">
-			<h3 class="stepper-title">Información General</h3>
-		</div>
-		<!--end::Step 1-->
-		<!--begin::Step 2-->
-		<div class="stepper-item" data-kt-stepper-element="nav">
-			<h3 class="stepper-title">Información Venta</h3>
-		</div>
-		<!--end::Step 2-->
-	</div>
-	<!--end::Nav-->
-	<!--begin::Form-->
-	<form class="mx-auto w-100 mw-600px pt-2 pb-10" novalidate="novalidate" id="kt_modal_top_up_wallet_stepper_form">
+<form id="kt_modal_stepper_form" novalidate="novalidate">
+	<div class="flex grow gap-5 lg:gap-7.5">
 
-		<!--begin::Step 1-->
-		<div class="current" data-kt-stepper-element="content">
-			<!--begin::Wrapper-->
-			<div class="w-100">
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-6 d-flex align-items-center">
-						<!--begin::Checkbox-->
-						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
-							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="SL" name="SL" />
-							<span class="form-check-label fw-semibold">SL</span>
-						</label>
-						<!--end::Checkbox-->
-						<!--begin::Checkbox-->
-						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
-							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP1" name="TP1" />
-							<span class="form-check-label fw-semibold">TP1</span>
-						</label>
-						<!--end::Checkbox-->
-						<!--begin::Checkbox-->
-						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
-							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP2" name="TP2" />
-							<span class="form-check-label fw-semibold">TP2</span>
-						</label>
-						<!--end::Checkbox-->
-						<!--begin::Checkbox-->
-						<label class="form-check form-check-custom form-check-solid me-5 mt-12">
-							<input class="form-check-input h-20px w-20px" type="checkbox" value="1" id="TP3" name="TP3" />
-							<span class="form-check-label fw-semibold">TP3</span>
-						</label>
-						<!--end::Checkbox-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Target:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Target" name="Target" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
-							</div>
-							<!--end::Col-->
+		<!-- Sidebar -->
+		<div class="hidden lg:block w-[230px] shrink-0">
+			<div class="w-[230px] fixed z-10 kt-scrollable-y-auto" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="225px" data-kt-scrollable-wrappers="#modal_orders_content">
+				<div class="flex flex-col grow relative before:absolute before:left-[11px] before:top-0 before:bottom-0 before:border-l before:border-border" data-kt-scrollspy="true" data-kt-scrollspy-offset="110px" data-kt-scrollspy-target="#modal_orders_body">
+
+					<div class="flex flex-col">
+						<div class="pl-6 pr-2.5 py-2.5 text-sm font-semibold text-mono">
+							Cierre
 						</div>
-
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-12">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Chart:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Chart" name="Chart" class="form-control form-control-solid" autocomplete="off"  />
-							</div>
-							<!--end::Col-->
+						<div class="flex flex-col">
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 active border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_close_general">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
+								</span>
+								General
+							</a>
+							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_close_sale">
+								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
+								</span>
+								Venta
+							</a>
 						</div>
-
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
-				</div>
-				<div class="row pt-2">
-					<!--begin::Col-->
-					<div class="col-lg-12">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Comentarios:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<textarea id="Comments" name="Comments" class="form-control form-control-solid" autocomplete="off" rows="3"></textarea>
-							</div>
-							<!--end::Col-->
-						</div>
 
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
 				</div>
 			</div>
-			<!--end::Wrapper-->
 		</div>
-		<!--end::Step 1-->
-		<!--begin::Step 2-->
-		<div data-kt-stepper-element="content">
-			<!--begin::Wrapper-->
-			<div class="w-100">
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Orden:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								@Html.DropDownList("OrderTypeId", OrderTypeItems, new { @class = "form-select form-select-solid", data_control = "select2", data_placeholder = "Selecciona uno", data_hide_search = "true" })
-							</div>
-							<!--end::Col-->
-						</div>
+		<!-- End of Sidebar -->
 
-						<!--end::Row-->
+		<!-- Content -->
+		<div id="modal_orders_body" class="flex flex-col items-stretch grow gap-5 lg:gap-7.5" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="200px" id="modal_orders_content">
+
+			<div class="kt-card pb-2.5">
+				<div class="kt-card-header" id="order_close_general">
+					<h3 class="kt-card-title">
+						General
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+
+					<div class="flex items-center gap-5 flex-wrap mt-3">
+						<label class="flex items-center gap-2">
+							<input class="kt-checkbox" type="checkbox" value="1" id="SL" name="SL" />
+							<span class="font-semibold text-sm">SL</span>
+						</label>
+						<label class="flex items-center gap-2">
+							<input class="kt-checkbox" type="checkbox" value="1" id="TP1" name="TP1" />
+							<span class="font-semibold text-sm">TP1</span>
+						</label>
+						<label class="flex items-center gap-2">
+							<input class="kt-checkbox" type="checkbox" value="1" id="TP2" name="TP2" />
+							<span class="font-semibold text-sm">TP2</span>
+						</label>
+						<label class="flex items-center gap-2">
+							<input class="kt-checkbox" type="checkbox" value="1" id="TP3" name="TP3" />
+							<span class="font-semibold text-sm">TP3</span>
+						</label>
 					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-6">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Tipo de Trade:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Selecciona uno" id="TradeTypeId" name="TradeTypeId">
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Target:</label>
+								<input type="text" id="Target" name="Target" class="kt-input" autocomplete="off" maxlength="18" value="0" />
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Chart:</label>
+								<input type="text" id="Chart" name="Chart" class="kt-input" autocomplete="off" />
+							</div>
+						</div>
+					</div>
+
+					<div class="w-full fv-row">
+						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+							<label class="kt-form-label max-w-56">Comentarios:</label>
+							<textarea id="Comments" name="Comments" class="kt-input" autocomplete="off" rows="3"></textarea>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="kt-card pb-2.5 mb-10">
+				<div class="kt-card-header" id="order_close_sale">
+					<h3 class="kt-card-title">
+						Venta
+					</h3>
+				</div>
+				<div class="kt-card-content grid gap-5 pt-7.5">
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Tipo de Orden:</label>
+								@Html.DropDownList("OrderTypeId", OrderTypeItems, new { @class = "kt-select",
+									data_kt_select = "true",
+									data_kt_select_enable_search = "true",
+									data_kt_select_search_placeholder = "Buscar...",
+									data_kt_select_placeholder="Selecciona uno...",
+									data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Tipo de Trade:</label>
+								<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="true" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="TradeTypeId" name="TradeTypeId">
 									<option value=""></option>
 									<option selected="selected" value="Sell">Venta</option>
 								</select>
 							</div>
-							<!--end::Col-->
 						</div>
-
-						<!--end::Row-->
 					</div>
-					<!--end::Col-->
+
+					<div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Cantidad:</label>
+								<input type="text" id="Quantity" name="Quantity" class="kt-input" autocomplete="off" maxlength="18" value="0" />
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Precio:</label>
+								<input type="text" id="Price" name="Price" class="kt-input" autocomplete="off" maxlength="18" value="0" />
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Comisión:</label>
+								<input type="text" id="CommissionRate" name="CommissionRate" class="kt-input" autocomplete="off" maxlength="18" value="0.001" />
+							</div>
+						</div>
+						<div class="w-full fv-row">
+							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+								<label class="kt-form-label max-w-56">Total:</label>
+								<input type="text" id="Total" name="Total" class="kt-input" autocomplete="off" maxlength="18" value="0" />
+							</div>
+						</div>
+					</div>
 
 				</div>
-				<div class="row">
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Cantidad:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Quantity" name="Quantity" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
-							</div>
-							<!--end::Col-->
-						</div>
+			</div>
 
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Precio:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Price" name="Price" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
-							</div>
-							<!--end::Col-->
-						</div>
+		</div>
+		<!-- End of Content -->
+	</div>
 
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Comisión:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="CommissionRate" name="CommissionRate" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0.001" />
-							</div>
-							<!--end::Col-->
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-					<!--begin::Col-->
-					<div class="col-lg-3">
-						<!--begin::Row-->
-						<div class="row">
-							<!--begin::Label-->
-							<label class="col-lg-12 col-form-label required fw-bold fs-6">Total:</label>
-							<!--end::Label-->
-							<!--begin::Col-->
-							<div class="col-lg-12 fv-row fv-plugins-icon-container">
-								<input type="text" id="Total" name="Total" class="form-control form-control-solid" autocomplete="off" maxlength="18" value="0" />
-							</div>
-							<!--end::Col-->
-						</div>
-						<!--end::Row-->
-					</div>
-					<!--end::Col-->
-				</div>
-			</div>
-			<!--end::Wrapper-->
-		</div>
-		<!--end::Step 2-->
-		<!--begin::Actions-->
-		<div class="d-flex flex-stack pt-10">
-			<!--begin::Wrapper-->
-			<div class="me-2">
-				<button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
-					<i class="ki-duotone ki-arrow-left fs-3 me-1">
-						<span class="path1"></span>
-						<span class="path2"></span>
-					</i>Atrás
-				</button>
-			</div>
-			<!--end::Wrapper-->
-			<!--begin::Wrapper-->
-			<div>
-				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="submit" id="submitButton">
-					<span class="indicator-label">
-						Guardar
-						<i class="ki-duotone ki-arrow-right fs-3 ms-2 me-0">
-							<span class="path1"></span>
-							<span class="path2"></span>
-						</i>
-					</span>
-					<span class="indicator-progress">
-						Espere por favor...
-						<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-					</span>
-				</button>
-				<button type="button" class="btn btn-lg btn-primary" data-kt-stepper-action="next">
-					Continuar
-					<i class="ki-duotone ki-arrow-right fs-3 ms-1 me-0">
-						<span class="path1"></span>
-						<span class="path2"></span>
-					</i>
-				</button>
-			</div>
-			<!--end::Wrapper-->
-		</div>
-		<!--end::Actions-->
-		<div hidden>
-			@Html.HiddenFor(d => d.Id)
-		</div>
-	</form>
-	<!--end::Form-->
-</div>
-<!--end::Stepper-->
+	<div class="kt-modal-footer gap-2.5 justify-end px-2 pb-0 pt-4">
+		<button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#modal_orders">Cancelar</button>
+		<button type="button" class="kt-btn kt-btn-primary" id="submitButton">
+			Guardar
+		</button>
+	</div>
+
+	<div hidden>
+		@Html.HiddenFor(d => d.Id)
+	</div>
+</form>
+
+
 <script>
 	$(document).ready(function () {
-	    // Define form element
-		let form = document.getElementById('kt_modal_top_up_wallet_stepper_form');
+		InitSelect();
 
-		 // Init form validation rules.
-		var validatorStep1 = FormValidation.formValidation(
+		let form = document.getElementById('kt_modal_stepper_form');
+		const submitButton = document.getElementById('submitButton');
+
+		const validator = FormValidation.formValidation(
 			form,
 			{
 				fields: {
 					'Chart': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El chart es obligatorio'
 							},
 						}
 					},
-				},
-				plugins: {
-					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
-					}),
-				}
-
-			}
-		);
-
-		// Init form validation rules.
-		var validatorStep2 = FormValidation.formValidation(
-			form,
-			{
-				fields: {
 					'Total': {
 						validators: {
 							notEmpty: {
-								message: 'Obligatorio'
+								message: 'El total es obligatorio'
 							},
 							callback: {
-								message: 'Obligatorio',
+								message: 'El total debe ser mayor a 0',
 								callback: function (input) {
-									const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0; // Convierte a número
-
+									const cashValue = parseFloat(input.value.replace(/[^0-9.-]+/g, '')) || 0;
 									return cashValue > 0;
 								},
 							},
@@ -332,76 +205,71 @@
 				},
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
-					bootstrap: new FormValidation.plugins.Bootstrap5({
-						rowSelector: '.fv-row',
-						eleInvalidClass: '',
-						eleValidClass: ''
+					submitButton: new FormValidation.plugins.SubmitButton(),
+					message: new FormValidation.plugins.Message({
+						clazz: 'text-red-500 text-sm mt-1',
+						container: function (field, element) {
+							return element.closest('.fv-row');
+						}
 					}),
 				}
-
 			}
-		);
-
-		// Stepper lement
-		var element = document.querySelector("#kt_modal_top_up_wallet_stepper");
-
-		// Initialize Stepper
-		var stepper = new KTStepper(element);
-
-		// Handle next step
-		stepper.on("kt.stepper.next", function (stepper) {
-			if (validatorStep1) {
-				validatorStep1.validate().then(function (status) {
-					if (status == 'Valid') {
-						stepper.goNext(); // go next step
+		)
+		.on('core.element.validated', function (e) {
+			if (e.element.tagName === 'SELECT' && e.element.classList.contains('kt-select')) {
+				const wrapper = e.element.closest('.kt-select');
+				if (wrapper) {
+					if (e.valid) {
+						wrapper.classList.remove('border-destructive', 'ring-1', 'ring-red-500');
+						wrapper.classList.add('border-green-500');
+					} else {
+						wrapper.classList.remove('border-green-500');
+						wrapper.classList.add('border-destructive', 'ring-1', 'ring-red-500');
 					}
-				});
+				}
+			} else {
+				if (e.valid) {
+					e.element.classList.remove('border-destructive', 'ring-1', 'ring-red-500');
+					e.element.classList.add('border-green-500');
+				} else {
+					e.element.classList.remove('border-green-500');
+					e.element.classList.add('border-destructive', 'ring-1', 'ring-red-500');
+				}
 			}
 		});
 
-		// Handle previous step
-		stepper.on("kt.stepper.previous", function (stepper) {
-			stepper.goPrevious(); // go previous step
-		});
+		KTScrollspy.init();
+		KTScrollspy.createInstances();
 
+		const scrollspyEl = document.querySelector('#modal_orders_content');
+		const scrollspy = KTScrollspy.getInstance(scrollspyEl);
 
-		const submitButton = document.getElementById('submitButton');
-		submitButton.addEventListener("click", function () {		
+		submitButton.addEventListener("click", function (e) {
+			e.preventDefault();
 
-			// Validate form before submit
-			if (validatorStep2) {
-				validatorStep2.validate().then(function (status) {
-					if (status == 'Valid') {
-						// Show loading indication
-						submitButton.setAttribute('data-kt-indicator', 'on');
-
-						// Disable button to avoid multiple click
-						submitButton.disabled = true;
-
-						CloseOrder();
-					}
-				});
-			}
-
+			validator.validate().then(function (status) {
+				if (status == 'Valid') {
+					submitButton.setAttribute('data-kt-indicator', 'on');
+					submitButton.disabled = true;
+					CloseOrder();
+				}
+			});
 		});
 
 		function CloseOrder() {
-			// Helper para obtener valores de los inputs con conversión segura
 			const getValue = (selector, parser = (val) => val, defaultValue = null) => {
 				const element = document.querySelector(selector);
 
 				if (!element) return defaultValue;
 
-				// Manejar diferentes tipos de inputs
 				if (element.type === 'checkbox') {
-					return element.checked; // Devuelve true o false si es un checkbox
+					return element.checked;
 				}
 
 				const value = element.value || defaultValue;
-				return parser(value); // Aplica el parser (si se pasa) al valor
+				return parser(value);
 			};
 
-			// Obtener los valores del formulario
 			const data = {
 				Id: getValue('#Id', parseInt, 0),
 				SL: getValue('#SL', Boolean, false),
@@ -419,7 +287,6 @@
 				Total: getValue('#Total', parseFloat, 0),
 			};
 
-
 			var url = "@Url.Content("~/Orders/CloseOrder")";
 			fetch(url, {
 				method: 'POST',
@@ -430,69 +297,51 @@
 			}).then(res => res.json())
 			.catch(error => console.error('Error:', error))
 			.then((data) => {
-				// Show loading indication
 				submitButton.setAttribute('data-kt-indicator', 'off');
-
-				// Disable button to avoid multiple click
 				submitButton.disabled = false;
 
 				ShowNotification(data.notificationType, data.message);
 
 				if(data.success)
 				{
-				   $("#vModal").modal("hide");
-				   LoadDataTable();
+					const modalEl = document.querySelector('#modal_orders');
+					const modal = KTModal.getInstance(modalEl);
+					modal.hide();
+					LoadDataTable();
 				}
-
-
 			});
-
-
 		}
 
-
 		const config = {
-				SL: { uncheck: ["TP1", "TP2", "TP3"], message: "La operación se efectuó con una pérdida del 0,00%." },
-				TP1: { uncheck: ["SL", "TP2", "TP3"], message: "La operación se realizó con un rendimiento del 0.00%." },
-				TP2: { uncheck: ["SL", "TP3"], check: ["TP1"], message: "La operación se realizó con un rendimiento del 0.00%." },
-				TP3: { uncheck: ["SL"], check: ["TP1", "TP2"], message: "La operación se realizó con un rendimiento del 0.00%." }
-			};
-
+			SL: { uncheck: ["TP1", "TP2", "TP3"], message: "La operación se efectuó con una pérdida del 0,00%." },
+			TP1: { uncheck: ["SL", "TP2", "TP3"], message: "La operación se realizó con un rendimiento del 0.00%." },
+			TP2: { uncheck: ["SL", "TP3"], check: ["TP1"], message: "La operación se realizó con un rendimiento del 0.00%." },
+			TP3: { uncheck: ["SL"], check: ["TP1", "TP2"], message: "La operación se realizó con un rendimiento del 0.00%." }
+		};
 
 		Object.keys(config).forEach(id => {
 			document.getElementById(id).addEventListener("change", function () {
 				if (this.checked) {
 					const { uncheck = [], check = [], message } = config[id];
 
-					// Desmarca los checkboxes indicados
 					uncheck.forEach(uncheckId => $('#' + uncheckId).prop('checked', false));
-
-					// Marca los checkboxes indicados
 					check.forEach(checkId => $('#' + checkId).prop('checked', true));
-
-					// Actualiza el texto de Comments
 					$('#Comments').text(message);
 				}
 			});
 		});
 
-
 	});
 
-	//Script para que funcione el select2 en el modal
-	$('#OrderTypeId, #TradeTypeId')
-	.select2({ dropdownParent: $('#vModal'), minimumResultsForSearch: Infinity });
+	function InitSelect(){
+		KTSelectHelper.clear('#OrderTypeId');
+		KTSelectHelper.clear('#TradeTypeId');
+	}
 
-	Inputmask("decimal", {
-		groupSeparator: ",",         // Separador de miles
-		digits: 4,                   // Número de decimales
-		digitsOptional: false,       // Obliga a mostrar los decimales
-		prefix: "",                  // Prefijo de moneda
-		rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
-		allowMinus: false,           // No permitir números negativos
-		autoUnmask: true,            // Devuelve el valor sin formato al enviar
-	}).mask("#Target, #Quantity, #Price, #CommissionRate, #Total");
-
-	
+	InputMaskHelper.decimal('#Target');
+	InputMaskHelper.decimal('#Quantity');
+	InputMaskHelper.decimal('#Price');
+	InputMaskHelper.decimal('#CommissionRate');
+	InputMaskHelper.decimal('#Total');
 
 </script>
