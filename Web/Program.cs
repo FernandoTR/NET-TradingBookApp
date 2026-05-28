@@ -1,4 +1,3 @@
-
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +16,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] { "es-MX" }; // Espec�fico para M�xico
+    var supportedCultures = new[] { "es-MX" }; // Especï¿½fico para Mï¿½xico
     options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("es-MX");
     options.SupportedCultures = supportedCultures.Select(c => new System.Globalization.CultureInfo(c)).ToList();
     options.SupportedUICultures = options.SupportedCultures;
@@ -25,7 +24,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 var app = builder.Build();
 
-app.UseRequestLocalization(); // Usar la configuraci�n de localizaci�n
+app.UseRequestLocalization(); // Usar la configuraciï¿½n de localizaciï¿½n
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -40,9 +39,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Usar autenticaci�n y autorizaci�n
+// Usar autenticaciÃ³n y autorizaciÃ³n
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 
 

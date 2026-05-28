@@ -7,6 +7,7 @@ using Infrastructure.Email.Services;
 using Infrastructure.Identity;
 using Infrastructure.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -55,6 +56,7 @@ public class AccountController : Controller
 
     // GET: /Account/Login
     [AllowAnonymous]
+    [EnableRateLimiting("AccountPolicy")]
     public IActionResult SignIn(string returnUrl)
     {
         if (returnUrl == null || !returnUrl.Contains("LogOff"))
@@ -70,14 +72,15 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("AccountPolicy")]
     public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
     {
         try
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return View("SignIn", model);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return View("SignIn", model);
+            }
 
             // Verifica credenciales
             var result = await _identityService.CheckPasswordSignInAsync(model.Email.Trim(), model.Password);           
@@ -211,6 +214,7 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("AccountPolicy")]
     public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
     {
         try
