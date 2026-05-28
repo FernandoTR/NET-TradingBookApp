@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2026-05-28
+
+### Changed
+- Manage/AddCash and WithdrawCash views migrated to Tailwind CSS with InputMaskHelper.decimal and KTModal API.
+- Manage/Index modal launch updated to use KTModal API instead of jQuery modal.
+- Account views (ConfirmEmail, ForgotPasswordConfirmation, NewPassword, NewPasswordConfirmation, ResetPassword, Send2FACode) migrated to Tailwind CSS.
+
 ## [1.5.0] - 2026-05-27
 
 ### Changed
