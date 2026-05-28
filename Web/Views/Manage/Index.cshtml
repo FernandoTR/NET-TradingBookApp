@@ -105,11 +105,14 @@
 				}
 
 				return response.text();
-			}).then((data) => {
+			}).then((data) => {			
 				$("#contentvModal").html(data);
 				$('#title-modal').html(title);
-				$('#subtitle-modal').html(subtitle);
-				$("#vModal").modal("show");				
+				// $('#subtitle-modal').html(subtitle);
+
+				const modalEl = document.querySelector('#vModal');
+				const modal = KTModal.getInstance(modalEl);
+				modal.show();
 			})
 			.catch((error) => {
 				console.error("Error al cargar el modal:", error);

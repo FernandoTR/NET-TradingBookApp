@@ -8,29 +8,30 @@
 
 <form id="frmdata">
     @Html.AntiForgeryToken()
+    <div class="kt-card-content grid gap-5">
+        <!--begin::Input group-->
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5" bis_skin_checked="1">
+                @Html.LabelFor(d => d.CurrentBalance, new { @class = "kt-form-label max-w-56 required" })
+                @Html.TextBoxFor(d => d.CurrentBalance, new { @class = "kt-input", disabled = true })
 
-    <!--begin::Input group-->
-    <div class="d-flex flex-column mb-8 fv-row">
-        @Html.LabelFor(d => d.CurrentBalance, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 " })
-        @Html.TextBoxFor(d => d.CurrentBalance, new { @class = "form-control form-control-solid", disabled = true })
+            </div>
+        </div>
+        <!--end::Input group-->
+        <!--begin::Input group-->
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5" bis_skin_checked="1">
+                @Html.LabelFor(d => d.Cash, new { @class = "kt-form-label max-w-56 required" })
+                @Html.TextBoxFor(d => d.Cash, new { @class = "kt-input", Maxlength = 15, autocomplete = "off" })
+
+            </div>
+        </div>
+        <!--end::Input group-->
     </div>
-    <!--end::Input group-->
-    <!--begin::Input group-->
-    <div class="d-flex flex-column mb-8 fv-row">
-        @Html.LabelFor(d => d.Cash, new { @class = "d-flex align-items-center fs-6 fw-bold mb-2 required" })
-        @Html.TextBoxFor(d => d.Cash, new { @class = "form-control form-control-solid", Maxlength = 15, autocomplete = "off" })
-    </div>
-    <!--end::Input group-->
     <!--begin::Actions-->
-    <div class="text-center">
-        <button type="button" id="kt_modal_new_target_cancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" id="btnSave" class="btn btn-primary">
-            <span class="indicator-label">Guardar</span>
-            <span class="indicator-progress">
-                Espere por favor...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-            </span>
-        </button>
+    <div class="kt-modal-footer gap-2.5 justify-end">
+        <button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#vModal">Cancelar</button>
+        <button type="button" id="btnSave" class="kt-btn kt-btn-primary">Guardar</button>
     </div>
     <!--end::Actions-->
     <div hidden>
@@ -46,25 +47,9 @@
 
 <script>
     $(document).ready(function () {
-        Inputmask("decimal", {
-            groupSeparator: ",",         // Separador de miles
-            digits: 2,                   // Número de decimales
-            digitsOptional: false,       // Obliga a mostrar los decimales
-            prefix: "$ ",                // Prefijo de moneda
-            rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
-            allowMinus: false,           // No permitir números negativos
-            autoUnmask: true,            // Devuelve el valor sin formato al enviar
-        }).mask("#CurrentBalance");
+         InputMaskHelper.decimal('#CurrentBalance');
+        InputMaskHelper.decimal('#Cash');
 
-        Inputmask("decimal", {
-            groupSeparator: ",",         // Separador de miles
-            digits: 2,                   // Número de decimales
-            digitsOptional: false,       // Obliga a mostrar los decimales
-            prefix: "",                // Prefijo de moneda
-            rightAlignNumerics: false,   // Alineación del número (desactivado para mantenerlo a la izquierda)
-            allowMinus: false,           // No permitir números negativos
-            autoUnmask: true,            // Devuelve el valor sin formato al enviar
-        }).mask("#Cash");
 
 
         // Define form element
@@ -102,12 +87,14 @@
                         }
                     },
                 },
-                plugins: {
+                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
-                    bootstrap: new FormValidation.plugins.Bootstrap5({
-                        rowSelector: '.fv-row',
-                        eleInvalidClass: '',
-                        eleValidClass: ''
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                    message: new FormValidation.plugins.Message({
+                        clazz: 'text-red-500 text-sm mt-1',
+                        container: function (field, element) {
+                            return element.closest('.fv-row');
+                        }
                     }),
                 }
 
@@ -124,8 +111,6 @@
             if (validator) {
                 validator.validate().then(function (status) {
                     if (status == 'Valid') {
-                        // Show loading indication
-                        submitButton.setAttribute('data-kt-indicator', 'on');
 
                         // Disable button to avoid multiple click
                         submitButton.disabled = true;
@@ -170,7 +155,9 @@
 
                 if(data.success)
                 {
-                   $("#vModal").modal("hide");
+                   const modalEl = document.querySelector('#vModal');
+                    const modal = KTModal.getInstance(modalEl);
+                    modal.hide();
                    LoadBalanceView();
                 }
 
