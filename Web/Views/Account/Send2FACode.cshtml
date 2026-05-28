@@ -1,101 +1,109 @@
 ﻿@model Web.Models.Send2FACodeViewModel
 @{
-	ViewBag.Title = "Verificación de Dos Factores";
+	// ViewBag.Title = "Verificación de Dos Factores";
+	Layout = null;
 }
-<!--begin::Root-->
-<div class="d-flex flex-column flex-root" id="kt_app_root">
-	<!--begin::Authentication - Two-factor -->
-	<div class="d-flex flex-column flex-lg-row flex-column-fluid">
-		<!--begin::Body-->
-		<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
-			<!--begin::Form-->
-			<div class="d-flex flex-center flex-column flex-lg-row-fluid">
-				<!--begin::Wrapper-->
-				<div class="w-lg-500px p-10">
-					<!--begin::Form-->
-					@using (Html.BeginForm("Verify2FACode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, true, new { @class = "form-horizontal", role = "form", id = "myForm" }))
-					{
-						@Html.AntiForgeryToken()
-						@Html.Hidden("Code", @Model.Code)
-						@Html.Hidden("Provider", @Model.Provider)
-						@Html.Hidden("ReturnUrl", @Model.ReturnUrl)
-						@Html.Hidden("RememberMe", @Model.RememberMe)
-						@Html.Hidden("UserId", @Model.UserId)			
 
-						<!--begin::Icon-->
-						<div class="text-center mb-10">
-							<img alt="Logo" class="mh-125px" src="~/Template/assets/media/svg/misc/smartphone-2.svg" />
-						</div>
-						<!--end::Icon-->
-						<!--begin::Heading-->
-						<div class="text-center mb-10">
-							<!--begin::Title-->
-							<h1 class="text-gray-900 mb-3">Verificación de Dos Factores</h1>
-							<!--end::Title-->
-							<!--begin::Sub-title-->
-							<div class="text-muted fw-semibold fs-5 mb-5">@(Model.Provider != "Authenticator" ? "Ingresa el código de verificación que acabamos de enviar a" : "Revise su aplicación preferida para códigos de un solo uso y copie el código")</div>
-							<!--end::Sub-title-->
-							<!--begin::Mobile no-->
-							<div class="fw-bold text-gray-900 fs-3">@(Model.Provider != "Authenticator" ? Model.SendTo : "")</div>
-							<!--end::Mobile no-->
-						</div>
-						<!--end::Heading-->
-						<!--begin::Section-->
-						<div class="mb-10">
-							<!--begin::Label-->
-							<div class="fw-bold text-start text-gray-900 fs-6 mb-1 ms-1">Escribe tu código de seguridad de 6 dígitos</div>
-							<!--end::Label-->
-							<!--begin::Input group-->
-							<div class="d-flex flex-wrap flex-stack" id="input-container">
-								<input type="text" name="code_1" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-								<input type="text" name="code_2" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-								<input type="text" name="code_3" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-								<input type="text" name="code_4" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-								<input type="text" name="code_5" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-								<input type="text" name="code_6" data-inputmask="'mask': '9', 'placeholder': ''" maxlength="1" class="form-control bg-transparent h-60px w-60px fs-2qx text-center mx-1 my-2" value="" autocomplete="off" />
-							</div>
-							<!--begin::Input group-->
-						</div>
-						<!--end::Section-->
-						<!--begin::Submit-->
-						<div class="d-flex flex-center">
-							<button type="button" id="kt_sing_in_two_factor_submit" class="btn btn-lg btn-primary fw-bold" style="background-color: #FCD535!important; color: black!important;">
-								<span class="indicator-label">Enviar</span>
-								<span class="indicator-progress">
-									Espere por favor...
-									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-								</span>
-							</button>
-						</div>
-						<!--end::Submit-->
-					}
-					<!--end::Form-->
-					<!--begin::Notice-->
-					<div class="text-center fw-semibold fs-5 mt-10">
-						@* @Html.ActionLink("Probar otro método","SendCode","Account",
-															TempData["Send2FACodeData"].ToString(),
-											new { @class = "link-primary fs-5 me-1" }
-										) *@
-						<a href="javascript:setTempData()" class="link-primary fs-5 me-1">Probar otro método</a> 
+<!DOCTYPE html>
+<html lang="es" class="h-full dark" data-kt-theme="true" data-kt-theme-mode="light" dir="ltr" data-kt-theme-swtich-initialized="true" data-kt-theme-switch-mode="dark">
+<head>
+	<title>Verificación de Dos Factores - Trading Book</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8" />
+	<meta name="description" content="Trading Book" />
+	<meta name="keywords" content="Trading Book" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta property="og:locale" content="es_ES" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Trading Book" />
+	<meta property="og:url" content="#" />
+	<meta property="og:site_name" content="WebAppBase" />
+	<link rel="canonical" href="#" />
+	<link rel="shortcut icon" href="~/favicon.ico" />
+	<!--begin::Fonts(mandatory for all pages)-->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" />
+	<!--end::Fonts-->
+	<!--begin::Vendor Stylesheets(used for this page only)-->
+	<link href="~/Template/assets/vendors/keenicons/styles.bundle.css" rel="stylesheet" type="text/css" />
+	<link href="~/Template/assets/css/styles.css" rel="stylesheet" type="text/css" />
+	<link href="~/Template/assets/vendors/form-validation/index.min.css" rel="stylesheet" type="text/css" />
+	<!--end::Vendor Stylesheets-->
+	<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+	<!--end::Global Stylesheets Bundle-->
+
+</head>
+<body id="kt_app_body" class="antialiased flex h-full text-base text-foreground bg-background demo1 kt-sidebar-fixed kt-header-fixed">
+	<!-- Page -->
+	<style>
+			.page-bg {
+				background-image: radial-gradient(600px, rgba(59, 130, 246, 0.3), transparent);
+			}
+
+			.dark .page-bg {
+				background-color: radial-gradient(circle 600px at 50% 50%, rgba(59,130,246,0.3), transparent);
+			}
+	</style>
+
+	<div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
+		<div class="kt-card max-w-[370px] w-full">
+			@using (Html.BeginForm("Verify2FACode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, true, new { @class = "kt-card-content flex flex-col gap-5 p-10",  id = "myForm" }))
+			{
+				@Html.AntiForgeryToken()
+				@Html.Hidden("Code", @Model.Code)
+				@Html.Hidden("Provider", @Model.Provider)
+				@Html.Hidden("ReturnUrl", @Model.ReturnUrl)
+				@Html.Hidden("RememberMe", @Model.RememberMe)
+				@Html.Hidden("UserId", @Model.UserId)
+
+
+				<div class="text-center mb-2.5">
+					<h3 class="text-lg font-medium text-mono leading-none mb-2.5">
+						Verificación de Dos Factores
+					</h3>
+					<div class="flex flex-col" >
+						<span class="text-sm text-secondary-foreground mb-1.5">
+							@(Model.Provider != "Authenticator" ? "Ingresa el código de verificación que acabamos de enviar a" : "Revise su aplicación preferida para códigos de un solo uso y copie el código")
+						</span>
+						<a class="text-sm font-medium text-mono" href="#">
+							@(Model.Provider != "Authenticator" ? Model.SendTo : "")
+						</a>
 					</div>
-					<!--end::Notice-->
 				</div>
-				<!--end::Wrapper-->
-			</div>
-			<!--end::Form-->
-			<!--begin::Footer-->
-			<div class="w-lg-500px d-flex flex-stack px-10 mx-auto"></div>
-			<!--end::Footer-->
+				<div class="flex flex-wrap justify-center gap-2.5" data-kt-pin-input="true" data-kt-pin-input-name="verification_code" data-kt-pin-input-initialized="true" bis_skin_checked="1">
+					<input name="code_1" aria-label="Digit 1 of 6" autocomplete="one-time-code" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="tel">
+					<input name="code_2" aria-label="Digit 2 of 6" autocomplete="off" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="text">
+					<input name="code_3" aria-label="Digit 3 of 6" autocomplete="off" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="text">
+					<input name="code_4" aria-label="Digit 4 of 6" autocomplete="off" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="text">
+					<input name="code_5" aria-label="Digit 5 of 6" autocomplete="off" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="text">
+					<input name="code_6" aria-label="Digit 6 of 6" autocomplete="off" class="kt-input focus:border-primary/10 focus:ring-3 focus:ring-primary/10 size-10 shrink-0 px-0 text-center" data-kt-pin-input-item="" inputmode="numeric" maxlength="1" type="text">
+					<input type="hidden" name="verification_code" data-kt-pin-input-hidden="true" value="">
+				</div>
+
+				<button type="button" class="kt-btn kt-btn-primary flex justify-center grow" id="kt_sing_in_two_factor_submit">
+					Continuar
+				</button>
+				
+			}
 		</div>
-		<!--end::Body-->
-		<!--begin::Aside-->		
-		<!--end::Aside-->
 	</div>
-	<!--end::Authentication - Two-factor-->
-</div>
-<!--end::Root-->
-@section scripts {
-	<script>
+
+
+
+
+	<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+	<script src="~/Template/assets/js/core.bundle.js"></script>
+	<script src="~/Template/assets/vendors/ktui/ktui.min.js"></script>
+	<script src="~/Template/assets/vendors/form-validation/form-validation.bundle.js"></script>
+
+	<!--end::Global Javascript Bundle-->
+	<!-- End of Page -->
+
+</body>
+</html>
+
+
+
+<script type="text/javascript">
 		$(document).ready(function() {
 			const inputs = document.querySelectorAll("#input-container input");
 
@@ -199,4 +207,3 @@
 			
 		}
 	</script>
-}
