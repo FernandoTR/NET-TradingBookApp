@@ -1,207 +1,207 @@
+<div align="center">
+
 ![TradingBookApp](./PortalTrading.png)
 
 # TradingBook
 
-*Plataforma web para análisis de performance en trading cripto / Web platform for crypto trading performance analysis*
-
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core%20MVC-8.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/aspnet/core/)
-[![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-8.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/ef/core/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core%20MVC-10.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/aspnet/core/)
+[![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/ef/core/)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Metronic](https://img.shields.io/badge/Metronic-9-1B84FF?style=flat-square)](https://keenthemes.com/metronic/)
 [![Clean Architecture](https://img.shields.io/badge/Clean%20Architecture-0078D4?style=flat-square)]()
 
-TradingBook es una plataforma web creada para centralizar el registro y análisis de operaciones de trading en criptomonedas. Su objetivo es transformar la ejecución operativa en información accionable, permitiendo evaluar setups, medir efectividad, detectar patrones y mejorar la toma de decisiones a partir de datos reales.
+*Plataforma web para análisis de performance en trading de criptomonedas*
 
-> [!TIP]
-> The project was developed with **.NET 8** and **Clean Architecture**, with a focus on scalability, maintainability, and product evolution.
+</div>
 
-## Features / Características
+[Características](#características) • [Arquitectura](#arquitectura) • [Stack tecnológico](#stack-tecnológico) • [Inicio rápido](#inicio-rápido) • [Estructura del proyecto](#estructura-del-proyecto) • [Base de datos](#base-de-datos)
 
-- **Trading Score Engine**: Evalúa operaciones usando ubicación, tendencia, confirmación y zonas pivote 
-- **Análisis Multidimensional**: Estadísticas por trigger, escenario, figura, dirección, marco temporal y día 
-- **Dashboard Interactivo**: Visualizaciones con Chart.js para métricas clave 
-- **Gestión de Cuentas**: Múltiples cuentas con tracking de balance y transacciones 
-- **Seguridad Robusta**: Autenticación con 2FA y hashing de contraseñas 
-- **Registro de Actividad**: Logging completo de operaciones 
+---
 
-## Architecture / Arquitectura
+TradingBook es una plataforma web que centraliza el registro y análisis de operaciones de trading en criptomonedas. Su objetivo es transformar la ejecución operativa en información accionable: evaluar setups, medir efectividad, detectar patrones y mejorar la toma de decisiones a partir de datos reales.
+
+> [!NOTE]
+> El proyecto está construido con **.NET 10**, **Clean Architecture** y **Metronic Tailwind CSS**, con foco en escalabilidad, mantenibilidad y evolución continua del producto.
+
+## Características
+
+- **Trading Score Engine** — evalúa operaciones usando ubicación, tendencia, confirmación y zonas pivote.
+- **Análisis multidimensional** — estadísticas por trigger, escenario, figura, dirección, marco temporal y día de la semana.
+- **Dashboard interactivo** — visualizaciones con Chart.js para métricas clave y DataTables 2.x para exploración tabular.
+- **Gestión de cuentas** — múltiples cuentas con tracking de balance, depósitos y retiros.
+- **Autenticación robusta** — ASP.NET Core Identity con 2FA (código QR + authenticator), confirmación de email y recuperación de contraseña.
+- **Protección contra enumeración** — ForgotPassword redirige siempre a la página de confirmación sin revelar si el usuario existe.
+- **Rate limiting** — endpoints de cuenta protegidos con límite de 10 peticiones cada 5 segundos por IP.
+- **Cookies seguras** — política `CookieSecurePolicy.Always`, requiere HTTPS para flujos de autenticación.
+- **Credenciales externalizadas** — secretos en `config/secrets.json` (excluido de Git), plantilla de referencia en `config/secrets.template.json`.
+- **Registro de actividad** — logging completo de operaciones con trazabilidad por usuario.
+- **Módulos administrativos** — gestión de empleados, roles, usuarios, categorías, figuras, tipos de cuenta, temporalidades e instrumentos.
+
+## Arquitectura
+
+El proyecto sigue los principios de **Clean Architecture** con cuatro capas y dependencias unidireccionales:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                          Web                                │
-│              (ASP.NET Core MVC, Controllers,                │
-│               Views, wwwroot, Middleware)                   │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────┐
-│                     Application                             │
-│        (Services, DTOs, Interfaces, Models)                 │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────┐
-│                       Domain                                │
-│           (Entities, Enums, Constants)                       │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────┐
-│                   Infrastructure                            │
-│    (Persistence, Repositories, Email, Identity,            │
-│                   Logging, External Services)              │
-└─────────────────────────────────────────────────────────────┘
+Web ──────────────▶ Application ──────────────▶ Domain
+  │                       ▲
+  └──▶ Infrastructure ────┘
 ```
 
-## Project Structure / Estructura del Proyecto
+| Capa | Responsabilidad | Proyecto |
+|---|---|---|
+| **Web** | Controladores MVC, vistas Razor, middlewares, wwwroot | `Web/` |
+| **Application** | Servicios de negocio, DTOs, interfaces, modelos | `Application/` |
+| **Domain** | Entidades, enumeraciones, constantes (núcleo del negocio) | `Domain/` |
+| **Infrastructure** | Persistencia, repositorios, email, Identity, logging | `Infrastructure/` |
 
-### 1. Application
+El arranque ocurre en `Web/Program.cs` mediante tres métodos extensores que registran los servicios de cada capa: `AddApplicationServices()`, `AddInfrastructureServices()` y `AddWebServices()`.
 
-Contiene la lógica de aplicación y define las interfaces, DTOs y servicios necesarios para interactuar con otras capas.
+## Stack tecnológico
 
-- `DTOs/`
-   Objetos de transferencia de datos utilizados para encapsular y transportar datos entre capas. 
+| Componente | Tecnología |
+|---|---|
+| Framework | .NET 10.0 |
+| Web | ASP.NET Core MVC + Razor Pages |
+| ORM | Entity Framework Core 10.0 |
+| Base de datos | SQL Server |
+| UI Framework | Metronic 9 (Tailwind CSS) |
+| Tablas | DataTables 2.x |
+| Gráficos | Chart.js |
+| Fechas | Flatpickr |
+| Autenticación | ASP.NET Core Identity |
+| 2FA | QR Code (QRCoder) + Authenticator |
+| Email | MailKit (SMTP/Office 365) |
+| Arquitectura | Clean Architecture |
+| Localización | es-MX |
 
-- `Interfaces/`
-   Contratos que definen la lógica que deben implementar las clases concretas. 
+## Inicio rápido
 
-- `Models/`
-   Modelos que representan estructuras utilizadas en el contexto de la lógica de aplicación. 
+### Requisitos previos
 
-- `Resources/`
-   Archivos de recursos como cadenas localizadas o configuraciones específicas. 
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- SQL Server (local o vía Docker)
+- Visual Studio 2022 o VS Code
 
-- `Services/`
-   Servicios de aplicación que implementan la lógica específica del negocio. 
+### Configuración
 
-- `DependencyInjection.cs`
-   Configuración para registrar los servicios de Application en el contenedor de dependencias. 
+1. Clona el repositorio.
+2. Crea `config/secrets.json` copiando la plantilla:
 
-- `GlobalUsings.cs`
-   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
+   ```bash
+   cp config/secrets.template.json config/secrets.json
+   ```
 
----
+3. Rellena los valores reales en `config/secrets.json`: cadena de conexión y credenciales SMTP.
+   > [!IMPORTANT]
+   > `config/secrets.json` está excluido de Git. Nunca guardes credenciales reales en `appsettings.json` — ese archivo solo contiene placeholders `__CHANGE_ME__`.
 
-### 2. Domain
+4. Restaura las herramientas de EF Core:
 
-Representa el núcleo del negocio y contiene las entidades, valores constantes y enumeraciones. 
+   ```bash
+   cd Web
+   dotnet tool restore
+   ```
 
-- `Constants/`
-   Valores constantes que son utilizados en toda la aplicación.
-
-- `Entities/`
-   Clases que representan las entidades del dominio con sus propiedades y comportamientos. 
-
-- `Enums/`
-   Enumeraciones que representan conjuntos de valores predefinidos. 
-
-- `GlobalUsings.cs`
-   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
-
----
-
-### 3. Infrastructure
-
-Proporciona implementaciones concretas para las interfaces definidas en `Application`. Incluye servicios para correo electrónico, identidad, logging, persistencia y más. Provides concrete implementations for the interfaces defined in `Application`. 
-
-- `Email/`
-   Lógica relacionada con el envío de correos electrónicos.
-
-- `Identity/`
-   Manejo de autenticación y autorización. 
-
-- `Logging/`
-   Configuración y servicios relacionados con el registro de eventos. 
-
-- `Persistence:`
-   - `Data/`
-     Contiene el `DbContext` para interactuar con la base de datos. 
-
-   - `Repositories/`
-     Implementaciones de repositorios para acceder a los datos. 
-
-- `DependencyInjection.cs`
-   Configuración para registrar los servicios de Infrastructure en el contenedor de dependencias. 
-
-- `GlobalUsings.cs`
-   Archivo para declarar los using globales que simplifican las referencias en esta capa. 
-
----
-
-### 4. Web
-
-Proyecto ASP.NET Core en .NET 8 que actúa como punto de entrada de la aplicación. Incluye controladores, middlewares, y configuraciones específicas para la interacción con los usuarios y servicios externos. 
-
-- `Pages/`
-   Contiene las Razor Pages que definen la UI y la lógica de presentación. 
-
-- `Controllers/`
-   Incluye controladores para endpoints adicionales, como APIs o acciones especializadas. 
-
-- `Views/`
-   Vistas compartidas y parciales, así como layouts reutilizables. 
-
-- `wwwroot/`
-   Archivos estáticos (CSS, JS, imágenes, plantillas). 
-
-- `Template/`
-   Recursos de plantillas, scripts personalizados y plugins. 
-
-- `Media/Logos/`
-   Almacena logotipos y recursos gráficos. 
-
----
-
-## General Considerations / Consideraciones Generales
-
-- La separación en capas asegura una alta cohesión dentro de cada capa y un bajo acoplamiento entre ellas.
-
-- `DependencyInjection.cs` en cada capa se utiliza para registrar sus servicios específicos en el contenedor de dependencias global de ASP.NET Core. 
-
-- `GlobalUsings.cs` simplifica la gestión de espacios de nombres en los archivos de cada capa. 
-
-- Esta estructura permite que el código sea modular, testeable y fácilmente extensible, facilitando la colaboración en equipos grandes y el mantenimiento a largo plazo. 
-
-## Tech Stack / Stack Tecnológico
-
-| Component | Technology |
-|-----------|------------|
-| Framework | .NET 8 |
-| Web | ASP.NET Core MVC |
-| ORM | Entity Framework Core |
-| Database | SQL Server |
-| Frontend | Bootstrap, JavaScript |
-| Charts | Chart.js |
-| Auth | ASP.NET Core Identity |
-| Architecture | Clean Architecture |
-
-## Quick Start / Inicio Rápido
-
-### Prerequisites / Requisitos
-
-- .NET 8 SDK
-- SQL Server (Local or Docker)
-- Visual Studio 2022 / VS Code
-
-### Configuration / Configuración
-
-1. Copia el archivo `appsettings.json` del repositorio.
-2. Rellena los valores necesarios, como la cadena de conexión y cuenta de correo. 
-3. Ejecuta las migraciones de Entity Framework Core si es necesario. 
-
-### Running / Ejecución
+### Ejecución
 
 ```bash
-cd Web
-dotnet restore
-dotnet build
-dotnet run
+# Desde la raíz del repositorio
+dotnet build "TradingBookApp.sln"
+dotnet run --project Web/Web.csproj --launch-profile https
 ```
 
-Accede a la aplicación en `https://localhost:5001` o `http://localhost:5000`. 
+Accede a la aplicación en `https://localhost:7221` o `http://localhost:5080`.
 
-## Resources / Recursos
+> [!NOTE]
+> Usa el perfil HTTPS para los flujos de autenticación — las cookies de sesión requieren conexión segura.
 
-- [.NET Documentation](https://learn.microsoft.com/dotnet/)
-- [ASP.NET Core](https://learn.microsoft.com/aspnet/core/)
+## Estructura del proyecto
+
+```
+TradingBookApp/
+├── Application/          # Lógica de aplicación
+│   ├── Common/           # Utilidades compartidas (QueryOptions)
+│   ├── DTOs/             # Objetos de transferencia de datos
+│   ├── Interfaces/       # Contratos de repositorios y servicios
+│   ├── Models/           # Modelos de resultado (Result<T>)
+│   ├── Resources/        # Cadenas localizadas (ErrorMessage, Message)
+│   ├── Services/         # Implementaciones de servicios de negocio
+│   ├── GlobalUsings.cs
+│   └── DependencyInjection.cs
+├── Domain/               # Núcleo del negocio
+│   ├── Constants/        # Valores constantes
+│   ├── Entities/         # Entidades del dominio
+│   └── Enums/            # Enumeraciones
+├── Infrastructure/       # Implementaciones concretas
+│   ├── Email/            # Envío de correos (MailKit)
+│   ├── Identity/         # Autenticación y autorización
+│   ├── Logging/          # Registro de actividad
+│   ├── Persistence/
+│   │   ├── Data/         # DbContext (ApplicationDbContext, LoggingDbContext)
+│   │   └── Repositories/ # Repositorios
+│   ├── Services/         # Servicios de infraestructura
+│   ├── GlobalUsings.cs
+│   └── DependencyInjection.cs
+├── Web/                  # Punto de entrada ASP.NET Core
+│   ├── Controllers/      # Controladores MVC (21 controladores)
+│   ├── Views/            # Vistas Razor organizadas por módulo
+│   ├── wwwroot/          # Assets estáticos (CSS, JS, imágenes)
+│   ├── Helpers/          # Tag Helpers y utilidades de vista
+│   ├── Models/           # ViewModels
+│   ├── Program.cs
+│   └── DependencyInjection.cs
+├── config/
+│   └── secrets.template.json  # Plantilla de configuración secreta
+├── specs/                # Especificaciones de migración y hardening
+├── TradingBookApp.sln
+├── CHANGELOG.md
+└── README.md
+```
+
+## Base de datos
+
+El proyecto usa un enfoque **database-first**: la base de datos SQL Server ya existe y `ApplicationDbContext` se generó mediante scaffolding.
+
+### Aspectos clave
+
+- Se registran dos contextos: `ApplicationDbContext` (negocio) y `LoggingDbContext` (auditoría), ambos contra `ConnectionStrings:DefaultConnection`.
+- No hay migraciones de EF Core en el repositorio. Las consultas analíticas usan stored procedures como `usp_GetOrdersDataTable` y vistas como `View_Orders`.
+- Los DTOs sin clave usados en queries `FromSqlRaw` deben registrarse en `ApplicationDbContext.Custom.cs`, el archivo que sobrevive a regeneraciones de scaffolding.
+
+### Comandos útiles
+
+```bash
+# Restaurar herramientas EF (desde Web/)
+dotnet tool restore
+
+# Generar scaffolding desde una base de datos existente
+dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.SqlServer -o Models -f
+```
+
+> [!WARNING]
+> Si regeneras el scaffolding, `ApplicationDbContext.cs` se sobrescribe. El contenido protegido está en `ApplicationDbContext.Custom.cs` — no lo pierdas.
+
+## Seguridad
+
+| Mecanismo | Detalle |
+|---|---|
+| Rate limiting | 10 req / 5 s por IP en endpoints `Account` |
+| Cookies | `CookieSecurePolicy.Always` — solo sobre HTTPS |
+| 2FA | QR code + authenticator app |
+| Secretos | `config/secrets.json` excluido de Git |
+| Anti-enumeración | ForgotPassword no revela existencia de usuarios |
+| Conexiones | `Encrypt=true` en todas las cadenas de conexión |
+| Validación | `ModelState.IsValid` habilitado en todos los controladores |
+
+## Recursos
+
+- [Documentación de .NET](https://learn.microsoft.com/dotnet/)
+- [ASP.NET Core MVC](https://learn.microsoft.com/aspnet/core/mvc/)
 - [Entity Framework Core](https://learn.microsoft.com/ef/core/)
-- [Clean Architecture](https://learn.microsoft.com/azure/architecture/dotnet-apps/)
-- [Bootstrap](https://getbootstrap.com/)
+- [Clean Architecture en .NET](https://learn.microsoft.com/dotnet/architecture/modern-web-apps-azure/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Metronic Tailwind](https://keenthemes.com/metronic/tailwind/)
 - [Chart.js](https://www.chartjs.org/)
+- [DataTables](https://datatables.net/)
