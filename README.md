@@ -1,8 +1,8 @@
 <div align="center">
 
-![TradingBookApp](./PortalTrading.png)
+# Trading Book
 
-# TradingBook
+![TradingBookApp](./PortalTrading.png)
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core%20MVC-10.0-512BD4?style=flat-square&logo=dotnet)](https://learn.microsoft.com/aspnet/core/)
