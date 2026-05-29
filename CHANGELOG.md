@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2026-05-29
+
+### Changed
+- Migrated solution from .NET 8.0 to .NET 10.0.300 with all Microsoft packages updated to 10.0.8.
+- Upgraded EntityFrameworkCore, Identity, Hosting, Diagnostics, and CodeGeneration packages to 10.0.x versions.
+- Updated third-party packages: MailKit 4.17.0, Newtonsoft.Json 13.0.4, QRCoder 1.8.0, Selenium 4.44.0.
+
+### Security
+- All NuGet packages audited; no critical vulnerabilities introduced by the migration.
+
 ## [1.7.0] - 2026-05-28
 
 ### Security
