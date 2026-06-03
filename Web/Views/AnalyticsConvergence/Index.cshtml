@@ -1,0 +1,399 @@
+@{
+	ViewData["Title"] = "Análisis de Convergencias";
+
+	var categoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+	var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+	var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+	var triggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+	var sceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+	var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+	var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+	var figureItems = (List<SelectListItem>)ViewBag.FigureItems;
+}
+
+<!-- Container -->
+<div class="kt-container-fixed">
+	<div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+		<div class="flex flex-col justify-center gap-2">
+			<h1 class="text-xl font-medium leading-none text-mono">
+				Análisis de Convergencias
+			</h1>
+			<div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+				Cruza variables para identificar las combinaciones con mejores resultados operativos.
+			</div>
+		</div>
+		<div class="flex items-center gap-2.5">
+			<a class="kt-btn kt-btn-outline" data-kt-drawer-toggle="#filter_drawer">
+				<i class="ki-filled ki-setting-4"></i>
+				Filtros
+			</a>
+		</div>
+	</div>
+</div>
+<!-- End of Container -->
+<!-- Container -->
+<div class="kt-container-fixed">
+	<div class="kt-card kt-card-grid">
+		<div class="kt-card-table kt-scrollable-x-auto">
+			<table id="dtTable" class="kt-table" data-kt-datatable-table="true"></table>
+		</div>
+	</div>
+</div>
+<!-- End of Container -->
+<!--Filter Drawer-->
+<div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[90%] w-[450px] top-5 bottom-5 end-5 rounded-xl border border-border" data-kt-drawer="true" data-kt-drawer-container="body" id="filter_drawer">
+	<div class="kt-card-header px-5">
+		<h3 class="kt-card-title">
+			Filtros Disponibles
+		</h3>
+		<button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" data-kt-drawer-dismiss="true">
+			<i class="ki-filled ki-cross text-base">
+			</i>
+		</button>
+	</div>
+	<div class="kt-card-content space-y-5 p-5 kt-scrollable-y-auto">
+		<!-- Global Filters -->
+		<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-label max-w-56">Categoría:</label>
+			@Html.DropDownList("CategoryId", categoryItems, new { @class = "kt-select", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Selecciona uno...",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		</div>
+		<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-label max-w-56">Tipo de Cuenta:</label>
+			@Html.DropDownList("AccountTypeId", accountTypeItems, new { @class = "kt-select", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Selecciona uno...",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		</div>
+		<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-label max-w-56">Instrumento:</label>
+			@Html.DropDownList("InstrumentId", instrumentItems, new { @class = "kt-select", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "true",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Selecciona uno...",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		</div>
+
+		<!-- Divider -->
+		<div class="border-t border-border pt-5 mt-5">
+			<h4 class="text-sm font-semibold text-mono mb-3">Variables de Convergencia</h4>
+		</div>
+
+		<!-- Trigger -->
+		<div class="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-toggle  flex-shrink-0">
+				<input type="checkbox" id="TriggerActive" checked value="true" onchange="toggleVariable(this)" class="kt-checkbox kt-checkbox-sm mt-1" />
+				<span class="kt-form-toggle-slider"></span>
+			</label>
+			<label class="kt-form-label max-w-44">Trigger:</label>
+			@Html.DropDownList("TriggerId", triggerItems, new { @class = "kt-select convergence-var", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Todos",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		</div>
+
+		<!-- Scenery -->
+		<div class="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-toggle  flex-shrink-0">
+				<input type="checkbox" id="SceneryActive" checked value="true" onchange="toggleVariable(this)" class="kt-checkbox kt-checkbox-sm mt-1" />
+				<span class="kt-form-toggle-slider"></span>
+			</label>
+			<label class="kt-form-label max-w-44">Escenario:</label>
+			@Html.DropDownList("SceneryId", sceneryItems, new { @class = "kt-select convergence-var", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Todos",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		</div>
+
+		<!-- Direction -->
+		<div class="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-toggle  flex-shrink-0">
+				<input type="checkbox" id="DirectionActive" value="true" onchange="toggleVariable(this)" class="kt-checkbox kt-checkbox-sm mt-1" />
+				<span class="kt-form-toggle-slider"></span>
+			</label>
+			<label class="kt-form-label max-w-44">Dirección:</label>			
+			@Html.DropDownList("DirectionId", directionItems, new { @class = "kt-select convergence-var", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",				
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Todos",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+			
+		</div>
+
+		<!-- Frame -->
+		<div class="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-toggle  flex-shrink-0">
+				<input type="checkbox" id="FrameActive" value="true" onchange="toggleVariable(this)" class="kt-checkbox kt-checkbox-sm mt-1" />
+				<span class="kt-form-toggle-slider"></span>
+			</label>
+			<label class="kt-form-label max-w-44">Frame:</label>			
+			@Html.DropDownList("FrameId", frameItems, new { @class = "kt-select convergence-var", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Todos",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+		
+		</div>
+
+		<!-- Figure -->
+		<div class="flex items-center flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-toggle  flex-shrink-0">
+				<input type="checkbox" id="FigureActive" value="true" onchange="toggleVariable(this)" class="kt-checkbox kt-checkbox-sm mt-1" />
+				<span class="kt-form-toggle-slider"></span>
+			</label>
+			<label class="kt-form-label max-w-44">Figura:</label>			
+			@Html.DropDownList("FigureId", figureItems, new { @class = "kt-select convergence-var", 
+																  data_kt_select = "true", 
+																  data_kt_select_enable_search = "false",
+																  data_kt_select_search_placeholder = "Buscar...",
+																  data_kt_select_placeholder="Todos",
+																  data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+			
+		</div>
+
+		<!-- Divider -->
+		<div class="border-t border-border pt-5 mt-5">
+			<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+				<label class="kt-form-label max-w-56">Mín. Trades:</label>
+				<input type="number" id="MinTrades" class="kt-input" value="10" min="1" max="1000" />
+			</div>
+		</div>
+	</div>
+	<div class="kt-card-footer p-5 flex gap-3">
+		<a class="kt-btn kt-btn-outline" href="javascript:ClearFilterData()" data-kt-drawer-dismiss="true">
+			Limpiar
+		</a>
+		<a class="kt-btn kt-btn-primary grow" href="javascript:SearchData()" data-kt-drawer-dismiss="true" id="btn_AplicarFiltro">
+			Aplicar
+		</a>
+	</div>
+</div>
+<!--End of Filter Drawer-->
+@section scripts{
+	<script>
+		$(document).ready(function () {
+			LoadDataTable();
+			DisabledSelect();
+		});
+
+		function toggleVariable(el) {
+			const name = el.id.replace('Active', 'Id');
+			
+			if (el.checked) {				
+				KTSelectHelper.clear('#'+ name);
+				KTSelectHelper.enable('#' + name);
+			} else {
+				KTSelectHelper.clear('#'+ name);
+				KTSelectHelper.disable('#' + name);
+				
+			}
+		}
+
+		function DisabledSelect(){
+			KTSelectHelper.disable('#DirectionId');
+			KTSelectHelper.disable('#FrameId');
+			KTSelectHelper.disable('#FigureId');
+		}
+
+		function ClearFilterData() {
+			KTSelectHelper.setValue('#CategoryId', 1);
+			KTSelectHelper.clear('#AccountTypeId');
+			KTSelectHelper.clear('#InstrumentId');
+			KTSelectHelper.clear('#TriggerId');
+			KTSelectHelper.clear('#SceneryId');
+			KTSelectHelper.clear('#DirectionId');
+			KTSelectHelper.clear('#FrameId');
+			KTSelectHelper.clear('#FigureId');
+			document.getElementById('MinTrades').value = 10;
+
+			document.getElementById('TriggerActive').checked = true;
+			document.getElementById('SceneryActive').checked = true;
+			document.getElementById('DirectionActive').checked = false;
+			document.getElementById('FrameActive').checked = false;
+			document.getElementById('FigureActive').checked = false;
+
+			
+			DisabledSelect();
+			LoadDataTable();
+		}
+
+		function SearchData() {
+			LoadDataTable();
+		}
+
+		function LoadDataTable() {
+			const categoryId = document.querySelector('#CategoryId').value || 0;
+			const accountTypeId = document.querySelector('#AccountTypeId').value || 0;
+			const instrumentId = document.querySelector('#InstrumentId').value || 0;
+			const triggerId = document.querySelector('#TriggerId').value || 0;
+			const sceneryId = document.querySelector('#SceneryId').value || 0;
+
+			let directionId = 0;
+			if (!document.getElementById('DirectionId').disabled) {
+				directionId = document.querySelector('#DirectionId').value || 0;
+			}
+
+			let frameId = 0;
+			if (!document.getElementById('FrameId').disabled) {
+				frameId = document.querySelector('#FrameId').value || 0;
+			}
+
+			let figureId = 0;
+			if (!document.getElementById('FigureId').disabled) {
+				figureId = document.querySelector('#FigureId').value || 0;
+			}
+
+			const triggerActive = document.getElementById('TriggerActive').checked;
+			const sceneryActive = document.getElementById('SceneryActive').checked;
+			const directionActive = document.getElementById('DirectionActive').checked;
+			const frameActive = document.getElementById('FrameActive').checked;
+			const figureActive = document.getElementById('FigureActive').checked;
+			const minTrades = document.getElementById('MinTrades').value || 10;
+
+			var data = {
+				categoryId: categoryId,
+				accountTypeId: accountTypeId,
+				instrumentId: instrumentId,
+				triggerId: triggerId,
+				sceneryId: sceneryId,
+				directionId: directionId,
+				frameId: frameId,
+				figureId: figureId,
+				triggerActive: triggerActive,
+				sceneryActive: sceneryActive,
+				directionActive: directionActive,
+				frameActive: frameActive,
+				figureActive: figureActive,
+				minTrades: minTrades
+			};
+
+			if ($.fn.DataTable.isDataTable('#dtTable')) {
+				$('#dtTable').DataTable().destroy();
+			}
+
+			$('#dtTable').DataTable({
+				ajax: {
+					url: "@Url.Content("~/AnalyticsConvergence/JsonDataTable")",
+					type: "POST",
+					dataType: "json",
+					data: data
+				},
+				columns: [
+					{ name: "setup", title: "Setup", data: "setup", autoWidth: true, className: "min-w-[250px] w-[350px]" },
+					{ name: "trades", title: "Trades", data: "trades", autoWidth: true, className: "text-center min-w-[60px] w-[80px]" },
+					{ name: "tP1Rate", title: "TP1%", data: "tP1Rate", autoWidth: true, className: "text-center min-w-[90px] w-[110px]", render: renderTP1RateChart },
+					{ name: "tP2Rate", title: "TP2%", data: "tP2Rate", autoWidth: true, className: "text-center min-w-[90px] w-[110px]", render: renderTP2RateChart },
+					{ name: "tP3Rate", title: "TP3%", data: "tP3Rate", autoWidth: true, className: "text-center min-w-[90px] w-[110px]", render: renderTP3RateChart },
+					{ name: "slRate", title: "SL%", data: "slRate", autoWidth: true, className: "text-center min-w-[90px] w-[110px]", render: renderSLRateChart },
+					{ name: "score", title: "Score", data: "score", autoWidth: true, className: "text-center min-w-[90px] w-[120px]", render: renderScoreChart }
+				],
+				processing: true,
+				serverSide: true,
+				pageLength: 10,
+				searching: false,
+				info: true,
+				order: [[6, 'desc']],
+				layout: {
+					topStart: [],
+					topEnd: 'search',
+					bottomStart: ['pageLength', 'info'],
+					bottomEnd: 'paging'
+				},
+				language: {
+					processing: "Procesando...",
+					lengthMenu: "Mostrar _MENU_ registros",
+					zeroRecords: "No se encontraron resultados",
+					emptyTable: "Ningún dato disponible en esta tabla",
+					info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+					infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+					infoFiltered: "(filtrado de un total de _MAX_ registros)",
+					search: "",
+					searchPlaceholder: "Buscar combinaciones...",
+					paginate: {
+						first: "Primero",
+						last: "Último",
+						next: "Siguiente",
+						previous: "Anterior"
+					},
+					aria: {
+						sortAscending: ": Activar para ordenar la columna de manera ascendente",
+						sortDescending: ": Activar para ordenar la columna de manera descendente"
+					}
+				},
+				initComplete: function () {
+					const searchContainer = $('.dt-search');
+
+					searchContainer.find('label').remove();
+
+					searchContainer.html(`
+					<div class="kt-input max-w-48 relative">
+					<i class="ki-filled ki-magnifier text-sm text-secondary-foreground"></i>
+					<input
+						id="dt-search-0"
+						type="text"
+						class="w-full "
+						placeholder="Buscar combinaciones..."
+					/>
+					</div>
+					`);
+
+					searchContainer.find('input').on('keyup', function () {
+						$('#dtTable').DataTable().search(this.value).draw();
+					});
+
+				},
+				drawCallback: function () {
+					KTMenu.createInstances();
+
+					requestAnimationFrame(() => {
+						setTimeout(() => {
+							document
+								.querySelectorAll('.kt-progress-indicator')
+								.forEach(el => {
+									el.style.width = el.dataset.width + '%';
+								});
+						}, 200);
+					});
+				},
+			});
+		}
+
+		const renderTP1RateChart = (data) => renderProgressBar('', data, 'primary', 'opacity-90');
+		const renderTP2RateChart = (data) => renderProgressBar('', data, 'primary', 'opacity-80');
+		const renderTP3RateChart = (data) => renderProgressBar('', data, 'primary', 'opacity-60');
+		const renderSLRateChart = (data) => renderProgressBar('', data, 'destructive', 'opacity-90');
+
+		const renderScoreChart = (data) => {
+			const score = parseFloat(data).toFixed(1);
+			let color = 'destructive';
+			if (score > 80) color = 'success';
+			else if (score > 50) color = 'warning';
+
+			return `
+			<div class="flex flex-col gap-1 min-w-[90px]">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-white">${score}</span>
+					<span class="text-[11px] text-muted-foreground">pts</span>
+				</div>
+				<div class="kt-progress h-[3px] bg-white/10 kt-progress-${color}">
+					<div class="kt-progress-indicator rounded-full transition-all duration-700 ease-out"
+						data-width="${Math.min(score, 100)}" style="width:0%">
+					</div>
+				</div>
+			</div>`;
+		};
+	</script>
+}

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2026-06-02
+
+### Added
+- Created AnalyticsConvergence page to cross up to 5 variables (Trigger, Scenery, Direction, Frame, Figure) and identify best-performing combinations ranked by a compound Score.
+- Added stored procedure `usp_GetTBAnalyticsConvergence` with dynamic GROUP BY and Score formula `(TP1Rate*10 + TP2Rate*20 + TP3Rate*70) * MIN(Trades/50, 1)`.
+- Added permission `AnalyticsConvergence = 18`, DTOs, repository, service, controller, and Metronic Tailwind view with toggle-based convergence panel and DataTable server-side rendering.
+
 ## [1.8.0] - 2026-05-29
 
 ### Changed
