@@ -12,7 +12,6 @@
 
 # Ignorar archivos de configuraci�n con datos sensibles
 appsettings.*.json
-config/secrets.json
 
 # Ignorar todo en Logs excepto Index.cshtml
 Views/Logs/*

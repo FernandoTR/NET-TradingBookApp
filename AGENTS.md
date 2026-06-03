@@ -19,7 +19,7 @@
 - Repositories call database objects such as `usp_GetOrdersDataTable` and view `View_Orders`; build can pass without those objects, but runtime analytics/order flows need a compatible database.
 
 ## App Settings And Runtime Gotchas
-- Real credentials (connection strings, SMTP) go in `config/secrets.json` (excluded from git). Use `config/secrets.template.json` as reference. `appsettings*.json` contains only `__CHANGE_ME__` placeholders.
+- Real credentials (connection strings, SMTP) go in `appsettings.Development.json` or `appsettings.Production.json` (excluded from git via `appsettings.*.json` in `.gitignore`). `appsettings.json` contains only `__CHANGE_ME__` placeholders. ASP.NET Core loads `appsettings.{Environment}.json` automatically — no custom code needed.
 - Authentication cookies use `CookieSecurePolicy.Always`; use the HTTPS launch profile when checking sign-in/auth flows.
 - Request localization is hard-coded to `es-MX` in `Web/Program.cs`; date/number UI behavior follows that culture.
 - Static JS/CSS libraries are vendored under `Web/wwwroot/Template`; there is no npm/package manifest in this repo.
