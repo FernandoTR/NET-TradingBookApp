@@ -75,7 +75,7 @@
               <!-- Sidebar Menu -->
                 @if (currentUser.MenuOptions != null && currentUser.MenuOptions.Any())
                 {
-                    @Html.RenderMenu(currentUser.MenuOptions)
+                    @Html.RenderMenu(currentUser.MenuOptions, ViewContext)
                 }
               <!-- End of Sidebar Menu -->
              </div>
