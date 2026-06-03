@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] - 2026-06-03
+
+### Added
+- Sidebar menu now highlights the current page with `active` class from the server side, removing JS dependency for Metronic/Tailwind styles.
+- Sub-menu items render `kt-menu-bullet` dot instead of icon, matching Metronic's visual convention for nested items.
+- Parent accordion auto-expands when a child menu item matches the current route.
+
 ## [1.9.0] - 2026-06-02
 
 ### Added
