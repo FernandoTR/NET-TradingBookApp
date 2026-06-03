@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.0] - 2026-06-03
+
+### Removed
+- Custom `config/secrets.json` loading removed from `Infrastructure/DependencyInjection.cs` in favor of standard ASP.NET Core configuration.
+- `config/secrets.template.json` file deleted; all references cleaned from solution, gitignore, and documentation.
+
+### Refactored
+- Credential configuration now uses `appsettings.{Environment}.json` loaded automatically by the framework instead of a hardcoded relative path.
+
 ## [1.10.0] - 2026-06-03
 
 ### Added

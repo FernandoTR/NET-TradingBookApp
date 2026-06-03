@@ -35,7 +35,7 @@ TradingBook es una plataforma web que centraliza el registro y análisis de oper
 - **Protección contra enumeración** — ForgotPassword redirige siempre a la página de confirmación sin revelar si el usuario existe.
 - **Rate limiting** — endpoints de cuenta protegidos con límite de 10 peticiones cada 5 segundos por IP.
 - **Cookies seguras** — política `CookieSecurePolicy.Always`, requiere HTTPS para flujos de autenticación.
-- **Credenciales externalizadas** — secretos en `config/secrets.json` (excluido de Git), plantilla de referencia en `config/secrets.template.json`.
+- **Credenciales externalizadas** — `appsettings.Development.json` y `appsettings.Production.json` excluidos de Git; `appsettings.json` contiene solo placeholders `__CHANGE_ME__`.
 - **Registro de actividad** — logging completo de operaciones con trazabilidad por usuario.
 - **Módulos administrativos** — gestión de empleados, roles, usuarios, categorías, figuras, tipos de cuenta, temporalidades e instrumentos.
 
@@ -87,15 +87,15 @@ El arranque ocurre en `Web/Program.cs` mediante tres métodos extensores que reg
 ### Configuración
 
 1. Clona el repositorio.
-2. Crea `config/secrets.json` copiando la plantilla:
+2. Crea `Web/appsettings.Development.json` copiando el `appsettings.json`:
 
    ```bash
-   cp config/secrets.template.json config/secrets.json
+   cp Web/appsettings.json Web/appsettings.Development.json
    ```
 
-3. Rellena los valores reales en `config/secrets.json`: cadena de conexión y credenciales SMTP.
+3. Rellena los valores reales en `Web/appsettings.Development.json`: cadena de conexión y credenciales SMTP.
    > [!IMPORTANT]
-   > `config/secrets.json` está excluido de Git. Nunca guardes credenciales reales en `appsettings.json` — ese archivo solo contiene placeholders `__CHANGE_ME__`.
+   > `appsettings.Development.json` y `appsettings.Production.json` están excluidos de Git. Nunca guardes credenciales reales en `appsettings.json` — ese archivo solo contiene placeholders `__CHANGE_ME__`.
 
 4. Restaura las herramientas de EF Core:
 
@@ -152,8 +152,6 @@ TradingBookApp/
 │   ├── Models/           # ViewModels
 │   ├── Program.cs
 │   └── DependencyInjection.cs
-├── config/
-│   └── secrets.template.json  # Plantilla de configuración secreta
 ├── specs/                # Especificaciones de migración y hardening
 ├── TradingBookApp.sln
 ├── CHANGELOG.md
@@ -190,7 +188,7 @@ dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.Sq
 | Rate limiting | 10 req / 5 s por IP en endpoints `Account` |
 | Cookies | `CookieSecurePolicy.Always` — solo sobre HTTPS |
 | 2FA | QR code + authenticator app |
-| Secretos | `config/secrets.json` excluido de Git |
+| Secretos | `appsettings.*.json` excluidos de Git |
 | Anti-enumeración | ForgotPassword no revela existencia de usuarios |
 | Conexiones | `Encrypt=true` en todas las cadenas de conexión |
 | Validación | `ModelState.IsValid` habilitado en todos los controladores |
