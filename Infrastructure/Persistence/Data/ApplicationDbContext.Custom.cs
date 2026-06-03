@@ -18,6 +18,7 @@ public partial class ApplicationDbContext
         modelBuilder.Entity<GetTBAnalyticsStageDto>().HasNoKey();
         modelBuilder.Entity<GetTBAnalyticsTimeDto>().HasNoKey();
         modelBuilder.Entity<GetTBAnalyticsTriggerDto>().HasNoKey();
+        modelBuilder.Entity<GetTBAnalyticsConvergenceDto>().HasNoKey();
         modelBuilder.Entity<GetOrdersDataTableDto>().HasNoKey();
 
     }

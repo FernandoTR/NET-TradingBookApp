@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Email\Templates\" />
+    <Folder Include="Persistence\StoredProcedures\" />
   </ItemGroup>
 
   <ItemGroup>

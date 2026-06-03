@@ -112,13 +112,55 @@ window.KTSelectHelper = (() => {
             .map(x => x.value);
     }
 
+    function disable(selector) {
+
+        const element = getElement(selector);
+
+        if (!element) return;
+
+        element.disabled = true;
+
+        element.setAttribute(
+            'data-kt-select-disabled',
+            'true'
+        );
+
+        const instance = KTSelect.getInstance(element);
+
+        if (instance?.disable) {
+            instance.disable();
+        }
+    }
+
+    function enable(selector) {
+
+        const element = getElement(selector);
+
+        if (!element) return;
+
+        element.disabled = false;
+
+        element.setAttribute(
+            'data-kt-select-disabled',
+            'false'
+        );
+
+        const instance = KTSelect.getInstance(element);
+
+        if (instance?.enable) {
+            instance.enable();
+        }
+    }
+
     return {
 
         setValue,
         setValues,
         clear,
         getValue,
-        getValues
+        getValues,
+        disable,
+        enable
     };
 
 })();

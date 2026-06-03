@@ -46,4 +46,6 @@ public enum Permissions
     CatFrame = 16,
     [Description("Instrumentos")]
     CatInstruments = 17,
+    [Description("AnalyticsConvergence")]
+    AnalyticsConvergence = 18,
 }
