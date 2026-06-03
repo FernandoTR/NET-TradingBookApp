@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.10.0] - 2026-06-03
+
+### Added
+- Sidebar menu now highlights the current page with `active` class from the server side, removing JS dependency for Metronic/Tailwind styles.
+- Sub-menu items render `kt-menu-bullet` dot instead of icon, matching Metronic's visual convention for nested items.
+- Parent accordion auto-expands when a child menu item matches the current route.
+
+## [1.9.0] - 2026-06-02
+
+### Added
+- Created AnalyticsConvergence page to cross up to 5 variables (Trigger, Scenery, Direction, Frame, Figure) and identify best-performing combinations ranked by a compound Score.
+- Added stored procedure `usp_GetTBAnalyticsConvergence` with dynamic GROUP BY and Score formula `(TP1Rate*10 + TP2Rate*20 + TP3Rate*70) * MIN(Trades/50, 1)`.
+- Added permission `AnalyticsConvergence = 18`, DTOs, repository, service, controller, and Metronic Tailwind view with toggle-based convergence panel and DataTable server-side rendering.
+
 ## [1.8.0] - 2026-05-29
 
 ### Changed

@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Web.Helpers;
 
@@ -9,9 +10,11 @@ public static class MenuHelper
     //-- Contiene los Id de los menus que tienen un padre y ya fueron recorridos
     static HashSet<int>? oListMenuId;
 
-    public static IHtmlContent RenderMenu(this IHtmlHelper htmlHelper, List<GetMenuByUserIdDto> menuItems)
+    public static IHtmlContent RenderMenu(this IHtmlHelper htmlHelper, List<GetMenuByUserIdDto> menuItems, ViewContext viewContext)
     {
         oListMenuId = new HashSet<int>();
+
+        var currentPath = (viewContext.HttpContext.Request.Path.Value ?? "").TrimStart('~');
 
         var builder = new TagBuilder("div");
         builder.AddCssClass("kt-menu flex flex-col grow gap-1");
@@ -31,11 +34,11 @@ public static class MenuHelper
             {                    
                 oListMenuId.Add(Convert.ToInt32(menuItem.MenuId));
 
-                builder.InnerHtml.AppendHtml(RenderMenuItemParents(menuItem, menuItems));
+                builder.InnerHtml.AppendHtml(RenderMenuItemParents(menuItem, menuItems, currentPath));
             }
             else if (!oListMenuId.Any(x => x.Equals(Convert.ToInt32(menuItem.MenuId))))
             {
-                builder.InnerHtml.AppendHtml(RenderMenuItem(menuItem));
+                builder.InnerHtml.AppendHtml(RenderMenuItem(menuItem, currentPath, false));
             }                  
         }
 
@@ -47,22 +50,32 @@ public static class MenuHelper
         var itemBuilder = new TagBuilder("div");
         itemBuilder.AddCssClass("kt-menu-item pt-2.25 pb-px");
 
-        //var menuContentBuilder = new TagBuilder("div");
-        //menuContentBuilder.AddCssClass("kt-menu-content");
-
         var tittleBuilder = new TagBuilder("span");
         tittleBuilder.AddCssClass("kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]");
         tittleBuilder.InnerHtml.Append(menuItem.Name);
 
-        //menuContentBuilder.InnerHtml.AppendHtml(tittleBuilder);
         itemBuilder.InnerHtml.AppendHtml(tittleBuilder);        
 
         return itemBuilder;
     }
-    private static TagBuilder RenderMenuItem(GetMenuByUserIdDto menuItem)
+    private static string NormalizePath(string? url)
     {
+        if (string.IsNullOrEmpty(url))
+            return string.Empty;
+
+        return url.TrimStart('~', '/').TrimEnd('/');
+    }
+
+    private static TagBuilder RenderMenuItem(GetMenuByUserIdDto menuItem, string currentPath, bool isMenuAccordion)
+    {
+        var isActive = NormalizePath(menuItem.URL) == NormalizePath(currentPath);
+
         var itemBuilder = new TagBuilder("div");
         itemBuilder.AddCssClass("kt-menu-item");
+        if (isActive)
+        {
+            itemBuilder.AddCssClass("active");
+        }
 
         var linkBuilder = new TagBuilder("a");
         linkBuilder.AddCssClass("kt-menu-link gap-[10px] ps-[10px] pe-[10px] py-[6px] border border-transparent kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg");
@@ -71,26 +84,42 @@ public static class MenuHelper
             linkBuilder.Attributes.Add("href", menuItem.URL);
         }
 
-        var iconBuilder = new TagBuilder("span");
-        iconBuilder.AddCssClass("kt-menu-icon items-start text-muted-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary w-[20px]");
-        var iconTag = new TagBuilder("i");
-        iconTag.AddCssClass(menuItem.Icon ?? "ki-filled ki-calendar-tick text-lg");
-        iconBuilder.InnerHtml.AppendHtml(iconTag);
+        if (isMenuAccordion)
+        {
+            var bulletBuilder = new TagBuilder("span");
+            bulletBuilder.AddCssClass("kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary");
+            linkBuilder.InnerHtml.AppendHtml(bulletBuilder);
+        }
+        else
+        {
+            var iconBuilder = new TagBuilder("span");
+            iconBuilder.AddCssClass("kt-menu-icon items-start text-muted-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary w-[20px]");
+            var iconTag = new TagBuilder("i");
+            iconTag.AddCssClass(menuItem.Icon ?? "ki-filled ki-calendar-tick text-lg");
+            iconBuilder.InnerHtml.AppendHtml(iconTag);
+            linkBuilder.InnerHtml.AppendHtml(iconBuilder);
+        }
 
         var titleBuilder = new TagBuilder("span");
         titleBuilder.AddCssClass("kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary");
         titleBuilder.InnerHtml.Append(menuItem.Name);
 
-        linkBuilder.InnerHtml.AppendHtml(iconBuilder);
         linkBuilder.InnerHtml.AppendHtml(titleBuilder);
         itemBuilder.InnerHtml.AppendHtml(linkBuilder);         
 
         return itemBuilder;
     }
-    private static TagBuilder RenderMenuItemParents(GetMenuByUserIdDto menuItem, List<GetMenuByUserIdDto> menuItems)
+    private static TagBuilder RenderMenuItemParents(GetMenuByUserIdDto menuItem, List<GetMenuByUserIdDto> menuItems, string currentPath)
     {
+        var hasActiveChild = menuItems
+            .Any(a => a.ParentMenuId == menuItem.MenuId && NormalizePath(a.URL) == NormalizePath(currentPath));
+
         var itemBuilder = new TagBuilder("div");
         itemBuilder.AddCssClass("kt-menu-item");
+        if (hasActiveChild)
+        {
+            itemBuilder.AddCssClass("show");
+        }
         itemBuilder.Attributes.Add("data-kt-menu-item-toggle", "accordion");
         itemBuilder.Attributes.Add("data-kt-menu-item-trigger", "click");
 
@@ -139,7 +168,7 @@ public static class MenuHelper
         {
             var subMenuBuilder = new TagBuilder("div");
             subMenuBuilder.AddCssClass("kt-menu-accordion gap-1 ps-[10px] relative before:absolute before:start-[20px] before:top-0 before:bottom-0 before:border-s before:border-border");
-            //subMenuBuilder.Attributes.Add("style", "display: none; overflow: hidden;");
+            
 
             foreach (var subMenuItem in menuItems
                                         .Where(a => a.ParentMenuId.Equals(Convert.ToInt32(menuItem.MenuId)))
@@ -147,7 +176,7 @@ public static class MenuHelper
             {
                 oListMenuId.Add(Convert.ToInt32(subMenuItem.MenuId));
 
-                subMenuBuilder.InnerHtml.AppendHtml(RenderMenuItem(subMenuItem));
+                subMenuBuilder.InnerHtml.AppendHtml(RenderMenuItem(subMenuItem, currentPath, true));
             }
 
             itemBuilder.InnerHtml.AppendHtml(subMenuBuilder);
