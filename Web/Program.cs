@@ -1,56 +1,77 @@
 using Microsoft.Extensions.Options;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-builder.AddApplicationServices();
-builder.AddInfrastructureServices();
-builder.AddWebServices();
-
-builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
-
-// Configurar la zona horaria predeterminada
-//var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-//TimeZoneInfo.Local = mexicoTimeZone;
-
-builder.Services.Configure<RequestLocalizationOptions>(options =>
+try
 {
-    var supportedCultures = new[] { "es-MX" }; // Especï¿½fico para Mï¿½xico
-    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("es-MX");
-    options.SupportedCultures = supportedCultures.Select(c => new System.Globalization.CultureInfo(c)).ToList();
-    options.SupportedUICultures = options.SupportedCultures;
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
-app.UseRequestLocalization(); // Usar la configuraciï¿½n de localizaciï¿½n
+    // Add services to the container.
+    builder.AddApplicationServices();
+    builder.AddInfrastructureServices();
+    builder.AddWebServices();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    builder.Services.AddRazorPages();
+    builder.Services.AddControllersWithViews();
+
+    // Configurar la zona horaria predeterminada
+    //var mexicoTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+    //TimeZoneInfo.Local = mexicoTimeZone;
+
+    builder.Services.Configure<RequestLocalizationOptions>(options =>
+    {
+        var supportedCultures = new[] { "es-MX" };
+        options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("es-MX");
+        options.SupportedCultures = supportedCultures.Select(c => new System.Globalization.CultureInfo(c)).ToList();
+        options.SupportedUICultures = options.SupportedCultures;
+    });
+
+    var app = builder.Build();
+
+    app.UseRequestLocalization();
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseSerilogRequestLogging();
+
+    app.UseRouting();
+
+    // Usar autenticacion y autorizacion
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.UseRateLimiter();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    app.MapRazorPages();
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-// Usar autenticaciÃ³n y autorizaciÃ³n
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseRateLimiter();
-
-
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapRazorPages();
-
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0] - 2026-06-09
+
+### Added
+- Web: Added Serilog structured logging for startup, errors, console output, and daily files.
+- Web: Added HTTP request logging with daily `logs/app-.log` retention.
+
 ## [1.11.0] - 2026-06-03
 
 ### Removed

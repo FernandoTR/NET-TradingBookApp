@@ -13,6 +13,9 @@
 # Ignorar archivos de configuraci�n con datos sensibles
 appsettings.*.json
 
+# Ignorar archivos generados por Serilog
+Web/logs/
+
 # Ignorar todo en Logs excepto Index.cshtml
 Views/Logs/*
 !Views/Logs/Index.cshtml
