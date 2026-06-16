@@ -24,7 +24,7 @@ public static class MenuHelper
 
 
         // Recorremos y ordenamos los elementos de menú
-        foreach (var menuItem in menuItems.OrderBy(x => x.MenuId))
+        foreach (var menuItem in menuItems)
         {
             if(menuItem.ParentMenuId == null)
             {
@@ -66,9 +66,20 @@ public static class MenuHelper
         return url.TrimStart('~', '/').TrimEnd('/');
     }
 
+    private static bool IsMenuItemActive(string? currentPath, string? menuUrl)
+    {
+        var currentPathNormalized = NormalizePath(currentPath);
+        var menuUrlNormalized = NormalizePath(menuUrl);
+
+        return
+            string.Equals(menuUrlNormalized, currentPathNormalized, StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrEmpty(currentPathNormalized) &&
+            string.Equals(menuUrlNormalized, "Home", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static TagBuilder RenderMenuItem(GetMenuByUserIdDto menuItem, string currentPath, bool isMenuAccordion)
     {
-        var isActive = NormalizePath(menuItem.URL) == NormalizePath(currentPath);
+        var isActive = IsMenuItemActive(currentPath, menuItem.URL);
 
         var itemBuilder = new TagBuilder("div");
         itemBuilder.AddCssClass("kt-menu-item");
