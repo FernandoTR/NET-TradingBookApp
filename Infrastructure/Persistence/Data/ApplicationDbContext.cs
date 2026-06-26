@@ -69,6 +69,10 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<UserType> UserTypes { get; set; }
 
     public virtual DbSet<ViewOrder> ViewOrders { get; set; }
+
+    public virtual DbSet<AiTradeValidation> AiTradeValidations { get; set; }
+
+    public virtual DbSet<AiTradeValidationRule> AiTradeValidationRules { get; set; }
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -119,6 +123,124 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(d => d.User).WithMany(p => p.ActivityLogs)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Logs_AspNetUsers");
+        });
+
+        modelBuilder.Entity<AiTradeValidation>(entity =>
+        {
+            entity.ToTable("AiTradeValidation");
+
+            entity.Property(e => e.EntryPrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.FinalSummary).HasMaxLength(4000);
+            entity.Property(e => e.Grade)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.ModelName).HasMaxLength(150);
+            entity.Property(e => e.PromptVersion).HasMaxLength(50);
+            entity.Property(e => e.ProviderName).HasMaxLength(100);
+            entity.Property(e => e.RiskRewardRatio).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.SchemaVersion).HasMaxLength(50);
+            entity.Property(e => e.StopLoss).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.TakeProfit).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.ValidationStatus)
+                .HasMaxLength(40)
+                .IsUnicode(false);
+            entity.Property(e => e.VisualConfidence).HasColumnType("decimal(5, 4)");
+
+            entity.HasOne<AspNetUser>()
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AiTradeValidation_AspNetUsers");
+
+            entity.HasOne<Order>()
+                .WithMany()
+                .HasForeignKey(e => e.OrderId)
+                .HasConstraintName("FK_AiTradeValidation_Orders");
+
+            entity.HasOne<CatInstrument>()
+                .WithMany()
+                .HasForeignKey(e => e.InstrumentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AiTradeValidation_Cat_Instruments");
+
+            entity.HasOne<CatDirection>()
+                .WithMany()
+                .HasForeignKey(e => e.DirectionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AiTradeValidation_Cat_Direction");
+
+            entity.HasOne<CatTrigger>()
+                .WithMany()
+                .HasForeignKey(e => e.DetectedTriggerId)
+                .HasConstraintName("FK_AiTradeValidation_Detected_Cat_Trigger");
+
+            entity.HasOne<CatScenery>()
+                .WithMany()
+                .HasForeignKey(e => e.DetectedSceneryId)
+                .HasConstraintName("FK_AiTradeValidation_Detected_Cat_Scenery");
+
+            entity.HasOne<CatFigure>()
+                .WithMany()
+                .HasForeignKey(e => e.DetectedFigureId)
+                .HasConstraintName("FK_AiTradeValidation_Detected_Cat_Figure");
+
+            entity.HasOne<CatFrame>()
+                .WithMany()
+                .HasForeignKey(e => e.DetectedFrameId)
+                .HasConstraintName("FK_AiTradeValidation_Detected_Cat_Frame");
+
+            entity.HasOne<CatStage>()
+                .WithMany()
+                .HasForeignKey(e => e.DetectedStageId)
+                .HasConstraintName("FK_AiTradeValidation_Detected_Cat_Stage");
+
+            entity.HasOne<CatTrigger>()
+                .WithMany()
+                .HasForeignKey(e => e.ConfirmedTriggerId)
+                .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Trigger");
+
+            entity.HasOne<CatScenery>()
+                .WithMany()
+                .HasForeignKey(e => e.ConfirmedSceneryId)
+                .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Scenery");
+
+            entity.HasOne<CatFigure>()
+                .WithMany()
+                .HasForeignKey(e => e.ConfirmedFigureId)
+                .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Figure");
+
+            entity.HasOne<CatFrame>()
+                .WithMany()
+                .HasForeignKey(e => e.ConfirmedFrameId)
+                .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Frame");
+
+            entity.HasOne<CatStage>()
+                .WithMany()
+                .HasForeignKey(e => e.ConfirmedStageId)
+                .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Stage");
+        });
+
+        modelBuilder.Entity<AiTradeValidationRule>(entity =>
+        {
+            entity.ToTable("AiTradeValidationRule");
+
+            entity.Property(e => e.Result)
+                .HasMaxLength(40)
+                .IsUnicode(false);
+            entity.Property(e => e.RuleCode).HasMaxLength(50);
+            entity.Property(e => e.RuleName).HasMaxLength(200);
+            entity.Property(e => e.ScoreObtained).HasColumnType("decimal(9, 4)");
+            entity.Property(e => e.Source)
+                .HasMaxLength(40)
+                .IsUnicode(false);
+            entity.Property(e => e.Weight).HasColumnType("decimal(9, 4)");
+
+            entity.HasOne(d => d.Validation).WithMany(p => p.Rules)
+                .HasForeignKey(d => d.ValidationId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_AiTradeValidationRule_AiTradeValidation");
         });
 
         modelBuilder.Entity<ApplicationRole>(entity =>
