@@ -114,5 +114,24 @@ public class AiTradeValidationRepository : IAiTradeValidationRepository
         {
             throw new ArgumentException("FinalSummary is required to save a completed AI trade validation.", nameof(validation));
         }
+
+        if (!HasCompleteVisionExtraction(validation))
+        {
+            throw new ArgumentException("A complete AI vision extraction is required to save a completed AI trade validation.", nameof(validation));
+        }
+    }
+
+    private static bool HasCompleteVisionExtraction(AiTradeValidation validation)
+    {
+        return validation.DetectedTriggerId.HasValue &&
+               validation.DetectedSceneryId.HasValue &&
+               validation.DetectedFigureId.HasValue &&
+               validation.DetectedFrameId.HasValue &&
+               validation.DetectedStageId.HasValue &&
+               validation.DetectedLocationType.HasValue &&
+               validation.DetectedConfirmationType.HasValue &&
+               validation.DetectedIsTrendAligned.HasValue &&
+               validation.DetectedIsPivotZone.HasValue &&
+               validation.VisualConfidence.HasValue;
     }
 }
