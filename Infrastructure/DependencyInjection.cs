@@ -1,5 +1,7 @@
-﻿using Application.Interfaces;
+﻿using Application.Common;
+using Application.Interfaces;
 using Domain.Constants;
+using Infrastructure.ArtificialIntelligence;
 using Infrastructure.Email.Services;
 using Infrastructure.Identity;
 using Infrastructure.Logging;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -30,6 +33,26 @@ public static class DependencyInjection
         // DataBase
         builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddDbContext<LoggingDbContext>(options => options.UseSqlServer(connectionString));
+
+        // Artificial Intelligence
+        builder.Services.AddOptions<AiProviderOptions>()
+            .BindConfiguration(AiProviderOptions.SectionName);
+
+        builder.Services.AddSingleton<PromptTemplateProvider>();
+        builder.Services.AddSingleton<AiStructuredOutputSchemaProvider>();
+
+        builder.Services.AddHttpClient<OpenAiVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "OpenAI"));
+        builder.Services.AddHttpClient<MiniMaxVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "MiniMax"));
+        builder.Services.AddHttpClient<DeepSeekVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "DeepSeek"));
+        builder.Services.AddHttpClient<GlmVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "GLM"));
+        builder.Services.AddHttpClient<KimiVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "Kimi"));
+
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<OpenAiVisionClient>());
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<MiniMaxVisionClient>());
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<DeepSeekVisionClient>());
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<GlmVisionClient>());
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<KimiVisionClient>());
+        builder.Services.AddScoped<IAiVisionClientFactory, AiVisionClientFactory>();
 
 
         builder.Services.AddAuthorization(options =>
@@ -119,6 +142,27 @@ public static class DependencyInjection
 
         // Otros
         builder.Services.AddTransient<ITradingViewDownloaderServices, TradingViewDownloaderServices>();
+    }
+
+    private static void ConfigureAiProviderHttpClient(IServiceProvider serviceProvider, HttpClient httpClient, string providerName)
+    {
+        var options = serviceProvider.GetRequiredService<IOptions<AiProviderOptions>>().Value;
+        if (!options.Providers.TryGetValue(providerName, out var definition))
+        {
+            return;
+        }
+
+        if (Uri.TryCreate(definition.Endpoint, UriKind.Absolute, out var endpoint))
+        {
+            httpClient.BaseAddress = endpoint;
+        }
+
+        if (definition.TimeoutSeconds > 0)
+        {
+            httpClient.Timeout = TimeSpan.FromSeconds(definition.TimeoutSeconds);
+        }
+
+        httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/json");
     }
 }
 
