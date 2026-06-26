@@ -1,6 +1,9 @@
-﻿using Infrastructure.Persistence.Data;
+﻿using Application.Common;
+using Application.Interfaces;
+using Infrastructure.Persistence.Data;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using Web.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -9,6 +12,12 @@ public static class DependencyInjection
     public static void AddWebServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+        builder.Services.Configure<AiTradeValidationOptions>(
+            builder.Configuration.GetSection(AiTradeValidationOptions.SectionName));
+
+        builder.Services.AddScoped<IAiValidationImageValidator, AiValidationImageValidator>();
+        builder.Services.AddScoped<AiValidationImageRequestHandler>();
 
         //builder.Services.AddScoped<IUser, CurrentUser>();       
 
