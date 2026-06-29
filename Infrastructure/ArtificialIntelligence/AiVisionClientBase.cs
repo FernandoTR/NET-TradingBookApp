@@ -43,6 +43,10 @@ public abstract class AiVisionClientBase : IAiVisionClient
 
     public string ModelName { get; }
 
+    public string PromptVersion => PromptTemplateProvider.Version;
+
+    public string SchemaVersion => SchemaProvider.Version;
+
     protected PromptTemplateProvider PromptTemplateProvider { get; }
 
     protected AiStructuredOutputSchemaProvider SchemaProvider { get; }

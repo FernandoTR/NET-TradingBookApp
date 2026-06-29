@@ -2,17 +2,9 @@ using Application.DTOs.AiValidation;
 
 namespace Application.Interfaces;
 
-public interface IAiVisionClient
+public interface ITradeValidationOrchestrator
 {
-    string ProviderName { get; }
-
-    string ModelName { get; }
-
-    string PromptVersion { get; }
-
-    string SchemaVersion { get; }
-
-    Task<AiVisionExtractionDto> ExtractSetupAsync(
+    Task<AiValidationResultDto> ValidateAsync(
         CreateAiValidationDto request,
         IReadOnlyList<AiValidationImageInputDto> images,
         CancellationToken cancellationToken);

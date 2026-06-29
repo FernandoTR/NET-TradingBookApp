@@ -11,4 +11,6 @@ public sealed class AiTradeValidationOptions
     public int MaxTotalUploadMb { get; set; } = 32;
 
     public string[] AllowedContentTypes { get; set; } = ["image/jpeg", "image/png", "image/webp"];
+
+    public decimal MinimumRiskRewardRatio { get; set; } = 1m;
 }
