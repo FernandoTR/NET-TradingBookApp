@@ -13,4 +13,6 @@ public sealed class AiTradeValidationOptions
     public string[] AllowedContentTypes { get; set; } = ["image/jpeg", "image/png", "image/webp"];
 
     public decimal MinimumRiskRewardRatio { get; set; } = 1m;
+
+    public int MinHistoricalEvidenceTrades { get; set; } = 10;
 }
