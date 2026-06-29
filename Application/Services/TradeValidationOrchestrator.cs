@@ -13,6 +13,7 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
     private readonly IAiVisionClientFactory _aiVisionClientFactory;
     private readonly ITradeSetupNormalizer _tradeSetupNormalizer;
     private readonly IStrategyRuleEngine _strategyRuleEngine;
+    private readonly IHistoricalEvidenceService _historicalEvidenceService;
     private readonly AiValidationResultFactory _resultFactory;
     private readonly IAiTradeValidationRepository _aiTradeValidationRepository;
 
@@ -20,12 +21,14 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         IAiVisionClientFactory aiVisionClientFactory,
         ITradeSetupNormalizer tradeSetupNormalizer,
         IStrategyRuleEngine strategyRuleEngine,
+        IHistoricalEvidenceService historicalEvidenceService,
         AiValidationResultFactory resultFactory,
         IAiTradeValidationRepository aiTradeValidationRepository)
     {
         _aiVisionClientFactory = aiVisionClientFactory;
         _tradeSetupNormalizer = tradeSetupNormalizer;
         _strategyRuleEngine = strategyRuleEngine;
+        _historicalEvidenceService = historicalEvidenceService;
         _resultFactory = resultFactory;
         _aiTradeValidationRepository = aiTradeValidationRepository;
     }
@@ -43,9 +46,10 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         var client = _aiVisionClientFactory.CreateActiveClient();
         var extraction = await client.ExtractSetupAsync(request, images, cancellationToken);
         var setup = await _tradeSetupNormalizer.NormalizeAsync(request, extraction, cancellationToken);
+        var historicalEvidence = await _historicalEvidenceService.GetEvidenceAsync(setup, cancellationToken);
         var rules = _strategyRuleEngine.Evaluate(setup);
 
-        var result = CreateResult(client, extraction, setup, rules);
+        var result = CreateResult(client, extraction, setup, historicalEvidence, rules);
 
         _resultFactory.ApplyTradingScore(result, setup);
 
@@ -64,6 +68,7 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         IAiVisionClient client,
         AiVisionExtractionDto extraction,
         NormalizedTradeSetupDto setup,
+        HistoricalEvidenceDto? historicalEvidence,
         IReadOnlyList<AiValidationRuleResultDto> rules)
     {
         return new AiValidationResultDto
@@ -74,8 +79,9 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
             PromptVersion = client.PromptVersion,
             SchemaVersion = client.SchemaVersion,
             ModelResponseJson = JsonSerializer.Serialize(extraction, JsonOptions),
-            FinalSummary = BuildFinalSummary(rules),
+            FinalSummary = BuildFinalSummary(rules, historicalEvidence),
             DetectedValues = extraction,
+            HistoricalEvidence = historicalEvidence,
             RiskRewardRatio = setup.RiskRewardRatio,
             Rules = rules
         };
@@ -154,14 +160,20 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         return AiValidationStatus.Valid;
     }
 
-    private static string BuildFinalSummary(IReadOnlyList<AiValidationRuleResultDto> rules)
+    private static string BuildFinalSummary(
+        IReadOnlyList<AiValidationRuleResultDto> rules,
+        HistoricalEvidenceDto? historicalEvidence)
     {
         var passed = rules.Count(rule => rule.Result == ValidationRuleResult.Passed);
         var failed = rules.Count(rule => rule.Result == ValidationRuleResult.Failed);
         var notConfirmable = rules.Count(rule => rule.Result == ValidationRuleResult.NotConfirmable);
         var notApplicable = rules.Count(rule => rule.Result == ValidationRuleResult.NotApplicable);
 
-        return $"Reglas evaluadas: {passed} cumplidas, {failed} incumplidas, {notConfirmable} no confirmables, {notApplicable} no aplicables.";
+        var ruleSummary = $"Reglas evaluadas: {passed} cumplidas, {failed} incumplidas, {notConfirmable} no confirmables, {notApplicable} no aplicables.";
+
+        return historicalEvidence is null
+            ? $"{ruleSummary} Evidencia historica: no disponible."
+            : $"{ruleSummary} Evidencia historica: {historicalEvidence.Trades} trades, TP1 {historicalEvidence.TP1Rate:0.##}%, TP2 {historicalEvidence.TP2Rate:0.##}%, TP3 {historicalEvidence.TP3Rate:0.##}%, SL {historicalEvidence.SLRate:0.##}%, score {historicalEvidence.Score:0.##}, muestra {(historicalEvidence.IsSampleSmall ? "insuficiente" : "suficiente")} (minimo {historicalEvidence.MinTrades}).";
     }
 
     private static bool CanSaveCompletedValidation(

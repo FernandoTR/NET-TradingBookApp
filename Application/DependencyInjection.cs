@@ -29,6 +29,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICatStatusService, CatStatusService>();
         builder.Services.AddScoped<ICatTriggerService, CatTriggerService>();
         builder.Services.AddScoped<ICatConvergenceService, CatConvergenceService>();
+        builder.Services.AddScoped<IHistoricalEvidenceService, HistoricalEvidenceService>();
         builder.Services.AddScoped<IEmployeeService, EmployeeService>();
         builder.Services.AddScoped<IMenuService, MenuService>();
         builder.Services.AddScoped<IOrdersService, OrdersService>();

@@ -20,6 +20,8 @@ public class AiValidationResultDto
 
     public AiVisionExtractionDto? DetectedValues { get; set; }
 
+    public HistoricalEvidenceDto? HistoricalEvidence { get; set; }
+
     public decimal? RiskRewardRatio { get; set; }
 
     public short? StructuralScore { get; set; }
