@@ -1,0 +1,122 @@
+@using Domain.Enums
+@using System.Globalization
+@model IReadOnlyList<TradeAssistantHistoryItemViewModel>
+
+@{
+    ViewData["Title"] = "Historial de validaciones IA";
+}
+
+<div class="kt-container-fixed">
+    <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+        <div class="flex flex-col justify-center gap-2">
+            <h1 class="text-xl font-medium leading-none text-mono">
+                Historial de validaciones IA
+            </h1>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Consulta las validaciones completas guardadas para tu usuario.
+            </div>
+        </div>
+        <a asp-action="Index" class="kt-btn kt-btn-primary">
+            <i class="ki-filled ki-plus"></i>
+            Nueva validacion
+        </a>
+    </div>
+
+    @if (TempData["TradeAssistantMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+    {
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon">
+                <i class="ki-filled ki-information-2"></i>
+            </div>
+            <div class="kt-alert-content">
+                <div class="kt-alert-description">@message</div>
+            </div>
+        </div>
+    }
+
+    <div class="kt-card kt-card-grid mb-10">
+        <div class="kt-card-table kt-scrollable-x-auto">
+            <table class="kt-table align-middle">
+                <thead>
+                    <tr>
+                        <th class="min-w-[150px]">Fecha</th>
+                        <th class="min-w-[120px]">Instrumento</th>
+                        <th class="min-w-[140px]">Direccion</th>
+                        <th class="min-w-[140px]">Estado</th>
+                        <th class="min-w-[90px] text-center">Score</th>
+                        <th class="min-w-[170px]">Proveedor</th>
+                        <th class="min-w-[170px]">Modelo</th>
+                        <th class="min-w-[100px] text-end">Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-secondary-foreground py-8">
+                                No hay validaciones completas para mostrar.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-sm text-mono">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm", CultureInfo.CurrentCulture)</td>
+                                <td class="text-sm font-medium text-mono">@item.Instrument</td>
+                                <td class="text-sm text-secondary-foreground">@item.Direction</td>
+                                <td>
+                                    <span class="kt-badge kt-badge-outline @StatusClass(item.ValidationStatus)">
+                                        @StatusText(item.ValidationStatus)
+                                    </span>
+                                </td>
+                                <td class="text-sm text-center text-mono">@(item.TotalScore?.ToString(CultureInfo.CurrentCulture) ?? "N/D")</td>
+                                <td class="text-sm text-secondary-foreground">@item.ProviderName</td>
+                                <td class="text-sm text-secondary-foreground">@item.ModelName</td>
+                                <td class="text-end">
+                                    <a asp-action="Result" asp-route-id="@item.ValidationId" class="kt-btn kt-btn-sm kt-btn-outline">
+                                        <i class="ki-filled ki-eye"></i>
+                                        Resultado
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string StatusClass(string status)
+    {
+        return ParseStatus(status) switch
+        {
+            AiValidationStatus.Valid => "kt-badge-success",
+            AiValidationStatus.ConditionallyValid => "kt-badge-warning",
+            AiValidationStatus.Invalid => "kt-badge-destructive",
+            _ => "kt-badge-info"
+        };
+    }
+
+    private static string StatusText(string status)
+    {
+        return ParseStatus(status) switch
+        {
+            AiValidationStatus.Valid => "Valida",
+            AiValidationStatus.ConditionallyValid => "Condicional",
+            AiValidationStatus.Invalid => "Invalida",
+            AiValidationStatus.InsufficientEvidence => "Evidencia insuficiente",
+            _ => status
+        };
+    }
+
+    private static AiValidationStatus? ParseStatus(string status)
+    {
+        return Enum.TryParse<AiValidationStatus>(status, ignoreCase: true, out var parsed)
+            ? parsed
+            : null;
+    }
+}

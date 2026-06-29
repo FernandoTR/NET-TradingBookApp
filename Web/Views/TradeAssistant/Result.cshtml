@@ -1,0 +1,370 @@
+@using Domain.Enums
+@using System.Globalization
+@model TradeAssistantResultViewModel
+
+@{
+    ViewData["Title"] = "Resultado de validacion IA";
+
+    var result = Model.Result;
+    var detected = result.DetectedValues;
+    var evidence = result.HistoricalEvidence;
+    var passedRules = result.Rules.Where(rule => rule.Result == ValidationRuleResult.Passed).ToList();
+    var failedRules = result.Rules.Where(rule => rule.Result == ValidationRuleResult.Failed).ToList();
+    var notConfirmableRules = result.Rules.Where(rule => rule.Result == ValidationRuleResult.NotConfirmable).ToList();
+    var notApplicableRules = result.Rules.Where(rule => rule.Result == ValidationRuleResult.NotApplicable).ToList();
+    var confidence = detected?.VisualConfidence;
+    var confidencePercent = confidence.HasValue ? Math.Clamp(confidence.Value * 100m, 0m, 100m) : (decimal?)null;
+    var confidenceWidth = (confidencePercent ?? 0m).ToString("0.##", CultureInfo.InvariantCulture);
+    var triggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+    var sceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+    var stageItems = (List<SelectListItem>)ViewBag.StageItems;
+    var figureItems = (List<SelectListItem>)ViewBag.FigureItems;
+    var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+    var locationTypeItems = (List<SelectListItem>)ViewBag.LocationTypeItems;
+    var confirmationTypeItems = (List<SelectListItem>)ViewBag.ConfirmationTypeItems;
+    var trendItems = (List<SelectListItem>)ViewBag.TrendItems;
+    var pivotZoneItems = (List<SelectListItem>)ViewBag.PivotZoneItems;
+    var selectAttributes = new
+    {
+        Class = "kt-select",
+        data_kt_select = "true",
+        data_kt_select_enable_search = "true",
+        data_kt_select_search_placeholder = "Buscar...",
+        data_kt_select_placeholder = "Selecciona uno...",
+        data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}"
+    };
+    var statusClass = result.ValidationStatus switch
+    {
+        AiValidationStatus.Valid => "kt-badge-success",
+        AiValidationStatus.ConditionallyValid => "kt-badge-warning",
+        AiValidationStatus.Invalid => "kt-badge-destructive",
+        _ => "kt-badge-info"
+    };
+}
+
+<div class="kt-container-fixed">
+    <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+        <div class="flex flex-col justify-center gap-2">
+            <div class="flex items-center gap-3">
+                <h1 class="text-xl font-medium leading-none text-mono">
+                    Resultado de validacion IA
+                </h1>
+                <span class="kt-badge kt-badge-outline @statusClass">@result.ValidationStatus</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Validacion #@Model.ValidationId · @result.ProviderName / @result.ModelName
+            </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+            <a asp-action="History" class="kt-btn kt-btn-outline">
+                <i class="ki-filled ki-calendar"></i>
+                Historial
+            </a>
+            <a asp-action="Index" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-plus"></i>
+                Nueva validacion
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["TradeAssistantMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+    {
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon">
+                <i class="ki-filled ki-information-2"></i>
+            </div>
+            <div class="kt-alert-content">
+                <div class="kt-alert-description">@message</div>
+            </div>
+        </div>
+    }
+
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-5 mb-5">
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Veredicto</div>
+                <div class="text-2xl font-semibold text-mono">@result.ValidationStatus</div>
+                <div class="text-xs text-secondary-foreground mt-2">Estado final del setup evaluado.</div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Score total</div>
+                <div class="text-2xl font-semibold text-mono">@(result.TotalScore?.ToString() ?? "N/D")</div>
+                <div class="text-xs text-secondary-foreground mt-2">Score consolidado de reglas.</div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Grade</div>
+                <div class="text-2xl font-semibold text-mono">@(result.Grade ?? "N/D")</div>
+                <div class="text-xs text-secondary-foreground mt-2">Clasificacion operativa calculada.</div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Confianza visual</div>
+                <div class="text-2xl font-semibold text-mono">@(confidencePercent?.ToString("0.##") ?? "N/D")@(confidencePercent.HasValue ? "%" : "")</div>
+                <div class="kt-progress h-[5px] mt-3">
+                    <div class="kt-progress-indicator" style="width:@confidenceWidth%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kt-card mb-5">
+        <div class="kt-card-header">
+            <h3 class="kt-card-title">Resumen</h3>
+        </div>
+        <div class="kt-card-content p-5">
+            <p class="text-sm text-foreground leading-6">@result.FinalSummary</p>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-5 text-sm">
+                <div>
+                    <div class="text-secondary-foreground">Risk reward</div>
+                    <div class="font-medium text-mono">@(result.RiskRewardRatio?.ToString("0.##") ?? "N/D")</div>
+                </div>
+                <div>
+                    <div class="text-secondary-foreground">Score estructural</div>
+                    <div class="font-medium text-mono">@(result.StructuralScore?.ToString() ?? "N/D")</div>
+                </div>
+                <div>
+                    <div class="text-secondary-foreground">Prompt</div>
+                    <div class="font-medium text-mono">@result.PromptVersion</div>
+                </div>
+                <div>
+                    <div class="text-secondary-foreground">Schema</div>
+                    <div class="font-medium text-mono">@result.SchemaVersion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Confirm" method="post" class="kt-card mb-5">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ValidationId" value="@Model.ValidationId" />
+
+        <div class="kt-card-header">
+            <h3 class="kt-card-title">Confirmacion manual</h3>
+        </div>
+        <div class="kt-card-content p-5">
+            <div class="grid grid-cols-12 gap-3 text-xs font-medium text-secondary-foreground pb-3 border-b border-border">
+                <div class="col-span-12 lg:col-span-3">Campo</div>
+                <div class="col-span-12 lg:col-span-4">Detectado por IA</div>
+                <div class="col-span-12 lg:col-span-5">Confirmado</div>
+            </div>
+
+            <div class="grid gap-4 pt-4">
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Gatillo</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(triggerItems, detected?.TriggerId?.ToString())</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("TriggerId", triggerItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Escenario</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(sceneryItems, detected?.SceneryId?.ToString())</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("SceneryId", sceneryItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Etapa</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(stageItems, detected?.StageId?.ToString())</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("StageId", stageItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Figura</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(figureItems, detected?.FigureId?.ToString())</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("FigureId", figureItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Frame</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(frameItems, detected?.FrameId?.ToString())</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("FrameId", frameItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Ubicacion</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(locationTypeItems, detected?.LocationType.HasValue == true ? ((byte)detected.LocationType.Value).ToString() : null)</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("LocationType", locationTypeItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Confirmacion</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@SelectText(confirmationTypeItems, detected?.ConfirmationType.HasValue == true ? ((byte)detected.ConfirmationType.Value).ToString() : null)</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("ConfirmationType", confirmationTypeItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Tendencia</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@BooleanText(detected?.IsTrendAligned)</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("IsTrendAligned", trendItems, selectAttributes)</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-3 items-center">
+                    <div class="col-span-12 lg:col-span-3 text-sm font-medium text-mono">Zona pivote</div>
+                    <div class="col-span-12 lg:col-span-4 text-sm text-secondary-foreground">@BooleanText(detected?.IsPivotZone)</div>
+                    <div class="col-span-12 lg:col-span-5">@Html.DropDownList("IsPivotZone", pivotZoneItems, selectAttributes)</div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-5">
+                <button type="submit" class="kt-btn kt-btn-primary">
+                    <i class="ki-filled ki-check-circle"></i>
+                    Guardar confirmacion
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Condiciones cumplidas</h3>
+            </div>
+            <div class="kt-card-content p-5 grid gap-3">
+                @if (passedRules.Any())
+                {
+                    foreach (var rule in passedRules)
+                    {
+                        @await Html.PartialAsync("_RuleResult", rule)
+                    }
+                }
+                else
+                {
+                    <div class="text-sm text-secondary-foreground">Sin condiciones cumplidas.</div>
+                }
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Condiciones incumplidas</h3>
+            </div>
+            <div class="kt-card-content p-5 grid gap-3">
+                @if (failedRules.Any())
+                {
+                    foreach (var rule in failedRules)
+                    {
+                        @await Html.PartialAsync("_RuleResult", rule)
+                    }
+                }
+                else
+                {
+                    <div class="text-sm text-secondary-foreground">Sin condiciones incumplidas.</div>
+                }
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">No confirmable</h3>
+            </div>
+            <div class="kt-card-content p-5 grid gap-3">
+                @if (notConfirmableRules.Any())
+                {
+                    foreach (var rule in notConfirmableRules)
+                    {
+                        @await Html.PartialAsync("_RuleResult", rule)
+                    }
+                }
+                else
+                {
+                    <div class="text-sm text-secondary-foreground">Sin informacion no confirmable.</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (notApplicableRules.Any())
+    {
+        <div class="kt-card mb-5">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">No aplicable</h3>
+            </div>
+            <div class="kt-card-content p-5 grid gap-3">
+                @foreach (var rule in notApplicableRules)
+                {
+                    @await Html.PartialAsync("_RuleResult", rule)
+                }
+            </div>
+        </div>
+    }
+
+    <div class="kt-card mb-10">
+        <div class="kt-card-header">
+            <h3 class="kt-card-title">Evidencia historica</h3>
+        </div>
+        <div class="kt-card-content p-5">
+            @if (evidence is not null)
+            {
+                <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                    <div>
+                        <div class="text-sm text-secondary-foreground">Trades</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.Trades</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-secondary-foreground">TP1</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.TP1Rate.ToString("0.##")%</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-secondary-foreground">TP2</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.TP2Rate.ToString("0.##")%</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-secondary-foreground">TP3</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.TP3Rate.ToString("0.##")%</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-secondary-foreground">SL</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.SLRate.ToString("0.##")%</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-secondary-foreground">Score</div>
+                        <div class="text-lg font-semibold text-mono">@evidence.Score.ToString("0.##")</div>
+                    </div>
+                </div>
+
+                <div class="mt-5 text-sm text-secondary-foreground">
+                    @if (!string.IsNullOrWhiteSpace(evidence.Setup))
+                    {
+                        <span>@evidence.Setup.</span>
+                    }
+                    <span>Muestra @(evidence.IsSampleSmall ? "insuficiente" : "suficiente") con minimo operativo de @evidence.MinTrades trades.</span>
+                </div>
+            }
+            else
+            {
+                <div class="text-sm text-secondary-foreground">
+                    La evidencia historica detallada no esta disponible para esta consulta. El resumen persistido permanece visible arriba.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string SelectText(IEnumerable<SelectListItem> items, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "N/D";
+        }
+
+        return items.FirstOrDefault(item => item.Value == value)?.Text ?? value;
+    }
+
+    private static string BooleanText(bool? value)
+    {
+        return value switch
+        {
+            true => "Si",
+            false => "No",
+            _ => "N/D"
+        };
+    }
+}

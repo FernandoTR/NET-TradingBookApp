@@ -1,0 +1,28 @@
+@using Domain.Enums
+@using Application.DTOs.AiValidation
+@model AiValidationRuleResultDto
+
+@{
+    var badgeClass = Model.Result switch
+    {
+        ValidationRuleResult.Passed => "kt-badge-success",
+        ValidationRuleResult.Failed => "kt-badge-destructive",
+        ValidationRuleResult.NotConfirmable => "kt-badge-warning",
+        _ => "kt-badge-info"
+    };
+}
+
+<div class="border border-border rounded-lg p-3">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="font-medium text-sm text-mono">@Model.RuleName</div>
+        <span class="kt-badge kt-badge-outline @badgeClass">@Model.Result</span>
+    </div>
+    <div class="text-xs text-secondary-foreground mt-1">@Model.RuleCode · @Model.Source</div>
+    @if (!string.IsNullOrWhiteSpace(Model.Evidence))
+    {
+        <div class="text-sm text-foreground mt-2">@Model.Evidence</div>
+    }
+    <div class="text-xs text-secondary-foreground mt-2">
+        Peso @Model.Weight.ToString("0.##") · Score @Model.ScoreObtained.ToString("0.##")
+    </div>
+</div>

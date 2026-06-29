@@ -1,0 +1,330 @@
+@model TradeAssistantCreateViewModel
+
+@{
+    ViewData["Title"] = "Asistente de validacion IA";
+
+    var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+    var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+    var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+    var sceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+    var stageItems = (List<SelectListItem>)ViewBag.StageItems;
+    var figureItems = (List<SelectListItem>)ViewBag.FigureItems;
+    var triggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+    var imageRoleItems = (List<SelectListItem>)ViewBag.ImageRoleItems;
+    var imageRows = Model.Images.Any()
+        ? Model.Images
+        : new List<TradeAssistantImageViewModel> { new TradeAssistantImageViewModel { SortOrder = 1 } };
+}
+
+<div class="kt-container-fixed" data-trade-assistant>
+    <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+        <div class="flex flex-col justify-center gap-2">
+            <h1 class="text-xl font-medium leading-none text-mono">
+                Asistente de validación IA
+            </h1>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Captura la propuesta de trade y adjunta imagenes temporales para validar el setup.
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["TradeAssistantMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+    {
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon">
+                <i class="ki-filled ki-information-2"></i>
+            </div>
+            <div class="kt-alert-content">
+                <div class="kt-alert-description">@message</div>
+            </div>
+        </div>
+    }
+
+    <form asp-action="Validate" method="post" enctype="multipart/form-data" class="flex flex-col gap-5" id="trade-assistant-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-sm text-destructive"></div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Propuesta de trade</h3>
+            </div>
+            <div class="kt-card-content grid gap-5 pt-7.5">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="InstrumentId" class="kt-form-label mb-2">Instrumento</label>
+                        <select asp-for="InstrumentId" asp-items="instrumentItems" class="kt-select" required
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Selecciona uno..."
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                        <span asp-validation-for="InstrumentId" class="text-sm text-destructive"></span>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="DirectionId" class="kt-form-label mb-2">Dirección</label>
+                        <select asp-for="DirectionId" asp-items="directionItems" class="kt-select" required
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Selecciona uno..."
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                        <span asp-validation-for="DirectionId" class="text-sm text-destructive"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="EntryPrice" class="kt-form-label mb-2">Entrada</label>
+                        <input asp-for="EntryPrice" class="kt-input" type="number" step="0.00000001" min="0.00000001" required autocomplete="off" />
+                        <span asp-validation-for="EntryPrice" class="text-sm text-destructive"></span>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="StopLoss" class="kt-form-label mb-2">Stop loss</label>
+                        <input asp-for="StopLoss" class="kt-input" type="number" step="0.00000001" min="0.00000001" required autocomplete="off" />
+                        <span asp-validation-for="StopLoss" class="text-sm text-destructive"></span>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="TakeProfit" class="kt-form-label mb-2">Take profit</label>
+                        <input asp-for="TakeProfit" class="kt-input" type="number" step="0.00000001" min="0.00000001" required autocomplete="off" />
+                        <span asp-validation-for="TakeProfit" class="text-sm text-destructive"></span>
+                    </div>
+                </div>
+
+                <div class="fv-row">
+                    <label asp-for="UserComment" class="kt-form-label mb-2">Comentario</label>
+                    <textarea asp-for="UserComment" class="kt-textarea" rows="3" maxlength="1000"></textarea>
+                    <span asp-validation-for="UserComment" class="text-sm text-destructive"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Contexto opcional</h3>
+            </div>
+            <div class="kt-card-content grid gap-5 pt-7.5">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="FrameId" class="kt-form-label mb-2">Frame</label>
+                        <select asp-for="FrameId" asp-items="frameItems" class="kt-select"
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Opcional"
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="SceneryId" class="kt-form-label mb-2">Escenario</label>
+                        <select asp-for="SceneryId" asp-items="sceneryItems" class="kt-select"
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Opcional"
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="StageId" class="kt-form-label mb-2">Etapa</label>
+                        <select asp-for="StageId" asp-items="stageItems" class="kt-select"
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Opcional"
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="TriggerId" class="kt-form-label mb-2">Gatillo</label>
+                        <select asp-for="TriggerId" asp-items="triggerItems" class="kt-select"
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Opcional"
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="FigureId" class="kt-form-label mb-2">Figura</label>
+                        <select asp-for="FigureId" asp-items="figureItems" class="kt-select"
+                                data-kt-select="true"
+                                data-kt-select-enable-search="true"
+                                data-kt-select-search-placeholder="Buscar..."
+                                data-kt-select-placeholder="Opcional"
+                                data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <div class="flex flex-col gap-1">
+                    <h3 class="kt-card-title">Imagenes temporales</h3>
+                    <p class="text-xs text-secondary-foreground">
+                        JPEG, PNG o WebP. Maximo 8 MB por imagen, 32 MB por envio y hasta 4 imagenes.
+                    </p>
+                </div>
+                <button type="button" class="kt-btn kt-btn-outline kt-btn-sm" data-add-image>
+                    <i class="ki-filled ki-plus"></i>
+                    Agregar imagen
+                </button>
+            </div>
+            <div class="kt-card-content grid gap-4 pt-7.5">
+                <div class="kt-alert kt-alert-warning kt-alert-light" data-image-limit hidden>
+                    <div class="kt-alert-icon">
+                        <i class="ki-filled ki-information-4"></i>
+                    </div>
+                    <div class="kt-alert-content">
+                        <div class="kt-alert-description">El maximo para esta validacion es 4 imagenes.</div>
+                    </div>
+                </div>
+
+                <div class="text-sm text-destructive" data-image-errors></div>
+
+                <div class="grid gap-4" data-image-list>
+                    @for (var index = 0; index < imageRows.Count; index++)
+                    {
+                        var image = imageRows[index];
+                        <div class="border border-border rounded-lg p-4 grid gap-4" data-image-row>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="text-sm font-medium text-mono" data-image-title>Imagen @(index + 1)</div>
+                                <button type="button" class="kt-btn kt-btn-icon kt-btn-ghost kt-btn-sm" data-remove-image aria-label="Quitar imagen">
+                                    <i class="ki-filled ki-cross"></i>
+                                </button>
+                            </div>
+
+                            <input type="hidden" name="Images[@index].SortOrder" value="@(index + 1)" data-sort-order />
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                <div class="fv-row">
+                                    <label class="kt-form-label mb-2" for="Images_@(index)__File">Archivo</label>
+                                    <input class="kt-input" id="Images_@(index)__File" name="Images[@index].File" type="file" accept="image/jpeg,image/png,image/webp" required data-image-file />
+                                </div>
+
+                                <div class="fv-row">
+                                    <label class="kt-form-label mb-2" for="Images_@(index)__ImageRole">Rol</label>
+                                    <select class="kt-select" id="Images_@(index)__ImageRole" name="Images[@index].ImageRole" required
+                                            data-kt-select="true"
+                                            data-kt-select-enable-search="false"
+                                            data-kt-select-placeholder="Selecciona uno..."
+                                            data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                                        @foreach (var role in imageRoleItems)
+                                        {
+                                            <option value="@role.Value" selected="@(role.Value == image.ImageRole.ToString())">@role.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                <div class="fv-row">
+                                    <label class="kt-form-label mb-2" for="Images_@(index)__FrameId">Frame</label>
+                                    <select class="kt-select" id="Images_@(index)__FrameId" name="Images[@index].FrameId"
+                                            data-kt-select="true"
+                                            data-kt-select-enable-search="true"
+                                            data-kt-select-search-placeholder="Buscar..."
+                                            data-kt-select-placeholder="Selecciona uno..."
+                                            data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                                        @foreach (var frame in frameItems)
+                                        {
+                                            <option value="@frame.Value" selected="@(frame.Value == image.FrameId?.ToString())">@frame.Text</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="fv-row">
+                                    <label class="kt-form-label mb-2" for="Images_@(index)__Comment">Comentario</label>
+                                    <input class="kt-input" id="Images_@(index)__Comment" name="Images[@index].Comment" value="@image.Comment" maxlength="500" autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-2.5 pb-10">
+            <button type="reset" class="kt-btn kt-btn-secondary">
+                <i class="ki-filled ki-arrows-circle"></i>
+                Limpiar
+            </button>
+            <button type="submit" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-check-circle"></i>
+                Validar con IA
+            </button>
+        </div>
+    </form>
+
+    <template id="trade-assistant-image-template">
+        <div class="border border-border rounded-lg p-4 grid gap-4" data-image-row>
+            <div class="flex items-center justify-between gap-3">
+                <div class="text-sm font-medium text-mono" data-image-title>Imagen __displayIndex__</div>
+                <button type="button" class="kt-btn kt-btn-icon kt-btn-ghost kt-btn-sm" data-remove-image aria-label="Quitar imagen">
+                    <i class="ki-filled ki-cross"></i>
+                </button>
+            </div>
+
+            <input type="hidden" name="Images[__index__].SortOrder" value="__displayIndex__" data-sort-order />
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="fv-row">
+                    <label class="kt-form-label mb-2" for="Images___index____File">Archivo</label>
+                    <input class="kt-input" id="Images___index____File" name="Images[__index__].File" type="file" accept="image/jpeg,image/png,image/webp" required data-image-file />
+                </div>
+
+                <div class="fv-row">
+                    <label class="kt-form-label mb-2" for="Images___index____ImageRole">Rol</label>
+                    <select class="kt-select" id="Images___index____ImageRole" name="Images[__index__].ImageRole" required
+                            data-kt-select="true"
+                            data-kt-select-enable-search="false"
+                            data-kt-select-placeholder="Selecciona uno..."
+                            data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        @foreach (var role in imageRoleItems)
+                        {
+                            <option value="@role.Value">@role.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="fv-row">
+                    <label class="kt-form-label mb-2" for="Images___index____FrameId">Frame</label>
+                    <select class="kt-select" id="Images___index____FrameId" name="Images[__index__].FrameId"
+                            data-kt-select="true"
+                            data-kt-select-enable-search="true"
+                            data-kt-select-search-placeholder="Buscar..."
+                            data-kt-select-placeholder="Selecciona uno..."
+                            data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}">
+                        @foreach (var frame in frameItems)
+                        {
+                            <option value="@frame.Value">@frame.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="fv-row">
+                    <label class="kt-form-label mb-2" for="Images___index____Comment">Comentario</label>
+                    <input class="kt-input" id="Images___index____Comment" name="Images[__index__].Comment" maxlength="500" autocomplete="off" />
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+@section Scripts {
+    <script src="~/js/trade-assistant.js" asp-append-version="true"></script>
+}
