@@ -1,0 +1,419 @@
+@using System.Globalization
+@model CreateOrderFromValidationViewModel
+
+@{
+    ViewData["Title"] = "Crear orden desde validacion IA";
+
+    var order = Model.Order;
+    var categoryItems = (List<SelectListItem>)ViewBag.CategoryItems;
+    var accountTypeItems = (List<SelectListItem>)ViewBag.AccountTypeItems;
+    var instrumentItems = (List<SelectListItem>)ViewBag.InstrumentItems;
+    var dayItems = (List<SelectListItem>)ViewBag.DayItems;
+    var stageItems = (List<SelectListItem>)ViewBag.StageItems;
+    var figureItems = (List<SelectListItem>)ViewBag.FigureItems;
+    var frameItems = (List<SelectListItem>)ViewBag.FrameItems;
+    var triggerItems = (List<SelectListItem>)ViewBag.TriggerItems;
+    var directionItems = (List<SelectListItem>)ViewBag.DirectionItems;
+    var sceneryItems = (List<SelectListItem>)ViewBag.SceneryItems;
+    var orderTypeItems = (List<SelectListItem>)ViewBag.OrderTypeItems;
+    var tradeTypeItems = (List<SelectListItem>)ViewBag.TradeTypeItems;
+    var locationTypeItems = (List<SelectListItem>)ViewBag.LocationTypeItems;
+    var confirmationTypeItems = (List<SelectListItem>)ViewBag.ConfirmationTypeItems;
+    var trendItems = (List<SelectListItem>)ViewBag.TrendItems;
+    var pivotZoneItems = (List<SelectListItem>)ViewBag.PivotZoneItems;
+    var requiredSelectAttributes = new
+    {
+        Class = "kt-select",
+        data_kt_select = "true",
+        data_kt_select_enable_search = "true",
+        data_kt_select_search_placeholder = "Buscar...",
+        data_kt_select_placeholder = "Selecciona uno...",
+        data_kt_select_config = "{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}",
+        required = "required"
+    };
+}
+
+<div class="kt-container-fixed">
+    <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+        <div class="flex flex-col justify-center gap-2">
+            <div class="flex items-center gap-3">
+                <h1 class="text-xl font-medium leading-none text-mono">
+                    Crear orden desde validacion IA
+                </h1>
+                <span class="kt-badge kt-badge-outline kt-badge-info">Validacion #@Model.ValidationId</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Revisa los valores confirmados y completa los datos operativos de la orden.
+            </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+            <a asp-action="Result" asp-route-id="@Model.ValidationId" class="kt-btn kt-btn-outline">
+                <i class="ki-filled ki-arrow-left"></i>
+                Resultado
+            </a>
+            <a asp-controller="Orders" asp-action="Index" class="kt-btn kt-btn-outline">
+                <i class="ki-filled ki-chart-line-star"></i>
+                Ordenes
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["TradeAssistantMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+    {
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon">
+                <i class="ki-filled ki-information-2"></i>
+            </div>
+            <div class="kt-alert-content">
+                <div class="kt-alert-description">@message</div>
+            </div>
+        </div>
+    }
+
+    <div class="kt-alert kt-alert-warning kt-alert-outline mb-5">
+        <div class="kt-alert-icon">
+            <i class="ki-filled ki-information-4"></i>
+        </div>
+        <div class="kt-alert-content">
+            <div class="kt-alert-description">
+                La orden se creara usando el flujo existente de ordenes y conservara sus validaciones actuales de cuenta, saldo y trade.
+            </div>
+        </div>
+    </div>
+
+    <form id="create-order-from-validation-form" class="flex flex-col gap-5" data-validation-id="@Model.ValidationId">
+        @Html.AntiForgeryToken()
+        <input asp-for="ValidationId" type="hidden" />
+        <input asp-for="Order.InstrumentsId" type="hidden" />
+        <input asp-for="Order.StageId" type="hidden" />
+        <input asp-for="Order.FigureId" type="hidden" />
+        <input asp-for="Order.FrameId" type="hidden" />
+        <input asp-for="Order.TriggerId" type="hidden" />
+        <input asp-for="Order.DirectionId" type="hidden" />
+        <input asp-for="Order.SceneryId" type="hidden" />
+        <input asp-for="Order.IsTrendAligned" type="hidden" />
+        <input asp-for="Order.LocationType" type="hidden" />
+        <input asp-for="Order.ConfirmationType" type="hidden" />
+        <input asp-for="Order.IsPivotZone" type="hidden" />
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Valores confirmados</h3>
+            </div>
+            <div class="kt-card-content p-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 text-sm">
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Instrumento</div>
+                        <div class="font-medium text-mono">@SelectText(instrumentItems, order.InstrumentsId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Direccion</div>
+                        <div class="font-medium text-mono">@SelectText(directionItems, order.DirectionId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Etapa</div>
+                        <div class="font-medium text-mono">@SelectText(stageItems, order.StageId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Figura</div>
+                        <div class="font-medium text-mono">@SelectText(figureItems, order.FigureId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Frame</div>
+                        <div class="font-medium text-mono">@SelectText(frameItems, order.FrameId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Gatillo</div>
+                        <div class="font-medium text-mono">@SelectText(triggerItems, order.TriggerId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Escenario</div>
+                        <div class="font-medium text-mono">@SelectText(sceneryItems, order.SceneryId.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Tendencia</div>
+                        <div class="font-medium text-mono">@BooleanText(order.IsTrendAligned)</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Ubicacion</div>
+                        <div class="font-medium text-mono">@SelectText(locationTypeItems, order.LocationType?.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Confirmacion</div>
+                        <div class="font-medium text-mono">@SelectText(confirmationTypeItems, order.ConfirmationType?.ToString(CultureInfo.InvariantCulture))</div>
+                    </div>
+                    <div>
+                        <div class="text-secondary-foreground mb-1">Zona pivote</div>
+                        <div class="font-medium text-mono">@BooleanText(order.IsPivotZone)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kt-card">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Datos operativos</h3>
+            </div>
+            <div class="kt-card-content grid gap-5 pt-7.5">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="Order.CategoryId" class="kt-form-label mb-2">Categoria</label>
+                        @Html.DropDownListFor(model => model.Order.CategoryId, categoryItems, requiredSelectAttributes)
+                        <span asp-validation-for="Order.CategoryId" class="text-sm text-destructive"></span>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.AccountTypeId" class="kt-form-label mb-2">Tipo de cuenta</label>
+                        @Html.DropDownListFor(model => model.Order.AccountTypeId, accountTypeItems, requiredSelectAttributes)
+                        <span asp-validation-for="Order.AccountTypeId" class="text-sm text-destructive"></span>
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.DayId" class="kt-form-label mb-2">Dia</label>
+                        @Html.DropDownListFor(model => model.Order.DayId, dayItems, requiredSelectAttributes)
+                        <span asp-validation-for="Order.DayId" class="text-sm text-destructive"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+                    <div class="fv-row">
+                        <label class="kt-form-label mb-2" for="Order_CreationDate">Fecha</label>
+                        <input id="Order_CreationDate" name="Order.CreationDate" class="kt-input" type="date" required />
+                    </div>
+
+                    <div class="fv-row">
+                        <label class="kt-form-label mb-2" for="Order_Time">Hora</label>
+                        <input id="Order_Time" name="Order.Time" class="kt-input" type="time" required />
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.OrderTypeId" class="kt-form-label mb-2">Tipo de orden</label>
+                        @Html.DropDownListFor(model => model.Order.OrderTypeId, orderTypeItems, requiredSelectAttributes)
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.TradeTypeId" class="kt-form-label mb-2">Tipo de trade</label>
+                        @Html.DropDownListFor(model => model.Order.TradeTypeId, tradeTypeItems, requiredSelectAttributes)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+                    <div class="fv-row">
+                        <label asp-for="Order.Quantity" class="kt-form-label mb-2">Cantidad</label>
+                        <input asp-for="Order.Quantity" class="kt-input" type="number" step="0.00000001" min="0" required autocomplete="off" />
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.Price" class="kt-form-label mb-2">Precio</label>
+                        <input asp-for="Order.Price" class="kt-input" type="number" step="0.00000001" min="0" required autocomplete="off" />
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.CommissionRate" class="kt-form-label mb-2">Comision</label>
+                        <input asp-for="Order.CommissionRate" class="kt-input" type="number" step="0.00000001" min="0" required autocomplete="off" />
+                    </div>
+
+                    <div class="fv-row">
+                        <label asp-for="Order.Total" class="kt-form-label mb-2">Total</label>
+                        <input asp-for="Order.Total" class="kt-input" type="number" step="0.00000001" min="0.00000001" required autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap justify-end gap-2.5 pb-10">
+            <a asp-action="Result" asp-route-id="@Model.ValidationId" class="kt-btn kt-btn-secondary">
+                <i class="ki-filled ki-arrow-left"></i>
+                Cancelar
+            </a>
+            <button type="button" id="create-order-submit" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-check-circle"></i>
+                Crear orden
+            </button>
+        </div>
+    </form>
+</div>
+
+@functions {
+    private static string SelectText(IEnumerable<SelectListItem> items, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "N/D";
+        }
+
+        return items.FirstOrDefault(item => item.Value == value)?.Text ?? value;
+    }
+
+    private static string BooleanText(bool? value)
+    {
+        return value switch
+        {
+            true => "Si",
+            false => "No",
+            _ => "N/D"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('create-order-from-validation-form');
+            const submitButton = document.getElementById('create-order-submit');
+
+            if (!form || !submitButton) {
+                return;
+            }
+
+            const notify = (type, message) => {
+                if (typeof ShowNotification === 'function') {
+                    ShowNotification(type, message);
+                    return;
+                }
+
+                window.alert(message);
+            };
+
+            const getValue = (name) => {
+                const field = form.elements[name];
+                return field ? field.value : '';
+            };
+
+            const parseInteger = (name) => {
+                const value = Number.parseInt(getValue(name), 10);
+                return Number.isNaN(value) ? 0 : value;
+            };
+
+            const parseDecimal = (name) => {
+                const value = Number.parseFloat(getValue(name).replace(',', '.'));
+                return Number.isNaN(value) ? 0 : value;
+            };
+
+            const parseBool = (name) => {
+                const normalized = getValue(name).trim().toLowerCase();
+                return normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on';
+            };
+
+            const toTimeSpan = (value) => {
+                return value && value.length === 5 ? `${value}:00` : value;
+            };
+
+            const buildPayload = () => ({
+                CategoryId: parseInteger('Order.CategoryId'),
+                AccountTypeId: parseInteger('Order.AccountTypeId'),
+                InstrumentsId: parseInteger('Order.InstrumentsId'),
+                CreationDate: getValue('Order.CreationDate'),
+                Time: toTimeSpan(getValue('Order.Time')),
+                DayId: parseInteger('Order.DayId'),
+                StageId: parseInteger('Order.StageId'),
+                FigureId: parseInteger('Order.FigureId'),
+                FrameId: parseInteger('Order.FrameId'),
+                TriggerId: parseInteger('Order.TriggerId'),
+                DirectionId: parseInteger('Order.DirectionId'),
+                SceneryId: parseInteger('Order.SceneryId'),
+                OrderTypeId: getValue('Order.OrderTypeId'),
+                TradeTypeId: getValue('Order.TradeTypeId'),
+                Quantity: parseDecimal('Order.Quantity'),
+                Price: parseDecimal('Order.Price'),
+                CommissionRate: parseDecimal('Order.CommissionRate'),
+                Total: parseDecimal('Order.Total'),
+                IsTrendAligned: parseBool('Order.IsTrendAligned'),
+                LocationType: parseInteger('Order.LocationType'),
+                ConfirmationType: parseInteger('Order.ConfirmationType'),
+                IsPivotZone: parseBool('Order.IsPivotZone')
+            });
+
+            const getOrderId = (result) => {
+                const value = result.code ?? result.Code;
+
+                if (Number.isInteger(value) && value > 0) {
+                    return value;
+                }
+
+                const parsed = Number.parseInt(value, 10);
+
+                if (!Number.isNaN(parsed) && parsed > 0) {
+                    return parsed;
+                }
+
+                const messageMatch = (result.message || result.Message || '').match(/\d+/);
+                return messageMatch ? Number.parseInt(messageMatch[0], 10) : 0;
+            };
+
+            const linkOrder = async (orderId) => {
+                const response = await fetch('@Url.Action("LinkOrder", "TradeAssistant")', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        validationId: Number.parseInt(form.dataset.validationId, 10),
+                        orderId: orderId
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                return response.json();
+            };
+
+            submitButton.addEventListener('click', async function () {
+                if (!form.reportValidity()) {
+                    return;
+                }
+
+                submitButton.disabled = true;
+                let orderCreated = false;
+
+                try {
+                    const response = await fetch('@Url.Content("~/Orders/AddOrder")', {
+                        method: 'POST',
+                        body: JSON.stringify(buildPayload()),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const result = await response.json();
+                    notify(result.notificationType, result.message);
+
+                    if (!result.success) {
+                        submitButton.disabled = false;
+                        return;
+                    }
+
+                    orderCreated = true;
+
+                    const orderId = getOrderId(result);
+
+                    if (!orderId) {
+                        submitButton.innerHTML = '<i class="ki-filled ki-information-4"></i> Orden creada sin vinculo';
+                        notify(3, 'La orden se creo, pero no se recibio el identificador para vincularla.');
+                        return;
+                    }
+
+                    const linkResult = await linkOrder(orderId);
+                    notify(linkResult.notificationType, linkResult.message);
+
+                    if (linkResult.success) {
+                        submitButton.innerHTML = '<i class="ki-filled ki-check-circle"></i> Orden vinculada';
+                        window.setTimeout(function () {
+                            window.location.href = '@Url.Action("Result", "TradeAssistant", new { id = Model.ValidationId })';
+                        }, 900);
+                        return;
+                    }
+
+                    submitButton.innerHTML = '<i class="ki-filled ki-information-4"></i> Orden creada sin vinculo';
+                } catch (error) {
+                    console.error('Error:', error);
+                    notify(orderCreated ? 3 : 4, orderCreated
+                        ? 'La orden se creo, pero no fue posible vincular la validacion.'
+                        : 'No fue posible crear la orden. Intente nuevamente.');
+                }
+
+                if (!orderCreated) {
+                    submitButton.disabled = false;
+                }
+            });
+        });
+    </script>
+}

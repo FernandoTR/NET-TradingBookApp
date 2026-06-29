@@ -131,17 +131,11 @@ public class AiTradeValidationRepository : IAiTradeValidationRepository
     {
         try
         {
-            var validation = await _context.AiTradeValidations
-                .FirstOrDefaultAsync(item => item.Id == validationId && item.UserId == userId, cancellationToken);
+            var updated = await _context.AiTradeValidations
+                .Where(item => item.Id == validationId && item.UserId == userId && item.OrderId == null)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(item => item.OrderId, orderId), cancellationToken);
 
-            if (validation == null)
-            {
-                return false;
-            }
-
-            validation.OrderId = orderId;
-
-            return await _context.SaveChangesAsync(cancellationToken) > 0;
+            return updated > 0;
         }
         catch (Exception ex)
         {
