@@ -1,3 +1,4 @@
+using Application.DTOs.AiValidation;
 using Application.Interfaces;
 using Infrastructure.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +67,64 @@ public class AiTradeValidationRepository : IAiTradeValidationRepository
             .Where(validation => validation.UserId == userId)
             .OrderByDescending(validation => validation.CreatedAt)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<AiTradeValidation>> GetCompletedByUserAsync(string userId, CancellationToken cancellationToken)
+    {
+        return await _context.AiTradeValidations
+            .AsNoTracking()
+            .Where(validation =>
+                validation.UserId == userId &&
+                validation.ModelResponseJson != "" &&
+                validation.ProviderName != "" &&
+                validation.ModelName != "" &&
+                validation.FinalSummary != "" &&
+                validation.DetectedTriggerId.HasValue &&
+                validation.DetectedSceneryId.HasValue &&
+                validation.DetectedFigureId.HasValue &&
+                validation.DetectedFrameId.HasValue &&
+                validation.DetectedStageId.HasValue &&
+                validation.DetectedLocationType.HasValue &&
+                validation.DetectedConfirmationType.HasValue &&
+                validation.DetectedIsTrendAligned.HasValue &&
+                validation.DetectedIsPivotZone.HasValue &&
+                validation.VisualConfidence.HasValue)
+            .OrderByDescending(validation => validation.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> ConfirmAsync(ConfirmedAiValidationDto confirmation, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(confirmation);
+
+        try
+        {
+            var validation = await _context.AiTradeValidations
+                .FirstOrDefaultAsync(item => item.Id == confirmation.ValidationId && item.UserId == confirmation.UserId, cancellationToken);
+
+            if (validation is null)
+            {
+                return false;
+            }
+
+            validation.ConfirmedTriggerId = confirmation.TriggerId;
+            validation.ConfirmedSceneryId = confirmation.SceneryId;
+            validation.ConfirmedFigureId = confirmation.FigureId;
+            validation.ConfirmedFrameId = confirmation.FrameId;
+            validation.ConfirmedStageId = confirmation.StageId;
+            validation.ConfirmedLocationType = confirmation.LocationType.HasValue ? (byte)confirmation.LocationType.Value : null;
+            validation.ConfirmedConfirmationType = confirmation.ConfirmationType.HasValue ? (byte)confirmation.ConfirmationType.Value : null;
+            validation.ConfirmedIsTrendAligned = confirmation.IsTrendAligned;
+            validation.ConfirmedIsPivotZone = confirmation.IsPivotZone;
+            validation.ConfirmedAt = confirmation.ConfirmedAt ?? DateTime.UtcNow;
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog(nameof(ConfirmAsync), ex);
+            throw;
+        }
     }
 
     public async Task<bool> LinkOrderAsync(int validationId, int orderId, string userId, CancellationToken cancellationToken)
