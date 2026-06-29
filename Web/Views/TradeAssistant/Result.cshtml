@@ -56,6 +56,13 @@
             </div>
         </div>
         <div class="flex items-center gap-2.5">
+            @if (Model.CanCreateOrder)
+            {
+                <a asp-action="CreateOrder" asp-route-validationId="@Model.ValidationId" class="kt-btn kt-btn-outline">
+                    <i class="ki-filled ki-plus-circle"></i>
+                    Crear orden
+                </a>
+            }
             <a asp-action="History" class="kt-btn kt-btn-outline">
                 <i class="ki-filled ki-calendar"></i>
                 Historial

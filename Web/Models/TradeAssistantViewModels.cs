@@ -46,9 +46,27 @@ public sealed class TradeAssistantResultViewModel
 {
     public int ValidationId { get; set; }
 
+    public int? OrderId { get; set; }
+
+    public bool CanCreateOrder { get; set; }
+
     public AiValidationResultDto Result { get; set; } = null!;
 
     public ConfirmedAiValidationDto Confirmation { get; set; } = null!;
+}
+
+public sealed class CreateOrderFromValidationViewModel
+{
+    public int ValidationId { get; set; }
+
+    public OrdersCreateViewModel Order { get; set; } = null!;
+}
+
+public sealed class LinkOrderToValidationViewModel
+{
+    public int ValidationId { get; set; }
+
+    public int OrderId { get; set; }
 }
 
 public sealed class TradeAssistantHistoryItemViewModel

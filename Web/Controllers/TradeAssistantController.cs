@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using Web.Models;
+using Web.Models.Enums;
 using Web.Services;
 
 namespace Web.Controllers;
@@ -23,9 +24,12 @@ public class TradeAssistantController : Controller
     private readonly IAiValidationImageValidator _aiValidationImageValidator;
     private readonly ITradeValidationOrchestrator _tradeValidationOrchestrator;
     private readonly IAiTradeValidationRepository _aiTradeValidationRepository;
+    private readonly ICatCategoryService _catCategoryService;
+    private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
     private readonly ICatDirectionService _catDirectionService;
     private readonly ICatFrameService _catFrameService;
+    private readonly ICatDayService _catDayService;
     private readonly ICatSceneryService _catSceneryService;
     private readonly ICatStageService _catStageService;
     private readonly ICatFigureService _catFigureService;
@@ -37,9 +41,12 @@ public class TradeAssistantController : Controller
         IAiValidationImageValidator aiValidationImageValidator,
         ITradeValidationOrchestrator tradeValidationOrchestrator,
         IAiTradeValidationRepository aiTradeValidationRepository,
+        ICatCategoryService catCategoryService,
+        ICatAccountTypeService catAccountTypeService,
         ICatInstrumentsService catInstrumentsService,
         ICatDirectionService catDirectionService,
         ICatFrameService catFrameService,
+        ICatDayService catDayService,
         ICatSceneryService catSceneryService,
         ICatStageService catStageService,
         ICatFigureService catFigureService,
@@ -50,9 +57,12 @@ public class TradeAssistantController : Controller
         _aiValidationImageValidator = aiValidationImageValidator;
         _tradeValidationOrchestrator = tradeValidationOrchestrator;
         _aiTradeValidationRepository = aiTradeValidationRepository;
+        _catCategoryService = catCategoryService;
+        _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
         _catDirectionService = catDirectionService;
         _catFrameService = catFrameService;
+        _catDayService = catDayService;
         _catSceneryService = catSceneryService;
         _catStageService = catStageService;
         _catFigureService = catFigureService;
@@ -208,6 +218,123 @@ public class TradeAssistantController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> CreateOrder(int validationId, CancellationToken cancellationToken)
+    {
+        var redirect = EnsureValidUser();
+        if (redirect is not null)
+        {
+            return redirect;
+        }
+
+        if (validationId <= 0)
+        {
+            return RedirectToAction(nameof(History));
+        }
+
+        var userId = _identityService.GetCurrentUserId();
+        var validation = await _aiTradeValidationRepository.GetByIdAsync(validationId, userId, cancellationToken);
+
+        if (validation is null)
+        {
+            TempData["TradeAssistantMessage"] = "No se encontro la validacion solicitada.";
+            return RedirectToAction(nameof(History));
+        }
+
+        if (validation.OrderId.HasValue)
+        {
+            TempData["TradeAssistantMessage"] = "La validacion ya tiene una orden vinculada.";
+            return RedirectToAction(nameof(Result), new { id = validation.Id });
+        }
+
+        if (!HasConfirmedOrderValues(validation))
+        {
+            TempData["TradeAssistantMessage"] = "Confirma todos los valores detectados antes de crear la orden.";
+            return RedirectToAction(nameof(Result), new { id = validation.Id });
+        }
+
+        var model = MapToCreateOrderFromValidationViewModel(validation);
+        await PopulateCreateOrderCatalogsAsync(model);
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LinkOrder([FromBody] LinkOrderToValidationViewModel model, CancellationToken cancellationToken)
+    {
+        var redirect = EnsureValidUser();
+        if (redirect is not null)
+        {
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = "La sesion no es valida para vincular la orden.",
+                notificationType = NotificationType.Error
+            });
+        }
+
+        if (model.ValidationId <= 0 || model.OrderId <= 0)
+        {
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = "No se recibieron datos validos para vincular la orden.",
+                notificationType = NotificationType.Error
+            });
+        }
+
+        var userId = _identityService.GetCurrentUserId();
+        var validation = await _aiTradeValidationRepository.GetByIdAsync(model.ValidationId, userId, cancellationToken);
+
+        if (validation is null)
+        {
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = "No se encontro la validacion solicitada para tu usuario.",
+                notificationType = NotificationType.Error
+            });
+        }
+
+        if (validation.OrderId.HasValue)
+        {
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = "La validacion ya tiene una orden vinculada.",
+                notificationType = NotificationType.Warning,
+                Code = validation.OrderId.Value
+            });
+        }
+
+        try
+        {
+            var linked = await _aiTradeValidationRepository.LinkOrderAsync(model.ValidationId, model.OrderId, userId, cancellationToken);
+
+            return Json(new ResultBackViewModel
+            {
+                Success = linked,
+                Message = linked
+                    ? "La validacion quedo vinculada con la orden creada."
+                    : "La orden se creo, pero no fue posible vincularla con la validacion.",
+                notificationType = linked ? NotificationType.Success : NotificationType.Warning,
+                Code = model.OrderId
+            });
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: TradeAssistant, Action: {nameof(LinkOrder)}", ex);
+
+            return Json(new ResultBackViewModel
+            {
+                Success = false,
+                Message = "La orden se creo, pero ocurrio un error al vincular la validacion.",
+                notificationType = NotificationType.Warning,
+                Code = model.OrderId
+            });
+        }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> History(CancellationToken cancellationToken)
     {
         var redirect = EnsureValidUser();
@@ -248,6 +375,26 @@ public class TradeAssistantController : Controller
         ViewBag.ConfirmationTypeItems = GetConfirmationTypeListSelect(model.Confirmation.ConfirmationType);
         ViewBag.TrendItems = GetBooleanListSelect(model.Confirmation.IsTrendAligned);
         ViewBag.PivotZoneItems = GetBooleanListSelect(model.Confirmation.IsPivotZone);
+    }
+
+    private async Task PopulateCreateOrderCatalogsAsync(CreateOrderFromValidationViewModel model)
+    {
+        ViewBag.CategoryItems = await GetCategoryListSelect(model.Order.CategoryId);
+        ViewBag.AccountTypeItems = await GetAccountTypeListSelect(model.Order.AccountTypeId);
+        ViewBag.InstrumentItems = await GetInstrumentsListSelect(model.Order.InstrumentsId);
+        ViewBag.DayItems = await GetDayListSelect(model.Order.DayId);
+        ViewBag.StageItems = await GetStageListSelect(model.Order.StageId);
+        ViewBag.FigureItems = await GetFigureListSelect(model.Order.FigureId);
+        ViewBag.FrameItems = await GetFrameListSelect(model.Order.FrameId);
+        ViewBag.TriggerItems = await GetTriggerListSelect(model.Order.TriggerId);
+        ViewBag.DirectionItems = await GetDirectionListSelect(model.Order.DirectionId);
+        ViewBag.SceneryItems = await GetSceneryListSelect(model.Order.SceneryId);
+        ViewBag.OrderTypeItems = GetOrderTypeListSelect(model.Order.OrderTypeId);
+        ViewBag.TradeTypeItems = GetTradeTypeListSelect(model.Order.TradeTypeId);
+        ViewBag.LocationTypeItems = GetLocationTypeListSelect(ToLocationType(model.Order.LocationType));
+        ViewBag.ConfirmationTypeItems = GetConfirmationTypeListSelect(ToConfirmationType(model.Order.ConfirmationType));
+        ViewBag.TrendItems = GetBooleanListSelect(model.Order.IsTrendAligned);
+        ViewBag.PivotZoneItems = GetBooleanListSelect(model.Order.IsPivotZone);
     }
 
     private void ValidateTradeProposal(TradeAssistantCreateViewModel model)
@@ -398,6 +545,8 @@ public class TradeAssistantController : Controller
         return new TradeAssistantResultViewModel
         {
             ValidationId = validation.Id,
+            OrderId = validation.OrderId,
+            CanCreateOrder = validation.OrderId is null && HasConfirmedOrderValues(validation),
             Result = new AiValidationResultDto
             {
                 ValidationStatus = ParseEnum(validation.ValidationStatus, AiValidationStatus.InsufficientEvidence),
@@ -433,6 +582,44 @@ public class TradeAssistantController : Controller
                 ConfirmedAt = validation.ConfirmedAt
             }
         };
+    }
+
+    private static CreateOrderFromValidationViewModel MapToCreateOrderFromValidationViewModel(AiTradeValidation validation)
+    {
+        return new CreateOrderFromValidationViewModel
+        {
+            ValidationId = validation.Id,
+            Order = new OrdersCreateViewModel
+            {
+                InstrumentsId = validation.InstrumentId,
+                StageId = validation.ConfirmedStageId.GetValueOrDefault(),
+                FigureId = validation.ConfirmedFigureId.GetValueOrDefault(),
+                FrameId = validation.ConfirmedFrameId.GetValueOrDefault(),
+                TriggerId = validation.ConfirmedTriggerId.GetValueOrDefault(),
+                DirectionId = validation.DirectionId,
+                SceneryId = validation.ConfirmedSceneryId.GetValueOrDefault(),
+                IsTrendAligned = validation.ConfirmedIsTrendAligned,
+                LocationType = validation.ConfirmedLocationType,
+                ConfirmationType = validation.ConfirmedConfirmationType,
+                IsPivotZone = validation.ConfirmedIsPivotZone
+            }
+        };
+    }
+
+    private static bool HasConfirmedOrderValues(AiTradeValidation validation)
+    {
+        return validation.InstrumentId > 0 &&
+               validation.DirectionId > 0 &&
+               validation.ConfirmedAt.HasValue &&
+               validation.ConfirmedTriggerId.HasValue &&
+               validation.ConfirmedSceneryId.HasValue &&
+               validation.ConfirmedFigureId.HasValue &&
+               validation.ConfirmedFrameId.HasValue &&
+               validation.ConfirmedStageId.HasValue &&
+               validation.ConfirmedLocationType.HasValue &&
+               validation.ConfirmedConfirmationType.HasValue &&
+               validation.ConfirmedIsTrendAligned.HasValue &&
+               validation.ConfirmedIsPivotZone.HasValue;
     }
 
     private static TradeAssistantHistoryItemViewModel MapToHistoryItemViewModel(
@@ -589,6 +776,54 @@ public class TradeAssistantController : Controller
         return selectItems;
     }
 
+    public async Task<List<SelectListItem>> GetCategoryListSelect(int? selectedId)
+    {
+        var data = await _catCategoryService.GetAllAsync();
+
+        var selectItems = CreateEmptySelectList();
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = x.Name ?? string.Empty,
+            Value = x.Id.ToString(),
+            Selected = IsSelected(selectedId, x.Id)
+        }));
+
+        return selectItems;
+    }
+
+    public async Task<List<SelectListItem>> GetAccountTypeListSelect(int? selectedId)
+    {
+        var data = await _catAccountTypeService.GetAllAsync();
+
+        var selectItems = CreateEmptySelectList();
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = BuildCatalogText(x.Code, x.Description),
+            Value = x.Id.ToString(),
+            Selected = IsSelected(selectedId, x.Id)
+        }));
+
+        return selectItems;
+    }
+
+    public async Task<List<SelectListItem>> GetDayListSelect(int? selectedId)
+    {
+        var data = await _catDayService.GetAllAsync();
+
+        var selectItems = CreateEmptySelectList();
+
+        selectItems.AddRange(data.Select(x => new SelectListItem
+        {
+            Text = BuildCatalogText(x.Code, x.Description),
+            Value = x.Id.ToString(),
+            Selected = IsSelected(selectedId, x.Id)
+        }));
+
+        return selectItems;
+    }
+
     public async Task<List<SelectListItem>> GetDirectionListSelect(int? selectedId)
     {
         var data = await _catDirectionService.GetAllAsync();
@@ -733,6 +968,26 @@ public class TradeAssistantController : Controller
             new SelectListItem { Text = "", Value = "" },
             new SelectListItem { Text = "Si", Value = "true", Selected = selectedValue == true },
             new SelectListItem { Text = "No", Value = "false", Selected = selectedValue == false }
+        };
+    }
+
+    public static List<SelectListItem> GetOrderTypeListSelect(string? selectedValue)
+    {
+        return new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" },
+            new SelectListItem { Text = "Market", Value = "Market", Selected = selectedValue == "Market" },
+            new SelectListItem { Text = "Limit", Value = "Limit", Selected = selectedValue == "Limit" },
+            new SelectListItem { Text = "Stop", Value = "Stop", Selected = selectedValue == "Stop" }
+        };
+    }
+
+    public static List<SelectListItem> GetTradeTypeListSelect(string? selectedValue)
+    {
+        return new List<SelectListItem>
+        {
+            new SelectListItem { Text = "", Value = "" },
+            new SelectListItem { Text = "Compra", Value = "Buy", Selected = selectedValue == "Buy" }
         };
     }
 

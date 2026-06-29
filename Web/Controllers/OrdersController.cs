@@ -774,7 +774,8 @@ public class OrdersController : Controller
             {
                 Success = true,
                 Message = string.Format(_messageService.GetResourceMessage("OrderSuccessfullySaved"), result.Item2),
-                notificationType = NotificationType.Success
+                notificationType = NotificationType.Success,
+                Code = result.Item2
             });
         }
         catch (Exception ex)
