@@ -17,6 +17,8 @@ public class OrdersService : IOrdersService
     private readonly IAccountsService _accountsService;
     private readonly ITradingScoreEngineService _tradingScoreEngineService;
     private readonly ITradingViewDownloaderServices _tradingViewDownloaderServices;
+    private readonly IAiTradeValidationMetricService _aiTradeValidationMetricService;
+
     public OrdersService(IGenericRepository<Order> repository,
                          IOrdersRepository ordersRepository,
                          ICatTimeRepository catTimeRepository,
@@ -25,7 +27,8 @@ public class OrdersService : IOrdersService
                          IAccountBalancesService accountBalancesService,
                          IAccountsService accountsService,
                          ITradingScoreEngineService tradingScoreEngineService,
-                         ITradingViewDownloaderServices tradingViewDownloaderServices)
+                         ITradingViewDownloaderServices tradingViewDownloaderServices,
+                         IAiTradeValidationMetricService aiTradeValidationMetricService)
     {
         _repository = repository;
         _ordersRepository = ordersRepository;
@@ -36,6 +39,7 @@ public class OrdersService : IOrdersService
         _accountsService = accountsService;
         _tradingScoreEngineService = tradingScoreEngineService;
         _tradingViewDownloaderServices = tradingViewDownloaderServices;
+        _aiTradeValidationMetricService = aiTradeValidationMetricService;
     }
 
     public async Task<bool> AddAsync(Order entity)
@@ -63,7 +67,13 @@ public class OrdersService : IOrdersService
         // 🔥 EJECUTAR MOTOR ANTES DE GUARDAR
         _tradingScoreEngineService.Evaluate(entity);
 
-        return await _repository.UpdateAsync(entity);
+        var updated = await _repository.UpdateAsync(entity);
+        if (updated)
+        {
+            await _aiTradeValidationMetricService.RefreshOrderOutcomeAsync(entity.Id, CancellationToken.None);
+        }
+
+        return updated;
     }
 
     public async Task<(List<GetOrdersDataTableDto>, int count)> GetOrdersDataTableAsync(ParametersTBAnalyticsDto parameters)
@@ -129,7 +139,13 @@ public class OrdersService : IOrdersService
 
     public async Task<bool> CloseOrderAsync(Order entity, Trade trade)
     {
-        return await _ordersRepository.CloseOrderAsync(entity, trade);
+        var closed = await _ordersRepository.CloseOrderAsync(entity, trade);
+        if (closed)
+        {
+            await _aiTradeValidationMetricService.RefreshOrderOutcomeAsync(entity.Id, CancellationToken.None);
+        }
+
+        return closed;
     }
 
     public async Task<bool> DownloadImageTradingViewAsync()

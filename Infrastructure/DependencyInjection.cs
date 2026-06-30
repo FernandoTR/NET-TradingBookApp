@@ -135,6 +135,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICatConvergenceRepository, CatConvergenceRepository>();
         builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
         builder.Services.AddScoped<IAiTradeValidationRepository, AiTradeValidationRepository>();
+        builder.Services.AddScoped<IAiTradeValidationMetricRepository, AiTradeValidationMetricRepository>();
 
 
         // Servicio de Generación de códigos QR

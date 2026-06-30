@@ -16,10 +16,16 @@
                 Consulta las validaciones completas guardadas para tu usuario.
             </div>
         </div>
-        <a asp-action="Index" class="kt-btn kt-btn-primary">
-            <i class="ki-filled ki-plus"></i>
-            Nueva validacion
-        </a>
+        <div class="flex items-center gap-2.5">
+            <a asp-controller="TradeAssistantMetrics" asp-action="Index" class="kt-btn kt-btn-outline">
+                <i class="ki-filled ki-chart-line-up"></i>
+                Metricas
+            </a>
+            <a asp-action="Index" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-plus"></i>
+                Nueva validacion
+            </a>
+        </div>
     </div>
 
     @if (TempData["TradeAssistantMessage"] is string message && !string.IsNullOrWhiteSpace(message))

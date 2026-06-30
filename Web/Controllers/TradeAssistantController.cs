@@ -24,6 +24,7 @@ public class TradeAssistantController : Controller
     private readonly IAiValidationImageValidator _aiValidationImageValidator;
     private readonly ITradeValidationOrchestrator _tradeValidationOrchestrator;
     private readonly IAiTradeValidationRepository _aiTradeValidationRepository;
+    private readonly IAiTradeValidationMetricService _aiTradeValidationMetricService;
     private readonly ICatCategoryService _catCategoryService;
     private readonly ICatAccountTypeService _catAccountTypeService;
     private readonly ICatInstrumentsService _catInstrumentsService;
@@ -41,6 +42,7 @@ public class TradeAssistantController : Controller
         IAiValidationImageValidator aiValidationImageValidator,
         ITradeValidationOrchestrator tradeValidationOrchestrator,
         IAiTradeValidationRepository aiTradeValidationRepository,
+        IAiTradeValidationMetricService aiTradeValidationMetricService,
         ICatCategoryService catCategoryService,
         ICatAccountTypeService catAccountTypeService,
         ICatInstrumentsService catInstrumentsService,
@@ -57,6 +59,7 @@ public class TradeAssistantController : Controller
         _aiValidationImageValidator = aiValidationImageValidator;
         _tradeValidationOrchestrator = tradeValidationOrchestrator;
         _aiTradeValidationRepository = aiTradeValidationRepository;
+        _aiTradeValidationMetricService = aiTradeValidationMetricService;
         _catCategoryService = catCategoryService;
         _catAccountTypeService = catAccountTypeService;
         _catInstrumentsService = catInstrumentsService;
@@ -204,6 +207,14 @@ public class TradeAssistantController : Controller
         try
         {
             var saved = await _aiTradeValidationRepository.ConfirmAsync(confirmation, cancellationToken);
+            if (saved)
+            {
+                await _aiTradeValidationMetricService.CreateInitialMetricAsync(
+                    confirmation.ValidationId,
+                    confirmation.UserId,
+                    cancellationToken);
+            }
+
             TempData["TradeAssistantMessage"] = saved
                 ? "Confirmación guardada correctamente."
                 : "No se pudo guardar la confirmación solicitada.";

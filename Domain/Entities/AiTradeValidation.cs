@@ -87,5 +87,7 @@ public partial class AiTradeValidation
 
     public DateTime? ConfirmedAt { get; set; }
 
+    public virtual AiTradeValidationMetric? Metric { get; set; }
+
     public virtual ICollection<AiTradeValidationRule> Rules { get; set; } = new List<AiTradeValidationRule>();
 }
