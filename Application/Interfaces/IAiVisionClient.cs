@@ -1,12 +1,11 @@
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiProviders;
 
 namespace Application.Interfaces;
 
 public interface IAiVisionClient
 {
     string ProviderName { get; }
-
-    string ModelName { get; }
 
     string PromptVersion { get; }
 
@@ -15,5 +14,6 @@ public interface IAiVisionClient
     Task<AiVisionExtractionDto> ExtractSetupAsync(
         CreateAiValidationDto request,
         IReadOnlyList<AiValidationImageInputDto> images,
+        AiProviderRuntimeConfiguration configuration,
         CancellationToken cancellationToken);
 }

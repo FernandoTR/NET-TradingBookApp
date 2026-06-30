@@ -48,4 +48,6 @@ public enum Permissions
     CatInstruments = 17,
     [Description("AnalyticsConvergence")]
     AnalyticsConvergence = 18,
+    [Description("Proveedores IA")]
+    AiProviders = 21,
 }

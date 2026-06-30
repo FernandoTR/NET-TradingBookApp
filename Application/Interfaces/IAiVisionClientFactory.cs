@@ -1,6 +1,8 @@
+using Application.DTOs.AiProviders;
+
 namespace Application.Interfaces;
 
 public interface IAiVisionClientFactory
 {
-    IAiVisionClient CreateActiveClient();
+    Task<AiVisionClientSelection> CreateActiveClientAsync(CancellationToken cancellationToken);
 }

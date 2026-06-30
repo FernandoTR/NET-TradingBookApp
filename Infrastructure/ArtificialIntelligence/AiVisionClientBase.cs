@@ -2,10 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Application.Common;
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiProviders;
 using Application.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.ArtificialIntelligence;
 
@@ -18,14 +17,12 @@ public abstract class AiVisionClientBase : IAiVisionClient
 
     private readonly HttpClient _httpClient;
     private readonly ILogService _logService;
-    private readonly string _apiKeyEnvironmentVariable;
 
     protected AiVisionClientBase(
         string providerName,
         HttpClient httpClient,
         PromptTemplateProvider promptTemplateProvider,
         AiStructuredOutputSchemaProvider schemaProvider,
-        IOptions<AiProviderOptions> options,
         ILogService logService)
     {
         ProviderName = providerName;
@@ -33,15 +30,9 @@ public abstract class AiVisionClientBase : IAiVisionClient
         _logService = logService;
         PromptTemplateProvider = promptTemplateProvider;
         SchemaProvider = schemaProvider;
-
-        var definition = ResolveDefinition(options.Value, providerName);
-        ModelName = definition.Model;
-        _apiKeyEnvironmentVariable = definition.ApiKeyEnvironmentVariable;
     }
 
     public string ProviderName { get; }
-
-    public string ModelName { get; }
 
     public string PromptVersion => PromptTemplateProvider.Version;
 
@@ -54,43 +45,54 @@ public abstract class AiVisionClientBase : IAiVisionClient
     public async Task<AiVisionExtractionDto> ExtractSetupAsync(
         CreateAiValidationDto request,
         IReadOnlyList<AiValidationImageInputDto> images,
+        AiProviderRuntimeConfiguration configuration,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         try
         {
-            if (_httpClient.BaseAddress == null)
+            if (!string.Equals(configuration.ProviderName, ProviderName, StringComparison.OrdinalIgnoreCase))
             {
-                throw CreateProviderException("invalid_endpoint", "AI provider endpoint is not configured with an absolute URL.");
+                throw CreateProviderException(configuration, "provider_mismatch", $"AI provider configuration '{configuration.ProviderName}' does not match adapter '{ProviderName}'.");
+            }
+
+            if (!Uri.TryCreate(configuration.Endpoint, UriKind.Absolute, out var endpoint))
+            {
+                throw CreateProviderException(configuration, "invalid_endpoint", "AI provider endpoint is not configured with an absolute URL.");
             }
 
             var imagePayloads = await BuildImagePayloadsAsync(images, cancellationToken);
-            var providerRequest = BuildProviderRequest(request, imagePayloads);
+            var providerRequest = BuildProviderRequest(request, imagePayloads, configuration);
             var requestJson = JsonSerializer.Serialize(providerRequest, JsonOptions);
 
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
             {
                 Content = new StringContent(requestJson, Encoding.UTF8, "application/json")
             };
 
-            var apiKey = Environment.GetEnvironmentVariable(_apiKeyEnvironmentVariable);
+            var apiKey = Environment.GetEnvironmentVariable(configuration.ApiKeyEnvironmentVariable);
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                throw CreateProviderException("missing_api_key", $"Missing API key environment variable '{_apiKeyEnvironmentVariable}'.");
+                throw CreateProviderException(configuration, "missing_api_key", $"Missing API key environment variable '{configuration.ApiKeyEnvironmentVariable}'.");
             }
 
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-            using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+            using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutSource.CancelAfter(TimeSpan.FromSeconds(configuration.TimeoutSeconds));
+
+            using var response = await _httpClient.SendAsync(httpRequest, timeoutSource.Token);
             if (!response.IsSuccessStatusCode)
             {
-                throw CreateHttpStatusException(response.StatusCode);
+                throw CreateHttpStatusException(configuration, response.StatusCode);
             }
 
-            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
+            var responseJson = await response.Content.ReadAsStringAsync(timeoutSource.Token);
             var modelContent = ExtractModelContent(responseJson);
             var extraction = DeserializeExtraction(modelContent);
 
-            EnsureCompleteExtraction(extraction);
+            EnsureCompleteExtraction(configuration, extraction);
 
             return extraction;
         }
@@ -101,31 +103,34 @@ public abstract class AiVisionClientBase : IAiVisionClient
         }
         catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
-            var normalizedException = CreateProviderException("timeout", "AI provider request timed out.", innerException: ex);
+            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (TimeoutException ex)
         {
-            var normalizedException = CreateProviderException("timeout", "AI provider request timed out.", innerException: ex);
+            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (HttpRequestException ex)
         {
-            var normalizedException = CreateProviderException("http_error", "AI provider request failed before a valid response was received.", ex.StatusCode, ex);
+            var normalizedException = CreateProviderException(configuration, "http_error", "AI provider request failed before a valid response was received.", ex.StatusCode, ex);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (JsonException ex)
         {
-            var normalizedException = CreateProviderException("invalid_json", "AI provider response was not valid strict JSON.", innerException: ex);
+            var normalizedException = CreateProviderException(configuration, "invalid_json", "AI provider response was not valid strict JSON.", innerException: ex);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
     }
 
-    protected abstract object BuildProviderRequest(CreateAiValidationDto request, IReadOnlyList<AiVisionImagePayload> images);
+    protected abstract object BuildProviderRequest(
+        CreateAiValidationDto request,
+        IReadOnlyList<AiVisionImagePayload> images,
+        AiProviderRuntimeConfiguration configuration);
 
     protected abstract string ExtractModelContent(string responseJson);
 
@@ -201,16 +206,6 @@ public abstract class AiVisionClientBase : IAiVisionClient
         };
     }
 
-    private static AiProviderDefinition ResolveDefinition(AiProviderOptions options, string providerName)
-    {
-        if (options.Providers.TryGetValue(providerName, out var definition))
-        {
-            return definition;
-        }
-
-        throw new InvalidOperationException($"Provider '{providerName}' is not configured.");
-    }
-
     private static async Task<IReadOnlyList<AiVisionImagePayload>> BuildImagePayloadsAsync(
         IReadOnlyList<AiValidationImageInputDto> images,
         CancellationToken cancellationToken)
@@ -260,32 +255,33 @@ public abstract class AiVisionClientBase : IAiVisionClient
     }
 
     private AiProviderException CreateProviderException(
+        AiProviderRuntimeConfiguration configuration,
         string errorCode,
         string message,
         HttpStatusCode? statusCode = null,
         Exception? innerException = null)
     {
-        return new AiProviderException(errorCode, ProviderName, ModelName, message, statusCode, innerException);
+        return new AiProviderException(errorCode, ProviderName, configuration.ModelName, message, statusCode, innerException);
     }
 
-    private AiProviderException CreateHttpStatusException(HttpStatusCode statusCode)
+    private AiProviderException CreateHttpStatusException(AiProviderRuntimeConfiguration configuration, HttpStatusCode statusCode)
     {
         if (statusCode == HttpStatusCode.Unauthorized)
         {
-            return CreateProviderException("unauthorized", "AI provider rejected the configured API key.", statusCode);
+            return CreateProviderException(configuration, "unauthorized", "AI provider rejected the configured API key.", statusCode);
         }
 
         if ((int)statusCode == 429)
         {
-            return CreateProviderException("rate_limited", "AI provider rate limit was exceeded.", statusCode);
+            return CreateProviderException(configuration, "rate_limited", "AI provider rate limit was exceeded.", statusCode);
         }
 
         if ((int)statusCode >= 500)
         {
-            return CreateProviderException("provider_unavailable", "AI provider returned a server error.", statusCode);
+            return CreateProviderException(configuration, "provider_unavailable", "AI provider returned a server error.", statusCode);
         }
 
-        return CreateProviderException("http_error", "AI provider returned an unsuccessful HTTP response.", statusCode);
+        return CreateProviderException(configuration, "http_error", "AI provider returned an unsuccessful HTTP response.", statusCode);
     }
 
     private void LogProviderFailure(AiProviderException exception)
@@ -294,7 +290,7 @@ public abstract class AiVisionClientBase : IAiVisionClient
         _logService.ErrorLog(nameof(ExtractSetupAsync), "AI provider extraction failed.", details);
     }
 
-    private void EnsureCompleteExtraction(AiVisionExtractionDto extraction)
+    private void EnsureCompleteExtraction(AiProviderRuntimeConfiguration configuration, AiVisionExtractionDto extraction)
     {
         if (extraction.TriggerId.HasValue &&
             extraction.SceneryId.HasValue &&
@@ -310,7 +306,7 @@ public abstract class AiVisionClientBase : IAiVisionClient
             return;
         }
 
-        throw CreateProviderException("incomplete_extraction", "AI provider response did not contain a complete vision extraction.");
+        throw CreateProviderException(configuration, "incomplete_extraction", "AI provider response did not contain a complete vision extraction.");
     }
 
     private static string ReadContentAsString(JsonElement content)
