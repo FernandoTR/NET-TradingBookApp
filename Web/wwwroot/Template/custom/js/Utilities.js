@@ -101,6 +101,44 @@ var renderStatusAnalytics = function (data) {
         </div>`;
 }
 
+// Funcion para colocar icono centrado en lugar de texto para valores booleanos o estatus 1/2
+var renderBooleanStatusIcon = function (data) {
+    let badge;
+    const normalizedValue = typeof data === 'string' ? data.trim().toLowerCase() : data;
+    const isActive = normalizedValue === true || normalizedValue === 1 || normalizedValue === 'true' || normalizedValue === '1' || normalizedValue === 'activo' || normalizedValue === 'habilitado';
+    const isInactive = normalizedValue === false || normalizedValue === 0 || normalizedValue === 2 || normalizedValue === 'false' || normalizedValue === '0' || normalizedValue === '2' || normalizedValue === 'inactivo' || normalizedValue === 'deshabilitado';
+
+    if (isActive) {
+        badge = `<div class="relative size-[44px] shrink-0" >
+                     <div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+                         <i class="ki-filled ki-check-circle text-md ps-px text-green-600">
+                         </i>
+                     </div>
+                 </div>`;
+    } else if (isInactive) {
+        badge = `<div class="relative size-[44px] shrink-0" >
+                     <div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4" >
+                         <i class="ki-filled ki-minus-circle text-md ps-px text-destructive">
+                         </i>
+                     </div>
+                 </div>`;
+    } else {
+        badge = ``;
+    }
+
+    return badge;
+};
+
+// Funcion para renderizar columnas Activo/Inactivo con icono
+var renderActiveIcon = function (data) {
+    return renderBooleanStatusIcon(data);
+};
+
+// Funcion para renderizar columnas Estado/Habilitado con icono
+var renderEnabledIcon = function (data) {
+    return renderBooleanStatusIcon(data);
+};
+
 
 
 /**

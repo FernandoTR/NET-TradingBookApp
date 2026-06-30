@@ -1,8 +1,7 @@
 using System.Text.Json;
-using Application.Common;
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiProviders;
 using Application.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.ArtificialIntelligence;
 
@@ -14,13 +13,15 @@ public sealed class OpenAiVisionClient : AiVisionClientBase
         HttpClient httpClient,
         PromptTemplateProvider promptTemplateProvider,
         AiStructuredOutputSchemaProvider schemaProvider,
-        IOptions<AiProviderOptions> options,
         ILogService logService)
-        : base(Provider, httpClient, promptTemplateProvider, schemaProvider, options, logService)
+        : base(Provider, httpClient, promptTemplateProvider, schemaProvider, logService)
     {
     }
 
-    protected override object BuildProviderRequest(CreateAiValidationDto request, IReadOnlyList<AiVisionImagePayload> images)
+    protected override object BuildProviderRequest(
+        CreateAiValidationDto request,
+        IReadOnlyList<AiVisionImagePayload> images,
+        AiProviderRuntimeConfiguration configuration)
     {
         var content = new List<object>
         {
@@ -43,7 +44,7 @@ public sealed class OpenAiVisionClient : AiVisionClientBase
 
         return new
         {
-            model = ModelName,
+            model = configuration.ModelName,
             instructions = PromptTemplateProvider.GetPrompt(),
             input = new[]
             {

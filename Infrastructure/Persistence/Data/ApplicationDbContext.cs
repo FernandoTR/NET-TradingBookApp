@@ -75,6 +75,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<AiTradeValidationMetric> AiTradeValidationMetrics { get; set; }
 
     public virtual DbSet<AiTradeValidationRule> AiTradeValidationRules { get; set; }
+
+    public virtual DbSet<AiProviderConfiguration> AiProviderConfigurations { get; set; }
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -273,6 +275,26 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasForeignKey(d => d.ValidationId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_AiTradeValidationRule_AiTradeValidation");
+        });
+
+        modelBuilder.Entity<AiProviderConfiguration>(entity =>
+        {
+            entity.ToTable("AiProviderConfiguration");
+
+            entity.HasIndex(e => e.ProviderName, "UX_AiProviderConfiguration_ProviderName")
+                .IsUnique();
+
+            entity.HasIndex(e => e.IsActive, "UX_AiProviderConfiguration_Active")
+                .IsUnique()
+                .HasFilter("[IsActive] = 1");
+
+            entity.Property(e => e.ProviderName).HasMaxLength(100);
+            entity.Property(e => e.ModelName).HasMaxLength(150);
+            entity.Property(e => e.Endpoint).HasMaxLength(500);
+            entity.Property(e => e.ApiKeyEnvironmentVariable).HasMaxLength(150);
+            entity.Property(e => e.TimeoutSeconds).HasDefaultValue(60);
+            entity.Property(e => e.IsEnabled).HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
         });
 
         modelBuilder.Entity<ApplicationRole>(entity =>

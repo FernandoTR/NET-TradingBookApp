@@ -1,0 +1,175 @@
+@model Web.Models.AiProviderConfigurationViewModel
+
+@{
+    Layout = null;
+    var providerItems = (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ProviderItems;
+}
+
+@using (Html.BeginForm("Save", "AiProviders", FormMethod.Post, new { id = "frmdata" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="kt-card-content grid gap-5">
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.ProviderName, new { @class = "kt-form-label max-w-56" })
+                @Html.DropDownListFor(d => d.ProviderName, providerItems, "Selecciona uno...", new { @class = "kt-select", data_kt_select = "true", data_kt_select_enable_search = "false", data_kt_select_placeholder = "Selecciona uno..." })
+            </div>
+        </div>
+
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.ModelName, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.ModelName, new { @class = "kt-input", maxlength = "120", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.Endpoint, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.Endpoint, new { @class = "kt-input", maxlength = "500", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.ApiKeyEnvironmentVariable, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.ApiKeyEnvironmentVariable, new { @class = "kt-input", maxlength = "160", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.TimeoutSeconds, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.TimeoutSeconds, new { @class = "kt-input", type = "number", min = "1", max = "600", step = "1" })
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <label class="flex items-center gap-2.5 text-sm text-foreground">
+                @Html.CheckBoxFor(d => d.SupportsVision, new { @class = "kt-checkbox kt-checkbox-sm" })
+                Soporta vision
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-foreground">
+                @Html.CheckBoxFor(d => d.IsEnabled, new { @class = "kt-checkbox kt-checkbox-sm" })
+                Habilitado
+            </label>
+        </div>
+    </div>
+
+    <div class="kt-modal-footer gap-2.5 justify-end">
+        <button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#vModal">Cancelar</button>
+        <button type="button" id="btnSave" class="kt-btn kt-btn-primary">Guardar</button>
+    </div>
+
+    @Html.HiddenFor(d => d.Id)
+}
+
+<script>
+    $(document).ready(function () {
+        if (typeof KTSelectHelper !== 'undefined') {
+            KTSelectHelper.clear('#ProviderName');
+        }
+
+        const form = document.getElementById('frmdata');
+        const submitButton = document.getElementById('btnSave');
+
+        const validator = FormValidation.formValidation(form, {
+            fields: {
+                'ProviderName': {
+                    validators: {
+                        notEmpty: {
+                            message: 'El proveedor es obligatorio'
+                        }
+                    }
+                },
+                'ModelName': {
+                    validators: {
+                        notEmpty: {
+                            message: 'El modelo es obligatorio'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 120,
+                            message: 'Debe tener entre 1 y 120 caracteres'
+                        }
+                    }
+                },
+                'Endpoint': {
+                    validators: {
+                        callback: {
+                            message: 'El endpoint debe ser una URL absoluta',
+                            callback: function (input) {
+                                if (!input.value) {
+                                    return true;
+                                }
+
+                                try {
+                                    const url = new URL(input.value);
+                                    return !!url.protocol && !!url.host;
+                                } catch {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                },
+                'ApiKeyEnvironmentVariable': {
+                    validators: {
+                        notEmpty: {
+                            message: 'La variable/secret es obligatoria'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 160,
+                            message: 'Debe tener entre 1 y 160 caracteres'
+                        }
+                    }
+                },
+                'TimeoutSeconds': {
+                    validators: {
+                        notEmpty: {
+                            message: 'El timeout es obligatorio'
+                        },
+                        callback: {
+                            message: 'El timeout debe ser mayor a 0',
+                            callback: function (input) {
+                                const value = Number(input.value);
+                                return Number.isInteger(value) && value > 0;
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                message: new FormValidation.plugins.Message({
+                    clazz: 'text-red-500 text-sm mt-1',
+                    container: function (field, element) {
+                        return element.closest('.fv-row');
+                    }
+                })
+            }
+        })
+        .on('core.element.validated', function (e) {
+            if (e.valid) {
+                e.element.classList.remove('border-destructive', 'ring-1', 'ring-red-500');
+                e.element.classList.add('border-green-500');
+            } else {
+                e.element.classList.remove('border-green-500');
+                e.element.classList.add('border-destructive', 'ring-1', 'ring-red-500');
+            }
+        });
+
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            validator.validate().then(function (status) {
+                if (status === 'Valid') {
+                    submitButton.disabled = true;
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>

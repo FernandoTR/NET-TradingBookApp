@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -41,11 +40,11 @@ public static class DependencyInjection
         builder.Services.AddSingleton<PromptTemplateProvider>();
         builder.Services.AddSingleton<AiStructuredOutputSchemaProvider>();
 
-        builder.Services.AddHttpClient<OpenAiVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "OpenAI"));
-        builder.Services.AddHttpClient<MiniMaxVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "MiniMax"));
-        builder.Services.AddHttpClient<DeepSeekVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "DeepSeek"));
-        builder.Services.AddHttpClient<GlmVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "GLM"));
-        builder.Services.AddHttpClient<KimiVisionClient>((serviceProvider, httpClient) => ConfigureAiProviderHttpClient(serviceProvider, httpClient, "Kimi"));
+        builder.Services.AddHttpClient<OpenAiVisionClient>(ConfigureAiProviderHttpClient);
+        builder.Services.AddHttpClient<MiniMaxVisionClient>(ConfigureAiProviderHttpClient);
+        builder.Services.AddHttpClient<DeepSeekVisionClient>(ConfigureAiProviderHttpClient);
+        builder.Services.AddHttpClient<GlmVisionClient>(ConfigureAiProviderHttpClient);
+        builder.Services.AddHttpClient<KimiVisionClient>(ConfigureAiProviderHttpClient);
 
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<OpenAiVisionClient>());
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<MiniMaxVisionClient>());
@@ -136,6 +135,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
         builder.Services.AddScoped<IAiTradeValidationRepository, AiTradeValidationRepository>();
         builder.Services.AddScoped<IAiTradeValidationMetricRepository, AiTradeValidationMetricRepository>();
+        builder.Services.AddScoped<IAiProviderConfigurationRepository, AiProviderConfigurationRepository>();
 
 
         // Servicio de Generación de códigos QR
@@ -145,24 +145,9 @@ public static class DependencyInjection
         builder.Services.AddTransient<ITradingViewDownloaderServices, TradingViewDownloaderServices>();
     }
 
-    private static void ConfigureAiProviderHttpClient(IServiceProvider serviceProvider, HttpClient httpClient, string providerName)
+    private static void ConfigureAiProviderHttpClient(HttpClient httpClient)
     {
-        var options = serviceProvider.GetRequiredService<IOptions<AiProviderOptions>>().Value;
-        if (!options.Providers.TryGetValue(providerName, out var definition))
-        {
-            return;
-        }
-
-        if (Uri.TryCreate(definition.Endpoint, UriKind.Absolute, out var endpoint))
-        {
-            httpClient.BaseAddress = endpoint;
-        }
-
-        if (definition.TimeoutSeconds > 0)
-        {
-            httpClient.Timeout = TimeSpan.FromSeconds(definition.TimeoutSeconds);
-        }
-
+        httpClient.Timeout = Timeout.InfiniteTimeSpan;
         httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/json");
     }
 }

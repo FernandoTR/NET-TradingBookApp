@@ -1,0 +1,259 @@
+@model List<Web.Models.AiProviderConfigurationViewModel>
+@{
+    ViewBag.Title = "Proveedores IA";
+}
+
+<div class="kt-container-fixed">
+	<div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+		<div class="flex flex-col justify-center gap-2">
+			<h1 class="text-xl font-medium leading-none text-mono">
+				Proveedores IA
+			</h1>
+			<div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+				Referencias de API keys y proveedor activo.
+			</div>
+		</div>
+		<div class="flex items-center gap-2.5">
+			<a class="kt-btn kt-btn-primary" href="javascript:showModalForNew()">
+				<i class="ki-filled ki-plus text-sm"></i>
+				Nuevo
+			</a>
+		</div>
+	</div>
+</div>
+
+<div class="kt-container-fixed">
+	<div class="grid">
+		<div class="kt-card kt-card-grid h-full min-w-full border border-white/5 shadow-2xs">
+			<div class="kt-card-table kt-scrollable-x-auto">
+				<table class="kt-table" data-kt-datatable-table="true" id="dtTable"></table>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script src="~/Template/assets/vendors/datatables-net/dataTables.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			function renderText(data) {
+				const value = data === null || data === undefined ? '' : data;
+				return $('<div/>').text(value).html();
+			}
+
+			function renderEndpoint(data) {
+				const value = renderText(data);
+				return `<div class="block max-w-[220px] truncate" title="${value}">${value}</div>`;
+			}
+
+			function loadTableData() {
+				if ($.fn.DataTable.isDataTable('#dtTable')) {
+					$('#dtTable').DataTable().destroy();
+				}
+
+				$('#dtTable').DataTable({
+					ajax: {
+						url: "@Url.Content("~/AiProviders/JsonDataTable")",
+						type: "POST",
+						dataType: "json"
+					},
+					columns: [
+						{
+							name: "ProviderName",
+							title: "Proveedor",
+							data: "providerName",
+							className: "min-w-[120px]",
+							render: renderText
+						},
+						{
+							name: "ModelName",
+							title: "Modelo",
+							data: "modelName",
+							className: "min-w-[160px]",
+							render: renderText
+						},
+						{
+							name: "Endpoint",
+							title: "Endpoint",
+							data: "endpoint",
+							className: "min-w-[240px] max-w-[240px] w-[240px]",
+							render: renderEndpoint
+						},
+						{
+							name: "ApiKeyEnvironmentVariable",
+							title: "Variable/secret",
+							data: "apiKeyEnvironmentVariable",
+							className: "min-w-[180px]",
+							render: renderText
+						},
+						{
+							name: "IsApiKeyConfigured",
+							title: "API key",
+							data: "apiKeyStatus",
+							className: "text-center min-w-[120px]"
+						},
+						{
+							name: "SupportsVision",
+							title: "Vision",
+							data: "visionStatus",
+							className: "text-center min-w-[100px]"
+						},
+						{
+							name: "TimeoutSeconds",
+							title: "Timeout",
+							data: "timeoutSeconds",
+							className: "text-center min-w-[90px]"
+						},
+						{
+							name: "IsActive",
+							title: "Activo",
+							data: "isActive",
+							render: renderActiveIcon,
+							className: "text-center min-w-[100px] w-[100px]"
+						},
+						{
+							name: "IsEnabled",
+							title: "Estado",
+							data: "isEnabled",
+							render: renderEnabledIcon,
+							className: "text-center min-w-[100px] w-[60px]"
+						},
+						{
+							name: "Task",
+							title: "",
+							data: "task",
+							orderable: false,
+							className: "text-center min-w-[40px] w-[60px]"
+						}
+					],
+					processing: true,
+					serverSide: true,
+					pageLength: 10,
+					searching: true,
+					language: {
+						processing: "Procesando...",
+						lengthMenu: "Mostrar _MENU_ registros",
+						zeroRecords: "No se encontraron resultados",
+						emptyTable: "Ningun dato disponible en esta tabla",
+						info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+						infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+						infoFiltered: "(filtrado de un total de _MAX_ registros)",
+						search: "",
+						searchPlaceholder: "Buscar proveedores...",
+						paginate: {
+							first: "Primero",
+							last: "Ultimo",
+							next: "&rsaquo;",
+							previous: "&lsaquo;"
+						},
+						aria: {
+							orderable: "Activar para ordenar ascendente",
+							orderableReverse: "Activar para ordenar descendente"
+						}
+					},
+					layout: {
+						topStart: [],
+						topEnd: 'search',
+						bottomStart: ['pageLength', 'info'],
+						bottomEnd: 'paging'
+					},
+					initComplete: function () {
+						const searchContainer = $('.dt-search');
+
+						searchContainer.find('label').remove();
+						searchContainer.html(`
+							<div class="kt-input max-w-48 relative">
+								<i class="ki-filled ki-magnifier text-sm text-secondary-foreground"></i>
+								<input
+									id="dt-search-0"
+									type="text"
+									class="w-full"
+									placeholder="Buscar proveedores..."
+								/>
+							</div>
+						`);
+
+						searchContainer.find('input').on('keyup', function () {
+							$('#dtTable').DataTable().search(this.value).draw();
+						});
+					},
+					drawCallback: function () {
+						KTMenu.createInstances();
+					}
+				});
+			}
+
+			loadTableData();
+		});
+
+		function showModal(urlContent, title, subtitle) {
+			fetch(urlContent).then((response) => {
+				return response.text();
+			}).then((data) => {
+				$("#contentvModal").html(data);
+				$('#title-modal').html(title);
+				$('#subtitle-modal').html(subtitle);
+
+				const modalEl = document.querySelector('#vModal');
+				const modal = KTModal.getInstance(modalEl);
+				modal.show();
+			});
+		}
+
+		function showModalForNew() {
+			const urlContentModal = "@Url.Content("~/AiProviders/New")";
+			showModal(urlContentModal, 'Nuevo proveedor IA', '');
+		}
+
+		function showModalForUpdate(id) {
+			const urlContentModal = "@Url.Content("~/AiProviders/Edit/?id=")" + id;
+			showModal(urlContentModal, 'Editar proveedor IA', '');
+		}
+
+		function showModalForActivate(id) {
+			const modalEl = document.querySelector('#confirmDialog');
+			const modal = KTModal.getInstance(modalEl);
+
+			$("#confirmButtonYes").off('click').on('click', () => {
+				modal.hide();
+				processingProviderStatus(id, "@Url.Content("~/AiProviders/Activate")", "Proveedor IA activado correctamente.");
+			});
+
+			$('#confirmDialogContent').html('Confirmar proveedor IA activo.');
+			$('#confirmTitle').html('Activar proveedor IA');
+			modal.show();
+		}
+
+		function showModalForDeactivate(id) {
+			const modalEl = document.querySelector('#confirmDialog');
+			const modal = KTModal.getInstance(modalEl);
+
+			$("#confirmButtonYes").off('click').on('click', () => {
+				modal.hide();
+				processingProviderStatus(id, "@Url.Content("~/AiProviders/Deactivate")", "Proveedor IA desactivado correctamente.");
+			});
+
+			$('#confirmDialogContent').html('Confirmar desactivacion del proveedor IA.');
+			$('#confirmTitle').html('Desactivar proveedor IA');
+			modal.show();
+		}
+
+		function processingProviderStatus(id, urlConfirmModal, successMessage) {
+			fetch(urlConfirmModal, {
+				method: 'POST',
+				body: JSON.stringify(id),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(res => res.text())
+				.catch(error => console.error('Error:', error))
+				.then((data) => {
+					if (data === 'true') {
+						window.location.href = "@Html.Raw(Url.Action("Index", "AiProviders", new { notification = "Success" }))" + "&message=" + encodeURIComponent(successMessage);
+					} else {
+						window.location.href = "@Html.Raw(Url.Action("Index", "AiProviders", new { notification = "Error" }))" + "&message=" + encodeURIComponent("No se pudo actualizar el proveedor IA.");
+					}
+				});
+		}
+	</script>
+}

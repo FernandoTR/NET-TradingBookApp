@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiProviders;
 using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure;
@@ -43,13 +44,17 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var client = _aiVisionClientFactory.CreateActiveClient();
-        var extraction = await client.ExtractSetupAsync(request, images, cancellationToken);
+        var clientSelection = await _aiVisionClientFactory.CreateActiveClientAsync(cancellationToken);
+        var extraction = await clientSelection.Client.ExtractSetupAsync(
+            request,
+            images,
+            clientSelection.Configuration,
+            cancellationToken);
         var setup = await _tradeSetupNormalizer.NormalizeAsync(request, extraction, cancellationToken);
         var historicalEvidence = await _historicalEvidenceService.GetEvidenceAsync(setup, cancellationToken);
         var rules = _strategyRuleEngine.Evaluate(setup);
 
-        var result = CreateResult(client, extraction, setup, historicalEvidence, rules);
+        var result = CreateResult(clientSelection, extraction, setup, historicalEvidence, rules);
 
         _resultFactory.ApplyTradingScore(result, setup);
 
@@ -65,7 +70,7 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
     }
 
     private static AiValidationResultDto CreateResult(
-        IAiVisionClient client,
+        AiVisionClientSelection clientSelection,
         AiVisionExtractionDto extraction,
         NormalizedTradeSetupDto setup,
         HistoricalEvidenceDto? historicalEvidence,
@@ -74,10 +79,10 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         return new AiValidationResultDto
         {
             ValidationStatus = ResolveValidationStatus(rules),
-            ProviderName = client.ProviderName,
-            ModelName = client.ModelName,
-            PromptVersion = client.PromptVersion,
-            SchemaVersion = client.SchemaVersion,
+            ProviderName = clientSelection.Client.ProviderName,
+            ModelName = clientSelection.Configuration.ModelName,
+            PromptVersion = clientSelection.Client.PromptVersion,
+            SchemaVersion = clientSelection.Client.SchemaVersion,
             ModelResponseJson = JsonSerializer.Serialize(extraction, JsonOptions),
             FinalSummary = BuildFinalSummary(rules, historicalEvidence),
             DetectedValues = extraction,
