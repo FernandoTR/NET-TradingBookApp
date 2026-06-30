@@ -54,18 +54,13 @@ public class AccountController : Controller
         _stringUtilitiesService = stringUtilitiesService;
     }
 
-    // GET: /Account/Login
+    // GET: /Account/SignIn
     [AllowAnonymous]
     [EnableRateLimiting("AccountPolicy")]
-    public IActionResult SignIn(string returnUrl)
+    public IActionResult SignIn(string? returnUrl)
     {
-        if (returnUrl == null || !returnUrl.Contains("LogOff"))
-        {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
-        }
-        else
-            return RedirectToAction("Index", "Home");
+        ViewBag.ReturnUrl = IsAllowedLocalReturnUrl(returnUrl) ? returnUrl : null;
+        return View();
     }
 
     // POST: /Account/Login
@@ -77,10 +72,10 @@ public class AccountController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return View("SignIn", model);
-            }
+            ////if (!ModelState.IsValid)
+            ////{
+            ////    return View("SignIn", model);
+            ////}
 
             // Verifica credenciales
             var result = await _identityService.CheckPasswordSignInAsync(model.Email.Trim(), model.Password);           
@@ -106,10 +101,7 @@ public class AccountController : Controller
                 _httpContextAccessor.HttpContext.Response.Cookies.Append("sidebar_minimize_state", "off");
 
                 // Redirigir en función del resultado
-                if (returnUrl == null || !returnUrl.Contains("LogOff"))
-                    return RedirectToLocal(returnUrl);
-                else
-                    return RedirectToAction("Index", "Home");
+                return RedirectToLocal(returnUrl);
             }
             else if (result.IsLockedOut)
             {
@@ -628,13 +620,34 @@ public class AccountController : Controller
     #region Funciones Auxiliares
 
     // Función auxiliar para manejar las redirecciones seguras
-    private ActionResult RedirectToLocal(string returnUrl)
+    private ActionResult RedirectToLocal(string? returnUrl)
     {
-        if (Url.IsLocalUrl(returnUrl))
+        if (IsAllowedLocalReturnUrl(returnUrl))
         {
-            return Redirect(returnUrl);
+            return Redirect(returnUrl!);
         }
         return RedirectToAction("Index", "Home");
+    }
+
+    private bool IsAllowedLocalReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl)
+            && Url.IsLocalUrl(returnUrl)
+            && !IsAuthenticationReturnUrl(returnUrl);
+    }
+
+    private static bool IsAuthenticationReturnUrl(string returnUrl)
+    {
+        var path = returnUrl.Split(new[] { '?', '#' }, 2)[0];
+        if (path.StartsWith("~/", StringComparison.Ordinal))
+        {
+            path = path.Substring(1);
+        }
+
+        return path.Equals("/Account/Login", StringComparison.OrdinalIgnoreCase)
+            || path.Equals("/Account/SignIn", StringComparison.OrdinalIgnoreCase)
+            || path.Equals("/Account/LogOff", StringComparison.OrdinalIgnoreCase)
+            || path.Equals("/Account/Logout", StringComparison.OrdinalIgnoreCase);
     }
 
     private void AddErrors(IdentityResult result)
