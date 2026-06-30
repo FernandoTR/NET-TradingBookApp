@@ -40,6 +40,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ITradingScoreEngineService, TradingScoreEngineService>();
         builder.Services.AddScoped<ITradeSetupNormalizer, TradeSetupNormalizer>();
         builder.Services.AddScoped<IStrategyRuleEngine, StrategyRuleEngine>();
+        builder.Services.AddScoped<IAiTradeValidationMetricService, AiTradeValidationMetricService>();
         builder.Services.AddScoped<AiValidationResultFactory>();
         builder.Services.AddScoped<ITradeValidationOrchestrator, TradeValidationOrchestrator>();
 

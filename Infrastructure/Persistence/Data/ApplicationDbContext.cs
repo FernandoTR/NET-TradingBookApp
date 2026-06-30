@@ -72,6 +72,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<AiTradeValidation> AiTradeValidations { get; set; }
 
+    public virtual DbSet<AiTradeValidationMetric> AiTradeValidationMetrics { get; set; }
+
     public virtual DbSet<AiTradeValidationRule> AiTradeValidationRules { get; set; }
     
 
@@ -220,6 +222,36 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.ConfirmedStageId)
                 .HasConstraintName("FK_AiTradeValidation_Confirmed_Cat_Stage");
+        });
+
+        modelBuilder.Entity<AiTradeValidationMetric>(entity =>
+        {
+            entity.ToTable("AiTradeValidationMetric");
+
+            entity.HasIndex(e => e.ValidationId, "UX_AiTradeValidationMetric_ValidationId")
+                .IsUnique();
+            entity.HasIndex(e => new { e.ProviderName, e.ModelName, e.CreatedAt }, "IX_AiTradeValidationMetric_Provider_Model_CreatedAt");
+            entity.HasIndex(e => e.OrderId, "IX_AiTradeValidationMetric_OrderId");
+
+            entity.Property(e => e.Grade)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.HumanCorrectionRate).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.ModelName).HasMaxLength(150);
+            entity.Property(e => e.OutcomeClassification)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.ProviderName).HasMaxLength(100);
+
+            entity.HasOne(d => d.Validation).WithOne(p => p.Metric)
+                .HasForeignKey<AiTradeValidationMetric>(d => d.ValidationId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_AiTradeValidationMetric_AiTradeValidation");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.AiTradeValidationMetrics)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK_AiTradeValidationMetric_Orders");
         });
 
         modelBuilder.Entity<AiTradeValidationRule>(entity =>

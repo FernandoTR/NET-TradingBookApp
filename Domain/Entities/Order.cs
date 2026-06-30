@@ -131,6 +131,9 @@ public partial class Order
     [InverseProperty("Order")]
     public virtual ICollection<AccountBalance> AccountBalances { get; set; } = new List<AccountBalance>();
 
+    [InverseProperty("Order")]
+    public virtual ICollection<AiTradeValidationMetric> AiTradeValidationMetrics { get; set; } = new List<AiTradeValidationMetric>();
+
     [ForeignKey("AuthorId")]
     [InverseProperty("Orders")]
     public virtual AspNetUser Author { get; set; } = null!;

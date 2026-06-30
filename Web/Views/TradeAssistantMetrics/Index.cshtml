@@ -1,0 +1,246 @@
+@using Application.DTOs.AiValidation
+@using System.Globalization
+@model TradeAssistantMetricsViewModel
+
+@{
+    ViewData["Title"] = "Metricas del asistente IA";
+    var summary = Model.Summary;
+}
+
+<div class="kt-container-fixed">
+    <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+        <div class="flex flex-col justify-center gap-2">
+            <h1 class="text-xl font-medium leading-none text-mono">
+                Metricas del asistente IA
+            </h1>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Agregado operativo por proveedor y modelo.
+            </div>
+        </div>
+        <div class="flex items-center gap-2.5">
+            <a class="kt-btn kt-btn-outline" data-kt-drawer-toggle="#filter_drawer">
+                <i class="ki-filled ki-setting-4"></i>
+                Filtro
+            </a>
+            <a asp-controller="TradeAssistant" asp-action="History" class="kt-btn kt-btn-outline">
+                <i class="ki-filled ki-calendar"></i>
+                Historial
+            </a>
+            <a asp-controller="TradeAssistant" asp-action="Index" class="kt-btn kt-btn-primary">
+                <i class="ki-filled ki-plus"></i>
+                Nueva validacion
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["TradeAssistantMetricsMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+    {
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon">
+                <i class="ki-filled ki-information-2"></i>
+            </div>
+            <div class="kt-alert-content">
+                <div class="kt-alert-description">@message</div>
+            </div>
+        </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Muestra</div>
+                <div class="text-2xl font-semibold text-mono">@summary.SampleSize</div>
+            </div>
+        </div>
+        <div class="kt-card">
+            <div class="kt-card-content p-5">
+                <div class="text-sm text-secondary-foreground mb-2">Corrección humana promedio</div>
+                <div class="text-2xl font-semibold text-mono">@FormatPercent(summary.AverageHumanCorrectionRate)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kt-card kt-card-grid mb-5">
+        <div class="kt-card-header">
+            <h3 class="kt-card-title">Resumen por proveedor y modelo</h3>
+        </div>
+        <div class="kt-card-table kt-scrollable-x-auto">
+            <table class="kt-table align-middle">
+                <thead>
+                    <tr>
+                        <th class="min-w-[130px]">Proveedor</th>
+                        <th class="min-w-[150px]">Modelo</th>
+                        <th class="min-w-[80px] text-center">Muestra</th>
+                        <th class="min-w-[95px] text-center">Trigger</th>
+                        <th class="min-w-[95px] text-center">Escenario</th>
+                        <th class="min-w-[95px] text-center">Etapa</th>
+                        <th class="min-w-[95px] text-center">Figura</th>
+                        <th class="min-w-[95px] text-center">Frame</th>
+                        <th class="min-w-[95px] text-center">Direccion</th>
+                        <th class="min-w-[95px] text-center">Tendencia</th>
+                        <th class="min-w-[95px] text-center">Ubicacion</th>
+                        <th class="min-w-[120px] text-center">Confirmacion</th>
+                        <th class="min-w-[95px] text-center">Pivote</th>
+                        <th class="min-w-[130px] text-center">Correccion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (summary.Groups.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="14" class="text-center text-secondary-foreground py-8">
+                                No hay metricas para mostrar.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var group in summary.Groups)
+                        {
+                            <tr>
+                                <td class="text-sm font-medium text-mono">@group.ProviderName</td>
+                                <td class="text-sm text-secondary-foreground">@group.ModelName</td>
+                                <td class="text-sm text-center text-mono">@group.SampleSize</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.TriggerPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.SceneryPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.StagePrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.FigurePrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.FramePrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.DirectionPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.TrendPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.LocationPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.ConfirmationPrecision)</td>
+                                <td class="text-sm text-center">@FormatNullablePercent(group.PivotZonePrecision)</td>
+                                <td class="text-sm text-center text-mono">@FormatPercent(group.AverageHumanCorrectionRate)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="kt-card kt-card-grid mb-10">
+        <div class="kt-card-header">
+            <h3 class="kt-card-title">Grade contra resultado real</h3>
+        </div>
+        <div class="kt-card-table kt-scrollable-x-auto">
+            <table class="kt-table align-middle">
+                <thead>
+                    <tr>
+                        <th class="min-w-[130px]">Proveedor</th>
+                        <th class="min-w-[150px]">Modelo</th>
+                        <th class="min-w-[80px]">Grade</th>
+                        <th class="min-w-[120px]">Resultado</th>
+                        <th class="min-w-[90px] text-center">Cantidad</th>
+                        <th class="min-w-[100px] text-center">Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var hasGradeOutcomes = summary.Groups.Any(group => group.GradeOutcomes.Count > 0);
+                    }
+                    @if (!hasGradeOutcomes)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-secondary-foreground py-8">
+                                No hay resultados reales vinculados.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var group in summary.Groups)
+                        {
+                            foreach (var outcome in group.GradeOutcomes)
+                            {
+                                <tr>
+                                    <td class="text-sm font-medium text-mono">@group.ProviderName</td>
+                                    <td class="text-sm text-secondary-foreground">@group.ModelName</td>
+                                    <td class="text-sm text-mono">@(outcome.Grade ?? "N/D")</td>
+                                    <td>
+                                        <span class="kt-badge kt-badge-outline @OutcomeClass(outcome.OutcomeClassification)">
+                                            @outcome.OutcomeClassification
+                                        </span>
+                                    </td>
+                                    <td class="text-sm text-center text-mono">@outcome.Count</td>
+                                    <td class="text-sm text-center text-mono">@FormatPercent(outcome.Percentage)</td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!--Filter Drawer-->
+<div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[90%] w-[450px] top-5 bottom-5 end-5 rounded-xl border border-border" data-kt-drawer="true" data-kt-drawer-container="body" id="filter_drawer">
+    <div class="kt-card-header px-5">
+        <h3 class="kt-card-title">
+            Filtros Disponibles
+        </h3>
+        <button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" data-kt-drawer-dismiss="true">
+            <i class="ki-filled ki-cross text-base">
+            </i>
+        </button>
+    </div>
+    <form method="get" class="flex flex-col min-h-0 grow">
+        <div class="kt-card-content space-y-5 p-5 kt-scrollable-y-auto">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                <label class="kt-form-label max-w-56" for="providerName">Proveedor:</label>
+                <input id="providerName" name="providerName" value="@Model.ProviderName" class="kt-input" />
+            </div>
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                <label class="kt-form-label max-w-56" for="modelName">Modelo:</label>
+                <input id="modelName" name="modelName" value="@Model.ModelName" class="kt-input" />
+            </div>
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                <label class="kt-form-label max-w-56" for="from">Desde:</label>
+                <input id="from" name="from" type="date" value="@DateInputValue(Model.From)" class="kt-input" />
+            </div>
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                <label class="kt-form-label max-w-56" for="to">Hasta:</label>
+                <input id="to" name="to" type="date" value="@DateInputValue(Model.To)" class="kt-input" />
+            </div>
+        </div>
+        <div class="kt-card-footer p-5 flex gap-3">
+            <a asp-action="Index" class="kt-btn kt-btn-outline" data-kt-drawer-dismiss="true">
+                Limpiar
+            </a>
+            <button type="submit" class="kt-btn kt-btn-primary grow" data-kt-drawer-dismiss="true" id="btn_AplicarFiltro">
+                Aplicar
+            </button>
+        </div>
+    </form>
+</div>
+<!--End of Filter Drawer-->
+
+@functions {
+    private static string DateInputValue(DateTime? value)
+    {
+        return value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
+    }
+
+    private static string FormatPercent(decimal value)
+    {
+        return $"{value.ToString("0.##", CultureInfo.CurrentCulture)}%";
+    }
+
+    private static string FormatNullablePercent(decimal? value)
+    {
+        return value.HasValue ? FormatPercent(value.Value) : "N/D";
+    }
+
+    private static string OutcomeClass(string outcome)
+    {
+        return outcome switch
+        {
+            "TP1" or "TP2" or "TP3" => "kt-badge-success",
+            "SL" => "kt-badge-destructive",
+            "Open" => "kt-badge-info",
+            _ => "kt-badge-warning"
+        };
+    }
+}
