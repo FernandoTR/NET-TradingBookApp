@@ -2,6 +2,7 @@ using Application.DTOs.AiValidation;
 using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure;
+using Infrastructure.ArtificialIntelligence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -142,6 +143,12 @@ public class TradeAssistantController : Controller
         catch (OperationCanceledException)
         {
             throw;
+        }
+        catch (AiProviderException ex)
+        {
+            ModelState.AddModelError(string.Empty, BuildAiProviderUserMessage(ex));
+            await PopulateCatalogsAsync(model);
+            return View(nameof(Index), model);
         }
         catch (Exception ex)
         {
@@ -769,6 +776,19 @@ public class TradeAssistantController : Controller
         {
             ModelState.AddModelError(string.Empty, error);
         }
+    }
+
+    private static string BuildAiProviderUserMessage(AiProviderException exception)
+    {
+        return exception.ErrorCode switch
+        {
+            "rate_limited" => "El proveedor de IA rechazo temporalmente la solicitud por limite de uso o cuota. Intente nuevamente mas tarde; el detalle tecnico quedo registrado en logs.",
+            "unauthorized" => "El proveedor de IA rechazo la API key configurada. Revise la configuracion del proveedor.",
+            "missing_api_key" => "No hay API key configurada para el proveedor de IA activo.",
+            "timeout" => "El proveedor de IA tardo demasiado en responder. Intente nuevamente con menos imagenes o mas tarde.",
+            "provider_unavailable" => "El proveedor de IA no esta disponible en este momento. Intente nuevamente mas tarde.",
+            _ => "No fue posible completar la validacion IA. El detalle tecnico quedo registrado en logs."
+        };
     }
 
     public async Task<List<SelectListItem>> GetInstrumentsListSelect(int? selectedId)

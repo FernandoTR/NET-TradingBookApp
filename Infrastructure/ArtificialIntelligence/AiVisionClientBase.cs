@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Application.DTOs.AiValidation;
@@ -50,6 +51,11 @@ public abstract class AiVisionClientBase : IAiVisionClient
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
+        Uri? endpoint = null;
+        IReadOnlyList<AiVisionImagePayload> imagePayloads = [];
+        IReadOnlyList<string?> imageDetails = [];
+        var stopwatch = Stopwatch.StartNew();
+
         try
         {
             if (!string.Equals(configuration.ProviderName, ProviderName, StringComparison.OrdinalIgnoreCase))
@@ -57,14 +63,15 @@ public abstract class AiVisionClientBase : IAiVisionClient
                 throw CreateProviderException(configuration, "provider_mismatch", $"AI provider configuration '{configuration.ProviderName}' does not match adapter '{ProviderName}'.");
             }
 
-            if (!Uri.TryCreate(configuration.Endpoint, UriKind.Absolute, out var endpoint))
+            if (!Uri.TryCreate(configuration.Endpoint, UriKind.Absolute, out endpoint))
             {
                 throw CreateProviderException(configuration, "invalid_endpoint", "AI provider endpoint is not configured with an absolute URL.");
             }
 
-            var imagePayloads = await BuildImagePayloadsAsync(images, cancellationToken);
+            imagePayloads = await BuildImagePayloadsAsync(images, cancellationToken);
             var providerRequest = BuildProviderRequest(request, imagePayloads, configuration);
             var requestJson = JsonSerializer.Serialize(providerRequest, JsonOptions);
+            imageDetails = AiProviderDiagnosticBuilder.ExtractImageDetails(requestJson);
 
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
             {
@@ -85,7 +92,20 @@ public abstract class AiVisionClientBase : IAiVisionClient
             using var response = await _httpClient.SendAsync(httpRequest, timeoutSource.Token);
             if (!response.IsSuccessStatusCode)
             {
-                throw CreateHttpStatusException(configuration, response.StatusCode);
+                var responseBody = response.Content is null
+                    ? null
+                    : await response.Content.ReadAsStringAsync(timeoutSource.Token);
+                var diagnostic = AiProviderDiagnosticBuilder.CreateHttpStatusDiagnostic(
+                    ProviderName,
+                    configuration,
+                    endpoint,
+                    response,
+                    responseBody,
+                    stopwatch.Elapsed,
+                    imagePayloads,
+                    imageDetails);
+
+                throw CreateHttpStatusException(configuration, response.StatusCode, diagnostic);
             }
 
             var responseJson = await response.Content.ReadAsStringAsync(timeoutSource.Token);
@@ -103,25 +123,62 @@ public abstract class AiVisionClientBase : IAiVisionClient
         }
         catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
-            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex);
+            var diagnostic = AiProviderDiagnosticBuilder.CreateExceptionDiagnostic(
+                ProviderName,
+                configuration,
+                endpoint,
+                "timeout",
+                ex,
+                stopwatch.Elapsed,
+                imagePayloads,
+                imageDetails);
+            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex, diagnostic: diagnostic);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (TimeoutException ex)
         {
-            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex);
+            var diagnostic = AiProviderDiagnosticBuilder.CreateExceptionDiagnostic(
+                ProviderName,
+                configuration,
+                endpoint,
+                "timeout",
+                ex,
+                stopwatch.Elapsed,
+                imagePayloads,
+                imageDetails);
+            var normalizedException = CreateProviderException(configuration, "timeout", "AI provider request timed out.", innerException: ex, diagnostic: diagnostic);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (HttpRequestException ex)
         {
-            var normalizedException = CreateProviderException(configuration, "http_error", "AI provider request failed before a valid response was received.", ex.StatusCode, ex);
+            var diagnostic = AiProviderDiagnosticBuilder.CreateExceptionDiagnostic(
+                ProviderName,
+                configuration,
+                endpoint,
+                "http_error",
+                ex,
+                stopwatch.Elapsed,
+                imagePayloads,
+                imageDetails,
+                ex.StatusCode.HasValue ? (int)ex.StatusCode.Value : null);
+            var normalizedException = CreateProviderException(configuration, "http_error", "AI provider request failed before a valid response was received.", ex.StatusCode, ex, diagnostic);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
         catch (JsonException ex)
         {
-            var normalizedException = CreateProviderException(configuration, "invalid_json", "AI provider response was not valid strict JSON.", innerException: ex);
+            var diagnostic = AiProviderDiagnosticBuilder.CreateExceptionDiagnostic(
+                ProviderName,
+                configuration,
+                endpoint,
+                "invalid_json",
+                ex,
+                stopwatch.Elapsed,
+                imagePayloads,
+                imageDetails);
+            var normalizedException = CreateProviderException(configuration, "invalid_json", "AI provider response was not valid strict JSON.", innerException: ex, diagnostic: diagnostic);
             LogProviderFailure(normalizedException);
             throw normalizedException;
         }
@@ -232,6 +289,7 @@ public abstract class AiVisionClientBase : IAiVisionClient
             payloads.Add(new AiVisionImagePayload(
                 image.OriginalFileName,
                 image.ContentType,
+                memoryStream.Length,
                 $"data:{image.ContentType};base64,{base64}",
                 image.FrameCode,
                 image.ImageRole.ToString(),
@@ -259,34 +317,51 @@ public abstract class AiVisionClientBase : IAiVisionClient
         string errorCode,
         string message,
         HttpStatusCode? statusCode = null,
-        Exception? innerException = null)
+        Exception? innerException = null,
+        AiProviderFailureDiagnostic? diagnostic = null)
     {
-        return new AiProviderException(errorCode, ProviderName, configuration.ModelName, message, statusCode, innerException);
+        return new AiProviderException(
+            errorCode,
+            ProviderName,
+            configuration.ModelName,
+            message,
+            statusCode,
+            innerException,
+            diagnostic?.ProviderErrorCode,
+            diagnostic?.ProviderErrorType,
+            diagnostic?.ProviderErrorMessage,
+            diagnostic?.RetryAfter,
+            diagnostic?.RequestId,
+            diagnostic?.ToJson());
     }
 
-    private AiProviderException CreateHttpStatusException(AiProviderRuntimeConfiguration configuration, HttpStatusCode statusCode)
+    private AiProviderException CreateHttpStatusException(
+        AiProviderRuntimeConfiguration configuration,
+        HttpStatusCode statusCode,
+        AiProviderFailureDiagnostic diagnostic)
     {
         if (statusCode == HttpStatusCode.Unauthorized)
         {
-            return CreateProviderException(configuration, "unauthorized", "AI provider rejected the configured API key.", statusCode);
+            return CreateProviderException(configuration, "unauthorized", "AI provider rejected the configured API key.", statusCode, diagnostic: diagnostic);
         }
 
         if ((int)statusCode == 429)
         {
-            return CreateProviderException(configuration, "rate_limited", "AI provider rate limit was exceeded.", statusCode);
+            return CreateProviderException(configuration, "rate_limited", "AI provider rate limit was exceeded.", statusCode, diagnostic: diagnostic);
         }
 
         if ((int)statusCode >= 500)
         {
-            return CreateProviderException(configuration, "provider_unavailable", "AI provider returned a server error.", statusCode);
+            return CreateProviderException(configuration, "provider_unavailable", "AI provider returned a server error.", statusCode, diagnostic: diagnostic);
         }
 
-        return CreateProviderException(configuration, "http_error", "AI provider returned an unsuccessful HTTP response.", statusCode);
+        return CreateProviderException(configuration, "http_error", "AI provider returned an unsuccessful HTTP response.", statusCode, diagnostic: diagnostic);
     }
 
     private void LogProviderFailure(AiProviderException exception)
     {
-        var details = $"Provider={exception.ProviderName}; Model={exception.ModelName}; ErrorCode={exception.ErrorCode}; StatusCode={(int?)exception.StatusCode}; ExceptionType={exception.InnerException?.GetType().Name ?? exception.GetType().Name}";
+        var details = exception.DiagnosticJson ??
+            $"Provider={exception.ProviderName}; Model={exception.ModelName}; ErrorCode={exception.ErrorCode}; StatusCode={(int?)exception.StatusCode}; ExceptionType={exception.InnerException?.GetType().Name ?? exception.GetType().Name}";
         _logService.ErrorLog(nameof(ExtractSetupAsync), "AI provider extraction failed.", details);
     }
 
@@ -334,6 +409,7 @@ public abstract class AiVisionClientBase : IAiVisionClient
 public sealed record AiVisionImagePayload(
     string OriginalFileName,
     string ContentType,
+    long ContentByteLength,
     string DataUri,
     string FrameCode,
     string ImageRole,
