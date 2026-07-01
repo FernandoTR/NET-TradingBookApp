@@ -28,6 +28,11 @@ TradingBook es una plataforma web que centraliza el registro y análisis de oper
 ## Características
 
 - **Trading Score Engine** — evalúa operaciones usando ubicación, tendencia, confirmación y zonas pivote.
+- **Asistente de validación IA** — permite validar propuestas de trade con imágenes temporales, extracción multimodal, normalización contra catálogos, reglas determinísticas, Trading Score y evidencia histórica.
+- **Creación de órdenes desde validaciones IA** — convierte una validación confirmada por el usuario en una orden usando el flujo existente de `Orders`.
+- **Métricas operativas del asistente IA** — compara clasificación IA, confirmación humana y resultado real de la orden por proveedor y modelo.
+- **Gestión de proveedores IA** — módulo administrativo para configurar proveedor, modelo, endpoint y referencia de API key sin almacenar secretos reales.
+- **Proveedores multimodales** — adaptadores explícitos para OpenAI, MiniMax, DeepSeek, GLM y Kimi.
 - **Análisis multidimensional** — estadísticas por trigger, escenario, figura, dirección, marco temporal y día de la semana.
 - **Dashboard interactivo** — visualizaciones con Chart.js para métricas clave y DataTables 2.x para exploración tabular.
 - **Gestión de cuentas** — múltiples cuentas con tracking de balance, depósitos y retiros.
@@ -97,7 +102,20 @@ El arranque ocurre en `Web/Program.cs` mediante tres métodos extensores que reg
    > [!IMPORTANT]
    > `appsettings.Development.json` y `appsettings.Production.json` están excluidos de Git. Nunca guardes credenciales reales en `appsettings.json` — ese archivo solo contiene placeholders `__CHANGE_ME__`.
 
-4. Restaura las herramientas de EF Core:
+4. Configura las API keys de proveedores IA como variables de entorno. La aplicación solo guarda la referencia al nombre de la variable, nunca el valor del secreto:
+
+   ```bash
+   setx OPENAI_API_KEY "<tu-api-key>"
+   setx MINIMAX_API_KEY "<tu-api-key>"
+   setx DEEPSEEK_API_KEY "<tu-api-key>"
+   setx GLM_API_KEY "<tu-api-key>"
+   setx KIMI_API_KEY "<tu-api-key>"
+   ```
+
+   > [!IMPORTANT]
+   > Reinicia la terminal o el proceso de la aplicación después de crear o actualizar variables de entorno. El módulo `AiProviders` valida si la variable existe, pero no muestra ni almacena su valor.
+
+5. Restaura las herramientas de EF Core:
 
    ```bash
    cd Web
