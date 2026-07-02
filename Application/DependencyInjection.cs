@@ -15,6 +15,7 @@ public static class DependencyInjection
        
         
         builder.Services.AddScoped<IActivityLogService, ActivityLogService>();       
+        builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
         builder.Services.AddScoped<IAccountsService, AccountsService>();
         builder.Services.AddScoped<IAccountBalancesService, AccountBalancesService>();
         builder.Services.AddScoped<ICatAccountTypeService, CatAccountTypeService>();
