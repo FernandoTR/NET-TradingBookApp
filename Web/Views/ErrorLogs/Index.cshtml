@@ -1,0 +1,298 @@
+@model List<Web.Models.ErrorLogsViewModel>
+
+@{
+	ViewData["Title"] = "Errores de Aplicación";
+}
+
+<!-- Header Container -->
+<div class="kt-container-fixed">
+	<div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+		<div class="flex flex-col justify-center gap-2">
+			<h1 class="text-xl font-medium leading-none text-mono">
+				Errores de Aplicación
+			</h1>
+			<div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+				Consulta los errores registrados por la aplicación.
+			</div>
+		</div>
+		<div class="flex items-center gap-2.5">
+			<a class="kt-btn kt-btn-outline" data-kt-drawer-toggle="#filter_drawer">
+				<i class="ki-filled ki-setting-4"></i>
+				Filtro
+			</a>
+		</div>
+	</div>
+</div>
+<!-- End of Header Container -->
+
+<!-- Container -->
+<div class="kt-container-fixed">
+	<div class="grid" bis_skin_checked="1">
+		<div class="kt-card kt-card-grid h-full min-w-full border border-white/5 shadow-2xs" bis_skin_checked="1">
+			<div class="kt-card-table kt-scrollable-x-auto" bis_skin_checked="1">
+				<table class="kt-table" data-kt-datatable-table="true" id="dtTable"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of Container -->
+
+<!-- Filter Drawer -->
+<div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[90%] w-[450px] top-5 bottom-5 end-5 rounded-xl border border-border" data-kt-drawer="true" data-kt-drawer-container="body" id="filter_drawer">
+	<div class="kt-card-header px-5">
+		<h3 class="kt-card-title">
+			Filtros Disponibles
+		</h3>
+		<button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" data-kt-drawer-dismiss="true">
+			<i class="ki-filled ki-cross text-base"></i>
+		</button>
+	</div>
+	<div class="kt-card-content space-y-5 p-5 kt-scrollable-y-auto">
+		<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+			<label class="kt-form-label max-w-56">Rango de fechas:</label>
+			<div class="kt-input w-full max-w-md min-w-[18rem]">
+				<i class="ki-outline ki-calendar"></i>
+				<input id="kt_daterangepicker_4"
+					   class="input ps-10"
+					   type="text"
+					   placeholder="Seleccionar rango de fechas"
+					   readonly />
+			</div>
+		</div>
+	</div>
+	<div class="kt-card-footer p-5 flex gap-3">
+		<a class="kt-btn kt-btn-outline" href="javascript:;" data-kt-drawer-dismiss="true">
+			Limpiar
+		</a>
+		<a class="kt-btn kt-btn-primary grow" href="javascript:;" data-kt-drawer-dismiss="true" id="btn_AplicarFiltro">
+			Aplicar
+		</a>
+	</div>
+</div>
+<!-- End of Filter Drawer -->
+
+<button class="hidden" type="button" id="detail_drawer_toggle" data-kt-drawer-toggle="#detail_drawer"></button>
+
+<!-- Detail Drawer -->
+<div class="hidden kt-drawer kt-drawer-end card flex-col max-w-[95vw] w-[720px] top-5 bottom-5 end-5 rounded-xl border border-border overflow-hidden" data-kt-drawer="true" data-kt-drawer-container="body" id="detail_drawer">
+	<div class="kt-card-header px-5">
+		<h3 class="kt-card-title">
+			Detalle del error
+		</h3>
+		<button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" data-kt-drawer-dismiss="true">
+			<i class="ki-filled ki-cross text-base"></i>
+		</button>
+	</div>
+	<div class="kt-card-content space-y-5 p-5 kt-scrollable-y-auto overflow-x-hidden min-w-0">
+		<div class="grid gap-4 min-w-0">
+			<div class="min-w-0">
+				<label class="kt-form-label">ID</label>
+				<div class="kt-input bg-muted w-full max-w-full min-w-0 h-auto min-h-[44px] py-2 whitespace-normal break-all overflow-hidden mt-2" id="detail_id"></div>
+			</div>
+			<div class="min-w-0">
+				<label class="kt-form-label">Fecha</label>
+				<div class="kt-input bg-muted w-full max-w-full min-w-0 h-auto min-h-[44px] py-2 whitespace-normal break-all overflow-hidden mt-2" id="detail_log_date"></div>
+			</div>
+			<div class="min-w-0">
+				<label class="kt-form-label">Aplicación</label>
+				<div class="kt-input bg-muted w-full max-w-full min-w-0 h-auto min-h-[44px] py-2 whitespace-normal break-all overflow-hidden mt-2" id="detail_application_id"></div>
+			</div>
+			<div class="min-w-0">
+				<label class="kt-form-label">Método</label>
+				<div class="kt-input bg-muted w-full max-w-full min-w-0 h-auto min-h-[44px] py-2 whitespace-normal break-all overflow-hidden mt-2" id="detail_method_name"></div>
+			</div>
+			<div class="min-w-0">
+				<label class="kt-form-label">Mensaje</label>
+				<div class="kt-input bg-muted w-full max-w-full min-w-0 h-auto min-h-[44px] py-2 whitespace-normal break-all overflow-hidden mt-2" id="detail_exception_message"></div>
+			</div>
+			<div class="min-w-0 max-w-full overflow-hidden">
+				<label class="kt-form-label">Stack trace</label>
+				<pre class="block w-full max-w-full min-w-0 kt-card border border-border bg-muted p-4 rounded-lg text-xs overflow-y-auto overflow-x-hidden mt-2 max-h-[260px]" id="detail_exception_stack_trace" style="box-sizing: border-box; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;"></pre>
+			</div>
+			<div class="min-w-0 max-w-full overflow-hidden">
+				<label class="kt-form-label">Exception string</label>
+				<pre class="block w-full max-w-full min-w-0 kt-card border border-border bg-muted p-4 rounded-lg text-xs overflow-y-auto overflow-x-hidden mt-2 max-h-[260px]" id="detail_exception_string" style="box-sizing: border-box; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;"></pre>
+			</div>
+		</div>
+	</div>
+	<div class="kt-card-footer p-5 flex justify-end">
+		<a class="kt-btn kt-btn-outline" href="javascript:;" data-kt-drawer-dismiss="true">
+			Cerrar
+		</a>
+	</div>
+</div>
+<!-- End of Detail Drawer -->
+
+@section scripts {
+	<script src="~/Template/assets/vendors/datatables-net/dataTables.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			let fechaInicio = moment().subtract(7, "days");
+			let fechaFin = moment();
+
+			KTFlatpickrHelper.initRange("#kt_daterangepicker_4");
+			KTFlatpickrHelper.setRange("#kt_daterangepicker_4", fechaInicio, fechaFin);
+
+			function updateDateRange() {
+				const range = KTFlatpickrHelper.getRange("#kt_daterangepicker_4");
+
+				if (range.startFormatted && range.endFormatted) {
+					fechaInicio = range.startFormatted;
+					fechaFin = range.endFormatted;
+				}
+			}
+
+			function loadTableDate() {
+				if ($.fn.DataTable.isDataTable('#dtTable')) {
+					$('#dtTable').DataTable().destroy();
+				}
+
+				$('#dtTable').DataTable({
+					ajax: {
+						url: "@Url.Content("~/ErrorLogs/JsonDataTable")",
+						type: "POST",
+						dataType: "json",
+						data: { fecha1: fechaInicio, fecha2: fechaFin }
+					},
+					columns: [
+						{ name: "id", title: "ID", data: "id", autoWidth: true, className: "min-w-[50px] w-[50px]" },
+						{
+							name: "logDate",
+							title: "Fecha",
+							data: "logDate",
+							autoWidth: true,
+							className: "min-w-[150px] w-[150px]",
+							render: function (data, type) {
+								return type === 'display' || type === 'filter'
+									? moment(data).format("DD/MM/YYYY HH:mm:ss")
+									: data;
+							}
+						},
+						{ name: "methodName", title: "Método", data: "methodName", autoWidth: true, className: "min-w-[240px]" },
+						{ name: "exceptionMessage", title: "Mensaje", data: "exceptionMessage", autoWidth: true, className: "min-w-[320px]" },
+						{ name: "applicationId", title: "Aplicación", data: "applicationId", autoWidth: true, className: "min-w-[100px] w-[80px]" },
+						{
+							name: "task",
+							title: "",
+							data: "task",
+							orderable: false,
+							className: "text-center min-w-[40px] w-[60px]"
+						}
+					],
+					processing: true,
+					serverSide: true,
+					pageLength: 10,
+					searching: true,
+					language: {
+						processing: "Procesando...",
+						lengthMenu: "Mostrar _MENU_ registros",
+						zeroRecords: "No se encontraron resultados",
+						emptyTable: "Ningún dato disponible en esta tabla",
+						info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+						infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+						infoFiltered: "(filtrado de un total de _MAX_ registros)",
+						search: "",
+						searchPlaceholder: "Buscar errores...",
+						paginate: {
+							first: "Primero",
+							last: "Último",
+							next: "›",
+							previous: "‹"
+						},
+						aria: {
+							orderable: "Activar para ordenar ascendente",
+							orderableReverse: "Activar para ordenar descendente"
+						}
+					},
+					layout: {
+						topStart: [],
+						topEnd: 'search',
+						bottomStart: ['pageLength', 'info'],
+						bottomEnd: 'paging'
+					},
+					initComplete: function () {
+						const searchContainer = $('.dt-search');
+
+						searchContainer.find('label').remove();
+
+						searchContainer.html(`
+							<div class="kt-input max-w-48 relative">
+							<i class="ki-filled ki-magnifier text-sm text-secondary-foreground"></i>
+							<input
+								id="dt-search-0"
+								type="text"
+								class="w-full"
+								placeholder="Buscar errores..."
+							/>
+							</div>
+						`);
+
+						searchContainer.find('input').on('keyup', function () {
+							$('#dtTable').DataTable().search(this.value).draw();
+						});
+					},
+					drawCallback: function () {
+						KTMenu.createInstances();
+					},
+					order: [[0, "desc"]]
+				});
+			}
+
+			const submitButton = document.getElementById('btn_AplicarFiltro');
+			submitButton.addEventListener('click', function (e) {
+				e.preventDefault();
+				updateDateRange();
+				loadTableDate();
+			});
+
+			updateDateRange();
+			loadTableDate();
+		});
+
+		function setDetailLoading() {
+			$('#detail_id').text('Cargando...');
+			$('#detail_log_date').text('Cargando...');
+			$('#detail_application_id').text('Cargando...');
+			$('#detail_method_name').text('Cargando...');
+			$('#detail_exception_message').text('Cargando...');
+			$('#detail_exception_stack_trace').text('Cargando...');
+			$('#detail_exception_string').text('Cargando...');
+		}
+
+		function setDetailError() {
+			$('#detail_id').text('');
+			$('#detail_log_date').text('');
+			$('#detail_application_id').text('');
+			$('#detail_method_name').text('No fue posible cargar el detalle.');
+			$('#detail_exception_message').text('');
+			$('#detail_exception_stack_trace').text('');
+			$('#detail_exception_string').text('');
+		}
+
+		function showErrorLogDetail(id) {
+			setDetailLoading();
+			document.getElementById('detail_drawer_toggle').click();
+
+			fetch(`@Url.Content("~/ErrorLogs/Detail")/${id}`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Error al cargar el detalle.');
+					}
+
+					return response.json();
+				})
+				.then(data => {
+					$('#detail_id').text(data.id ?? '');
+					$('#detail_log_date').text(data.logDate ? moment(data.logDate).format("DD/MM/YYYY HH:mm:ss") : '');
+					$('#detail_application_id').text(data.applicationId ?? '');
+					$('#detail_method_name').text(data.methodName ?? '');
+					$('#detail_exception_message').text(data.exceptionMessage ?? '');
+					$('#detail_exception_stack_trace').text(data.exceptionStackTrace ?? '');
+					$('#detail_exception_string').text(data.exceptionString ?? '');
+				})
+				.catch(() => {
+					setDetailError();
+				});
+		}
+	</script>
+}
