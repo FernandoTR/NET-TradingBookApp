@@ -11,6 +11,11 @@ namespace Infrastructure.ArtificialIntelligence;
 
 public abstract class AiVisionClientBase : IAiVisionClient
 {
+    private const int MaxRateLimitRetryCount = 2;
+
+    private static readonly TimeSpan DefaultRateLimitRetryDelay = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan MaxRateLimitRetryDelay = TimeSpan.FromSeconds(10);
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true
@@ -73,48 +78,61 @@ public abstract class AiVisionClientBase : IAiVisionClient
             var requestJson = JsonSerializer.Serialize(providerRequest, JsonOptions);
             imageDetails = AiProviderDiagnosticBuilder.ExtractImageDetails(requestJson);
 
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
-            {
-                Content = new StringContent(requestJson, Encoding.UTF8, "application/json")
-            };
-
             var apiKey = Environment.GetEnvironmentVariable(configuration.ApiKeyEnvironmentVariable);
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw CreateProviderException(configuration, "missing_api_key", $"Missing API key environment variable '{configuration.ApiKeyEnvironmentVariable}'.");
             }
 
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-
             using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeoutSource.CancelAfter(TimeSpan.FromSeconds(configuration.TimeoutSeconds));
 
-            using var response = await _httpClient.SendAsync(httpRequest, timeoutSource.Token);
-            if (!response.IsSuccessStatusCode)
+            for (var attempt = 0; ; attempt++)
             {
-                var responseBody = response.Content is null
-                    ? null
-                    : await response.Content.ReadAsStringAsync(timeoutSource.Token);
-                var diagnostic = AiProviderDiagnosticBuilder.CreateHttpStatusDiagnostic(
-                    ProviderName,
-                    configuration,
-                    endpoint,
-                    response,
-                    responseBody,
-                    stopwatch.Elapsed,
-                    imagePayloads,
-                    imageDetails);
+                TimeSpan? retryDelay = null;
 
-                throw CreateHttpStatusException(configuration, response.StatusCode, diagnostic);
+                using (var httpRequest = CreateHttpRequest(endpoint, requestJson, apiKey))
+                using (var response = await _httpClient.SendAsync(httpRequest, timeoutSource.Token))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseJson = await response.Content.ReadAsStringAsync(timeoutSource.Token);
+                        var modelContent = ExtractModelContent(responseJson);
+                        var extraction = DeserializeExtraction(modelContent);
+
+                        EnsureCompleteExtraction(configuration, extraction);
+
+                        return extraction;
+                    }
+
+                    var responseBody = response.Content is null
+                        ? null
+                        : await response.Content.ReadAsStringAsync(timeoutSource.Token);
+                    var diagnostic = AiProviderDiagnosticBuilder.CreateHttpStatusDiagnostic(
+                        ProviderName,
+                        configuration,
+                        endpoint,
+                        response,
+                        responseBody,
+                        stopwatch.Elapsed,
+                        imagePayloads,
+                        imageDetails);
+
+                    if (ShouldRetryRateLimit(response.StatusCode, diagnostic, attempt))
+                    {
+                        retryDelay = ResolveRateLimitRetryDelay(response.Headers.RetryAfter);
+                    }
+                    else
+                    {
+                        throw CreateHttpStatusException(configuration, response.StatusCode, diagnostic);
+                    }
+                }
+
+                if (retryDelay.HasValue)
+                {
+                    await Task.Delay(retryDelay.Value, timeoutSource.Token);
+                }
             }
-
-            var responseJson = await response.Content.ReadAsStringAsync(timeoutSource.Token);
-            var modelContent = ExtractModelContent(responseJson);
-            var extraction = DeserializeExtraction(modelContent);
-
-            EnsureCompleteExtraction(configuration, extraction);
-
-            return extraction;
         }
         catch (AiProviderException ex)
         {
@@ -298,6 +316,54 @@ public abstract class AiVisionClientBase : IAiVisionClient
         }
 
         return payloads;
+    }
+
+    private static HttpRequestMessage CreateHttpRequest(Uri endpoint, string requestJson, string apiKey)
+    {
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = new StringContent(requestJson, Encoding.UTF8, "application/json")
+        };
+        httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
+        return httpRequest;
+    }
+
+    private static bool ShouldRetryRateLimit(
+        HttpStatusCode statusCode,
+        AiProviderFailureDiagnostic diagnostic,
+        int attempt)
+    {
+        return (int)statusCode == 429 &&
+            attempt < MaxRateLimitRetryCount &&
+            !string.Equals(diagnostic.ProviderErrorCode, "insufficient_quota", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(diagnostic.ProviderErrorType, "insufficient_quota", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static TimeSpan ResolveRateLimitRetryDelay(RetryConditionHeaderValue? retryAfter)
+    {
+        if (retryAfter?.Delta is { } delta && delta >= TimeSpan.Zero)
+        {
+            return CapRateLimitRetryDelay(delta);
+        }
+
+        if (retryAfter?.Date is { } date)
+        {
+            var delay = date - DateTimeOffset.UtcNow;
+            if (delay > TimeSpan.Zero)
+            {
+                return CapRateLimitRetryDelay(delay);
+            }
+        }
+
+        return DefaultRateLimitRetryDelay;
+    }
+
+    private static TimeSpan CapRateLimitRetryDelay(TimeSpan delay)
+    {
+        return delay > MaxRateLimitRetryDelay
+            ? MaxRateLimitRetryDelay
+            : delay;
     }
 
     private static AiVisionExtractionDto DeserializeExtraction(string json)

@@ -38,7 +38,7 @@ public sealed class OpenAiVisionClient : AiVisionClientBase
             {
                 type = "input_image",
                 image_url = image.DataUri,
-                detail = "high"
+                detail = "low"
             });
         }
 
