@@ -41,11 +41,6 @@
 				return $('<div/>').text(value).html();
 			}
 
-			function renderEndpoint(data) {
-				const value = renderText(data);
-				return `<div class="block max-w-[220px] truncate" title="${value}">${value}</div>`;
-			}
-
 			function loadTableData() {
 				if ($.fn.DataTable.isDataTable('#dtTable')) {
 					$('#dtTable').DataTable().destroy();
@@ -71,13 +66,6 @@
 							data: "modelName",
 							className: "min-w-[160px]",
 							render: renderText
-						},
-						{
-							name: "Endpoint",
-							title: "Endpoint",
-							data: "endpoint",
-							className: "min-w-[240px] max-w-[240px] w-[240px]",
-							render: renderEndpoint
 						},
 						{
 							name: "ApiKeyEnvironmentVariable",
@@ -191,12 +179,28 @@
 				return response.text();
 			}).then((data) => {
 				$("#contentvModal").html(data);
+				initializeModalComponents(document.getElementById('contentvModal'));
 				$('#title-modal').html(title);
 				$('#subtitle-modal').html(subtitle);
 
 				const modalEl = document.querySelector('#vModal');
 				const modal = KTModal.getInstance(modalEl);
 				modal.show();
+			});
+		}
+
+		function initializeModalComponents(container) {
+			if (!container || !window.KTSelect) {
+				return;
+			}
+
+			if (typeof window.KTSelect.createInstances === 'function') {
+				window.KTSelect.createInstances();
+				return;
+			}
+
+			container.querySelectorAll('[data-kt-select="true"]').forEach(function (select) {
+				window.KTSelect.getOrCreateInstance(select);
 			});
 		}
 
@@ -251,7 +255,8 @@
 					if (data === 'true') {
 						window.location.href = "@Html.Raw(Url.Action("Index", "AiProviders", new { notification = "Success" }))" + "&message=" + encodeURIComponent(successMessage);
 					} else {
-						window.location.href = "@Html.Raw(Url.Action("Index", "AiProviders", new { notification = "Error" }))" + "&message=" + encodeURIComponent("No se pudo actualizar el proveedor IA.");
+						const errorMessage = data && data !== 'false' ? data : "No se pudo actualizar el proveedor IA.";
+						window.location.href = "@Html.Raw(Url.Action("Index", "AiProviders", new { notification = "Error" }))" + "&message=" + encodeURIComponent(errorMessage);
 					}
 				});
 		}

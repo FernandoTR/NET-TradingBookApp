@@ -6,11 +6,15 @@ public partial class AiProviderConfiguration
 {
     public int Id { get; set; }
 
+    public int? ModelCatalogId { get; set; }
+
     public string ProviderName { get; set; } = null!;
 
     public string ModelName { get; set; } = null!;
 
     public string? Endpoint { get; set; }
+
+    public string ApiProtocol { get; set; } = null!;
 
     public string ApiKeyEnvironmentVariable { get; set; } = null!;
 
@@ -27,4 +31,6 @@ public partial class AiProviderConfiguration
     public DateTime? UpdatedAt { get; set; }
 
     public DateTime? DeactivatedAt { get; set; }
+
+    public virtual AiProviderModelCatalog? ModelCatalog { get; set; }
 }

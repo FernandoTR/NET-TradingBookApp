@@ -8,6 +8,14 @@ namespace Application.Services;
 
 public class AiProviderConfigurationResolver : IAiProviderConfigurationResolver
 {
+    private const string DefaultApiProtocol = "OpenAiChatCompletions";
+
+    private static readonly string[] SupportedApiProtocols =
+    [
+        "OpenAiChatCompletions",
+        "AnthropicMessages"
+    ];
+
     private readonly IAiProviderConfigurationRepository _repository;
     private readonly AiProviderOptions _options;
 
@@ -60,6 +68,7 @@ public class AiProviderConfigurationResolver : IAiProviderConfigurationResolver
             ProviderName = provider.Name,
             ModelName = provider.Definition.Model,
             Endpoint = provider.Definition.Endpoint ?? string.Empty,
+            ApiProtocol = DefaultApiProtocol,
             ApiKeyEnvironmentVariable = provider.Definition.ApiKeyEnvironmentVariable,
             SupportsVision = provider.Definition.SupportsVision,
             TimeoutSeconds = provider.Definition.TimeoutSeconds
@@ -87,6 +96,7 @@ public class AiProviderConfigurationResolver : IAiProviderConfigurationResolver
             ProviderName = provider.ProviderName,
             ModelName = provider.ModelName,
             Endpoint = provider.Endpoint ?? string.Empty,
+            ApiProtocol = NormalizeApiProtocol(provider.ApiProtocol),
             ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable,
             SupportsVision = provider.SupportsVision,
             TimeoutSeconds = provider.TimeoutSeconds
@@ -133,6 +143,11 @@ public class AiProviderConfigurationResolver : IAiProviderConfigurationResolver
             throw new InvalidOperationException($"AI provider '{configuration.ProviderName}' does not define a valid absolute endpoint.");
         }
 
+        if (!IsValidApiProtocol(configuration.ApiProtocol))
+        {
+            throw new InvalidOperationException($"AI provider '{configuration.ProviderName}' defines unsupported API protocol '{configuration.ApiProtocol}'.");
+        }
+
         if (string.IsNullOrWhiteSpace(configuration.ApiKeyEnvironmentVariable))
         {
             throw new InvalidOperationException($"AI provider '{configuration.ProviderName}' does not define an API key environment variable.");
@@ -147,5 +162,15 @@ public class AiProviderConfigurationResolver : IAiProviderConfigurationResolver
         {
             throw new InvalidOperationException($"AI provider '{configuration.ProviderName}' API key environment variable '{configuration.ApiKeyEnvironmentVariable}' is not configured.");
         }
+    }
+
+    private static string NormalizeApiProtocol(string? apiProtocol)
+    {
+        return string.IsNullOrWhiteSpace(apiProtocol) ? DefaultApiProtocol : apiProtocol.Trim();
+    }
+
+    private static bool IsValidApiProtocol(string? apiProtocol)
+    {
+        return SupportedApiProtocols.Any(protocol => string.Equals(protocol, apiProtocol?.Trim(), StringComparison.OrdinalIgnoreCase));
     }
 }

@@ -77,6 +77,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<AiTradeValidationRule> AiTradeValidationRules { get; set; }
 
     public virtual DbSet<AiProviderConfiguration> AiProviderConfigurations { get; set; }
+
+    public virtual DbSet<AiProviderModelCatalog> AiProviderModelCatalogs { get; set; }
     
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -284,6 +286,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => e.ProviderName, "UX_AiProviderConfiguration_ProviderName")
                 .IsUnique();
 
+            entity.HasIndex(e => e.ModelCatalogId, "IX_AiProviderConfiguration_ModelCatalogId");
+
             entity.HasIndex(e => e.IsActive, "UX_AiProviderConfiguration_Active")
                 .IsUnique()
                 .HasFilter("[IsActive] = 1");
@@ -291,10 +295,33 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.ProviderName).HasMaxLength(100);
             entity.Property(e => e.ModelName).HasMaxLength(150);
             entity.Property(e => e.Endpoint).HasMaxLength(500);
+            entity.Property(e => e.ApiProtocol).HasMaxLength(50);
             entity.Property(e => e.ApiKeyEnvironmentVariable).HasMaxLength(150);
             entity.Property(e => e.TimeoutSeconds).HasDefaultValue(60);
             entity.Property(e => e.IsEnabled).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+
+            entity.HasOne(d => d.ModelCatalog).WithMany()
+                .HasForeignKey(d => d.ModelCatalogId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AiProviderConfiguration_AiProviderModelCatalog");
+        });
+
+        modelBuilder.Entity<AiProviderModelCatalog>(entity =>
+        {
+            entity.ToTable("AiProviderModelCatalog");
+
+            entity.HasIndex(e => new { e.ProviderName, e.ModelId }, "UX_AiProviderModelCatalog_Provider_ModelId")
+                .IsUnique();
+
+            entity.HasIndex(e => new { e.ProviderName, e.IsEnabled, e.SortOrder }, "IX_AiProviderModelCatalog_Provider_Enabled_SortOrder");
+
+            entity.Property(e => e.ProviderName).HasMaxLength(100);
+            entity.Property(e => e.ModelName).HasMaxLength(150);
+            entity.Property(e => e.ModelId).HasMaxLength(150);
+            entity.Property(e => e.Endpoint).HasMaxLength(500);
+            entity.Property(e => e.ApiProtocol).HasMaxLength(50);
+            entity.Property(e => e.IsEnabled).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ApplicationRole>(entity =>

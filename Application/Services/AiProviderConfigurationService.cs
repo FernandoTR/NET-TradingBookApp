@@ -6,23 +6,43 @@ namespace Application.Services;
 
 public class AiProviderConfigurationService : IAiProviderConfigurationService
 {
+    private const string OpenAiProviderName = "OpenAI";
+    private const string OpenCodeGoProviderName = "OpenCodeGo";
+    private const string DefaultApiProtocol = "OpenAiChatCompletions";
+
     private static readonly string[] SupportedProviders =
     [
-        "OpenAI",
+        OpenAiProviderName,
         "MiniMax",
         "DeepSeek",
         "GLM",
-        "Kimi"
+        "Kimi",
+        OpenCodeGoProviderName
+    ];
+
+    private static readonly string[] CatalogBackedProviders =
+    [
+        OpenAiProviderName,
+        OpenCodeGoProviderName
+    ];
+
+    private static readonly string[] SupportedApiProtocols =
+    [
+        "OpenAiChatCompletions",
+        "AnthropicMessages"
     ];
 
     private readonly IAiProviderConfigurationRepository _repository;
+    private readonly IAiProviderModelCatalogRepository _modelCatalogRepository;
     private readonly ILogService _logService;
 
     public AiProviderConfigurationService(
         IAiProviderConfigurationRepository repository,
+        IAiProviderModelCatalogRepository modelCatalogRepository,
         ILogService logService)
     {
         _repository = repository;
+        _modelCatalogRepository = modelCatalogRepository;
         _logService = logService;
     }
 
@@ -56,24 +76,35 @@ public class AiProviderConfigurationService : IAiProviderConfigurationService
             return false;
         }
 
-        var existing = await _repository.GetByProviderNameAsync(provider.ProviderName.Trim(), cancellationToken);
+        var normalizedProviderName = provider.ProviderName.Trim();
+        var existing = await _repository.GetByProviderNameAsync(normalizedProviderName, cancellationToken);
         if (existing is not null)
         {
             return false;
         }
 
+        var catalogModel = await ResolveCatalogModelAsync(provider, normalizedProviderName, cancellationToken);
+        if (IsCatalogBackedProvider(normalizedProviderName) && catalogModel is null)
+        {
+            return false;
+        }
+
+        var candidate = BuildSaveCandidate(provider, normalizedProviderName, catalogModel);
+
         try
         {
             var entity = new AiProviderConfiguration
             {
-                ProviderName = provider.ProviderName.Trim(),
-                ModelName = provider.ModelName.Trim(),
-                Endpoint = NormalizeEndpoint(provider.Endpoint),
-                ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable.Trim(),
-                SupportsVision = provider.SupportsVision,
-                TimeoutSeconds = provider.TimeoutSeconds,
+                ModelCatalogId = candidate.ModelCatalogId,
+                ProviderName = candidate.ProviderName,
+                ModelName = candidate.ModelName,
+                Endpoint = candidate.Endpoint,
+                ApiProtocol = candidate.ApiProtocol,
+                ApiKeyEnvironmentVariable = candidate.ApiKeyEnvironmentVariable,
+                SupportsVision = candidate.SupportsVision,
+                TimeoutSeconds = candidate.TimeoutSeconds,
                 IsActive = false,
-                IsEnabled = provider.IsEnabled,
+                IsEnabled = candidate.IsEnabled,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -122,18 +153,28 @@ public class AiProviderConfigurationService : IAiProviderConfigurationService
                 return false;
             }
 
-            if (entity.IsActive && !CanActivate(provider))
+            var catalogModel = await ResolveCatalogModelAsync(provider, normalizedProviderName, cancellationToken);
+            if (IsCatalogBackedProvider(normalizedProviderName) && catalogModel is null)
             {
                 return false;
             }
 
-            entity.ProviderName = normalizedProviderName;
-            entity.ModelName = provider.ModelName.Trim();
-            entity.Endpoint = NormalizeEndpoint(provider.Endpoint);
-            entity.ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable.Trim();
-            entity.SupportsVision = provider.SupportsVision;
-            entity.TimeoutSeconds = provider.TimeoutSeconds;
-            entity.IsEnabled = provider.IsEnabled;
+            var candidate = BuildSaveCandidate(provider, normalizedProviderName, catalogModel);
+
+            if (entity.IsActive && !CanActivate(candidate))
+            {
+                return false;
+            }
+
+            entity.ModelCatalogId = candidate.ModelCatalogId;
+            entity.ProviderName = candidate.ProviderName;
+            entity.ModelName = candidate.ModelName;
+            entity.Endpoint = candidate.Endpoint;
+            entity.ApiProtocol = candidate.ApiProtocol;
+            entity.ApiKeyEnvironmentVariable = candidate.ApiKeyEnvironmentVariable;
+            entity.SupportsVision = candidate.SupportsVision;
+            entity.TimeoutSeconds = candidate.TimeoutSeconds;
+            entity.IsEnabled = candidate.IsEnabled;
             entity.UpdatedAt = DateTime.UtcNow;
 
             if (!entity.IsEnabled)
@@ -247,9 +288,11 @@ public class AiProviderConfigurationService : IAiProviderConfigurationService
         return new AiProviderConfigurationDto
         {
             Id = provider.Id,
+            ModelCatalogId = provider.ModelCatalogId,
             ProviderName = provider.ProviderName,
             ModelName = provider.ModelName,
             Endpoint = provider.Endpoint,
+            ApiProtocol = provider.ApiProtocol,
             ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable,
             IsApiKeyConfigured = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(provider.ApiKeyEnvironmentVariable)),
             SupportsVision = provider.SupportsVision,
@@ -261,10 +304,20 @@ public class AiProviderConfigurationService : IAiProviderConfigurationService
 
     private static bool IsValidForSave(AiProviderConfigurationDto provider)
     {
-        return IsSupportedProvider(provider.ProviderName) &&
-            !string.IsNullOrWhiteSpace(provider.ModelName) &&
-            !string.IsNullOrWhiteSpace(provider.ApiKeyEnvironmentVariable) &&
-            provider.TimeoutSeconds > 0;
+        if (!IsSupportedProvider(provider.ProviderName) ||
+            string.IsNullOrWhiteSpace(provider.ApiKeyEnvironmentVariable) ||
+            provider.TimeoutSeconds <= 0)
+        {
+            return false;
+        }
+
+        if (IsCatalogBackedProvider(provider.ProviderName))
+        {
+            return provider.ModelCatalogId.GetValueOrDefault() > 0;
+        }
+
+        return !string.IsNullOrWhiteSpace(provider.ModelName) &&
+            IsValidApiProtocol(provider.ApiProtocol);
     }
 
     private static bool CanActivate(AiProviderConfigurationDto provider)
@@ -279,6 +332,66 @@ public class AiProviderConfigurationService : IAiProviderConfigurationService
     {
         return SupportedProviders.Any(provider =>
             string.Equals(provider, providerName?.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private async Task<AiProviderModelCatalog?> ResolveCatalogModelAsync(
+        AiProviderConfigurationDto provider,
+        string normalizedProviderName,
+        CancellationToken cancellationToken)
+    {
+        if (!IsCatalogBackedProvider(normalizedProviderName) || provider.ModelCatalogId.GetValueOrDefault() <= 0)
+        {
+            return null;
+        }
+
+        var catalogModel = await _modelCatalogRepository.GetByIdAsync(provider.ModelCatalogId!.Value, cancellationToken);
+        if (catalogModel is null ||
+            !catalogModel.IsEnabled ||
+            !string.Equals(catalogModel.ProviderName, normalizedProviderName, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        return catalogModel;
+    }
+
+    private static AiProviderConfigurationDto BuildSaveCandidate(
+        AiProviderConfigurationDto provider,
+        string normalizedProviderName,
+        AiProviderModelCatalog? catalogModel)
+    {
+        return new AiProviderConfigurationDto
+        {
+            Id = provider.Id,
+            ModelCatalogId = catalogModel?.Id,
+            ProviderName = normalizedProviderName,
+            ModelName = catalogModel?.ModelId ?? provider.ModelName.Trim(),
+            Endpoint = catalogModel?.Endpoint ?? NormalizeEndpoint(provider.Endpoint),
+            ApiProtocol = catalogModel?.ApiProtocol ?? NormalizeApiProtocol(provider.ApiProtocol),
+            ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable.Trim(),
+            IsApiKeyConfigured = provider.IsApiKeyConfigured,
+            SupportsVision = catalogModel?.SupportsVision ?? provider.SupportsVision,
+            TimeoutSeconds = provider.TimeoutSeconds,
+            IsActive = provider.IsActive,
+            IsEnabled = provider.IsEnabled
+        };
+    }
+
+    private static bool IsCatalogBackedProvider(string? providerName)
+    {
+        return CatalogBackedProviders.Any(provider =>
+            string.Equals(provider, providerName?.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsValidApiProtocol(string? apiProtocol)
+    {
+        return string.IsNullOrWhiteSpace(apiProtocol) ||
+            SupportedApiProtocols.Any(protocol => string.Equals(protocol, apiProtocol.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string NormalizeApiProtocol(string? apiProtocol)
+    {
+        return string.IsNullOrWhiteSpace(apiProtocol) ? DefaultApiProtocol : apiProtocol.Trim();
     }
 
     private static string? NormalizeEndpoint(string? endpoint)
