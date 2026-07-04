@@ -3,6 +3,9 @@
 @{
     Layout = null;
     var providerItems = (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.ProviderItems;
+    var modelCatalogItems = (IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)(ViewBag.ModelCatalogItems ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>());
+    var catalogBackedProviders = new[] { "OpenAI", "OpenCodeGo" };
+    var isCatalogBackedProvider = catalogBackedProviders.Contains(Model.ProviderName, StringComparer.OrdinalIgnoreCase);
 }
 
 @using (Html.BeginForm("Update", "AiProviders", FormMethod.Post, new { id = "frmdata" }))
@@ -13,6 +16,13 @@
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 @Html.LabelFor(d => d.ProviderName, new { @class = "kt-form-label max-w-56" })
                 @Html.DropDownListFor(d => d.ProviderName, providerItems, "Selecciona uno...", new { @class = "kt-select", data_kt_select = "true", data_kt_select_enable_search = "false", data_kt_select_placeholder = "Selecciona uno..." })
+            </div>
+        </div>
+
+        <div id="modelCatalogContainer" class="w-full fv-row @(isCatalogBackedProvider ? string.Empty : "hidden")">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                <label for="ModelCatalogId" class="kt-form-label max-w-56">Modelo del catalogo</label>
+                @Html.DropDownListFor(d => d.ModelCatalogId, modelCatalogItems, "Selecciona un modelo...", new { @class = "kt-input" })
             </div>
         </div>
 
@@ -27,6 +37,13 @@
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 @Html.LabelFor(d => d.Endpoint, new { @class = "kt-form-label max-w-56" })
                 @Html.TextBoxFor(d => d.Endpoint, new { @class = "kt-input", maxlength = "500", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="w-full fv-row">
+            <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                @Html.LabelFor(d => d.ApiProtocol, new { @class = "kt-form-label max-w-56" })
+                @Html.TextBoxFor(d => d.ApiProtocol, new { @class = "kt-input", maxlength = "50", autocomplete = "off" })
             </div>
         </div>
 
@@ -69,12 +86,172 @@
 
 <script>
     $(document).ready(function () {
-        if (typeof KTSelectHelper !== 'undefined') {
-            KTSelectHelper.clear('#ProviderName');
-        }
-
         const form = document.getElementById('frmdata');
         const submitButton = document.getElementById('btnSave');
+        const catalogBackedProviders = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(catalogBackedProviders));
+        const defaultApiProtocol = 'OpenAiChatCompletions';
+        const defaultApiKeyNames = {
+            OpenAI: 'OPENAI_API_KEY',
+            OpenCodeGo: 'OPENCODE_GO_API_KEY'
+        };
+        const providerSelect = document.getElementById('ProviderName');
+        const modelCatalogContainer = document.getElementById('modelCatalogContainer');
+        const modelCatalogSelect = document.getElementById('ModelCatalogId');
+        const modelNameInput = document.getElementById('ModelName');
+        const endpointInput = document.getElementById('Endpoint');
+        const apiProtocolInput = document.getElementById('ApiProtocol');
+        const apiKeyInput = document.getElementById('ApiKeyEnvironmentVariable');
+        const supportsVisionInput = document.getElementById('SupportsVision');
+        const modelCatalogEndpoint = '@Url.Action("GetModelsByProvider", "AiProviders")';
+        const initialProviderName = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProviderName ?? string.Empty));
+        const initialModelCatalogId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ModelCatalogId?.ToString() ?? string.Empty));
+
+        if (providerSelect && initialProviderName) {
+            providerSelect.value = initialProviderName;
+        }
+
+        if (modelCatalogSelect && initialModelCatalogId) {
+            modelCatalogSelect.value = initialModelCatalogId;
+        }
+
+        function isCatalogBackedSelected() {
+            return catalogBackedProviders.includes(providerSelect?.value);
+        }
+
+        function setReadOnly(input, value) {
+            if (!input) {
+                return;
+            }
+
+            input.readOnly = value;
+            input.classList.toggle('opacity-70', value);
+        }
+
+        function setModelCatalogOptions(models, selectedId) {
+            if (!modelCatalogSelect) {
+                return;
+            }
+
+            modelCatalogSelect.innerHTML = '<option value="">Selecciona un modelo...</option>';
+
+            models.forEach(function (model) {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.modelName;
+                option.dataset.modelId = model.modelId;
+                option.dataset.endpoint = model.endpoint;
+                option.dataset.apiProtocol = model.apiProtocol;
+                option.dataset.supportsVision = model.supportsVision ? 'true' : 'false';
+
+                if (String(model.id) === String(selectedId)) {
+                    option.selected = true;
+                }
+
+                modelCatalogSelect.appendChild(option);
+            });
+
+            if (selectedId) {
+                modelCatalogSelect.value = String(selectedId);
+            }
+
+            applySelectedCatalogModel();
+        }
+
+        async function loadCatalogModels(selectedId) {
+            const providerName = providerSelect?.value || '';
+
+            if (!catalogBackedProviders.includes(providerName)) {
+                setModelCatalogOptions([], '');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${modelCatalogEndpoint}?providerName=${encodeURIComponent(providerName)}`);
+                if (!response.ok) {
+                    setModelCatalogOptions([], '');
+                    return;
+                }
+
+                const models = await response.json();
+                setModelCatalogOptions(models, selectedId);
+            } catch {
+                setModelCatalogOptions([], '');
+            }
+        }
+
+        function applySelectedCatalogModel() {
+            if (!modelCatalogSelect || !isCatalogBackedSelected()) {
+                return;
+            }
+
+            const selectedOption = modelCatalogSelect.selectedOptions[0];
+            if (!selectedOption || !selectedOption.value) {
+                modelNameInput.value = '';
+                endpointInput.value = '';
+                apiProtocolInput.value = '';
+                supportsVisionInput.checked = false;
+                return;
+            }
+
+            if (!selectedOption.dataset.modelId) {
+                return;
+            }
+
+            modelNameInput.value = selectedOption?.dataset.modelId || '';
+            endpointInput.value = selectedOption?.dataset.endpoint || '';
+            apiProtocolInput.value = selectedOption?.dataset.apiProtocol || '';
+            supportsVisionInput.checked = selectedOption?.dataset.supportsVision === 'true';
+        }
+
+        async function syncProviderFields(refreshModels) {
+            const isCatalogBacked = isCatalogBackedSelected();
+
+            modelCatalogContainer?.classList.toggle('hidden', !isCatalogBacked);
+            setReadOnly(modelNameInput, isCatalogBacked);
+            setReadOnly(endpointInput, isCatalogBacked);
+            setReadOnly(apiProtocolInput, isCatalogBacked);
+
+            if (supportsVisionInput) {
+                supportsVisionInput.disabled = isCatalogBacked;
+            }
+
+            if (isCatalogBacked) {
+                const defaultApiKeyName = defaultApiKeyNames[providerSelect?.value];
+                if (apiKeyInput && !apiKeyInput.value && defaultApiKeyName) {
+                    apiKeyInput.value = defaultApiKeyName;
+                }
+
+                if (refreshModels || modelCatalogSelect.options.length <= 1) {
+                    await loadCatalogModels(modelCatalogSelect.value || initialModelCatalogId);
+                } else {
+                    applySelectedCatalogModel();
+                }
+            } else {
+                if (modelCatalogSelect) {
+                    modelCatalogSelect.value = '';
+                }
+
+                if (apiProtocolInput && !apiProtocolInput.value) {
+                    apiProtocolInput.value = defaultApiProtocol;
+                }
+            }
+        }
+
+        providerSelect?.addEventListener('change', function () {
+            syncProviderFields(true);
+        });
+
+        modelCatalogSelect?.addEventListener('change', applySelectedCatalogModel);
+
+        if (typeof KTSelectHelper !== 'undefined') {
+            if (initialProviderName) {
+                KTSelectHelper.setValue('#ProviderName', initialProviderName);
+            } else {
+                KTSelectHelper.clear('#ProviderName');
+            }
+        }
+
+        syncProviderFields(isCatalogBackedSelected());
 
         const validator = FormValidation.formValidation(form, {
             fields: {
@@ -82,6 +259,16 @@
                     validators: {
                         notEmpty: {
                             message: 'El proveedor es obligatorio'
+                        }
+                    }
+                },
+                'ModelCatalogId': {
+                    validators: {
+                        callback: {
+                            message: 'Selecciona un modelo del catalogo',
+                            callback: function (input) {
+                                return !isCatalogBackedSelected() || !!input.value;
+                            }
                         }
                     }
                 },

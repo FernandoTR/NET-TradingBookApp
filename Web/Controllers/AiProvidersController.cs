@@ -15,13 +15,29 @@ namespace Web.Controllers;
 [Authorize]
 public class AiProvidersController : Controller
 {
+    private const string OpenAiProviderName = "OpenAI";
+    private const string OpenCodeGoProviderName = "OpenCodeGo";
+
     private static readonly string[] SupportedProviders =
     [
-        "OpenAI",
+        OpenAiProviderName,
         "MiniMax",
         "DeepSeek",
         "GLM",
-        "Kimi"
+        "Kimi",
+        OpenCodeGoProviderName
+    ];
+
+    private static readonly string[] CatalogBackedProviders =
+    [
+        OpenAiProviderName,
+        OpenCodeGoProviderName
+    ];
+
+    private static readonly string[] NewProviderOptions =
+    [
+        OpenAiProviderName,
+        OpenCodeGoProviderName
     ];
 
     private static readonly int PermissionNumber = (int)Permissions.AiProviders;
@@ -30,17 +46,20 @@ public class AiProvidersController : Controller
     private readonly ILogService _logService;
     private readonly IMessageService _messageService;
     private readonly IAiProviderConfigurationService _aiProviderConfigurationService;
+    private readonly IAiProviderModelCatalogService _aiProviderModelCatalogService;
 
     public AiProvidersController(
         IIdentityService identityService,
         ILogService logService,
         IMessageService messageService,
-        IAiProviderConfigurationService aiProviderConfigurationService)
+        IAiProviderConfigurationService aiProviderConfigurationService,
+        IAiProviderModelCatalogService aiProviderModelCatalogService)
     {
         _identityService = identityService;
         _logService = logService;
         _messageService = messageService;
         _aiProviderConfigurationService = aiProviderConfigurationService;
+        _aiProviderModelCatalogService = aiProviderModelCatalogService;
     }
 
     public string draw = string.Empty;
@@ -100,7 +119,6 @@ public class AiProvidersController : Controller
                     "Id" => sortColumnDir == "asc" ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id),
                     "ProviderName" => sortColumnDir == "asc" ? query.OrderBy(x => x.ProviderName) : query.OrderByDescending(x => x.ProviderName),
                     "ModelName" => sortColumnDir == "asc" ? query.OrderBy(x => x.ModelName) : query.OrderByDescending(x => x.ModelName),
-                    "Endpoint" => sortColumnDir == "asc" ? query.OrderBy(x => x.Endpoint) : query.OrderByDescending(x => x.Endpoint),
                     "ApiKeyEnvironmentVariable" => sortColumnDir == "asc" ? query.OrderBy(x => x.ApiKeyEnvironmentVariable) : query.OrderByDescending(x => x.ApiKeyEnvironmentVariable),
                     "IsApiKeyConfigured" => sortColumnDir == "asc" ? query.OrderBy(x => x.IsApiKeyConfigured) : query.OrderByDescending(x => x.IsApiKeyConfigured),
                     "SupportsVision" => sortColumnDir == "asc" ? query.OrderBy(x => x.SupportsVision) : query.OrderByDescending(x => x.SupportsVision),
@@ -154,7 +172,7 @@ public class AiProvidersController : Controller
         return View();
     }
 
-    public IActionResult New()
+    public async Task<IActionResult> New(CancellationToken cancellationToken)
     {
         var unauthorized = EnsureAuthorized(out var currentUser);
         if (unauthorized is not null)
@@ -169,7 +187,8 @@ public class AiProvidersController : Controller
             TimeoutSeconds = 60
         };
 
-        SetProviderItems(model.ProviderName);
+        SetProviderItems(model.ProviderName, NewProviderOptions);
+        await SetModelCatalogItemsAsync(model.ProviderName, model.ModelCatalogId, cancellationToken);
         return View(model);
     }
 
@@ -195,6 +214,7 @@ public class AiProvidersController : Controller
 
             var model = MapViewModel(provider);
             SetProviderItems(model.ProviderName);
+            await SetModelCatalogItemsAsync(model.ProviderName, model.ModelCatalogId, cancellationToken);
             return View(model);
         }
         catch (Exception ex)
@@ -287,7 +307,20 @@ public class AiProvidersController : Controller
         try
         {
             var result = await _aiProviderConfigurationService.ActivateAsync(id, _identityService.GetCurrentUserId(), cancellationToken);
-            return Content(result.ToString().ToLower());
+            if (result)
+            {
+                return Content("true");
+            }
+
+            var provider = await _aiProviderConfigurationService.GetByIdAsync(id, cancellationToken);
+            if (provider is not null &&
+                IsCatalogBackedProvider(provider.ProviderName) &&
+                !provider.SupportsVision)
+            {
+                return Content($"No se puede activar {provider.ProviderName} porque el modelo '{provider.ModelName}' no tiene soporte de vision confirmado.");
+            }
+
+            return Content("false");
         }
         catch (Exception ex)
         {
@@ -313,6 +346,35 @@ public class AiProvidersController : Controller
         {
             _logService.ErrorLog($"Controller: AiProviders, Action: {nameof(Deactivate)}", ex);
             return Content("false");
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetModelsByProvider(string providerName, CancellationToken cancellationToken)
+    {
+        if (!HasPermission())
+        {
+            return Json(Array.Empty<object>());
+        }
+
+        try
+        {
+            var models = await _aiProviderModelCatalogService.GetEnabledByProviderAsync(providerName, cancellationToken);
+            return Json(models.Select(model => new
+            {
+                id = model.Id,
+                providerName = model.ProviderName,
+                modelName = model.ModelName,
+                modelId = model.ModelId,
+                endpoint = model.Endpoint,
+                apiProtocol = model.ApiProtocol,
+                supportsVision = model.SupportsVision
+            }));
+        }
+        catch (Exception ex)
+        {
+            _logService.ErrorLog($"Controller: AiProviders, Action: {nameof(GetModelsByProvider)}", ex);
+            return Json(Array.Empty<object>());
         }
     }
 
@@ -347,9 +409,15 @@ public class AiProvidersController : Controller
             currentUser.PermissionNumberList.Any(permission => permission.Equals(PermissionNumber));
     }
 
-    private void SetProviderItems(string? selectedProvider)
+    private static bool IsCatalogBackedProvider(string? providerName)
     {
-        ViewBag.ProviderItems = SupportedProviders
+        return CatalogBackedProviders.Any(provider =>
+            string.Equals(provider, providerName?.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void SetProviderItems(string? selectedProvider, IEnumerable<string>? providerOptions = null)
+    {
+        ViewBag.ProviderItems = (providerOptions ?? SupportedProviders)
             .Select(provider => new SelectListItem
             {
                 Text = provider,
@@ -359,14 +427,35 @@ public class AiProvidersController : Controller
             .ToList();
     }
 
+    private async Task SetModelCatalogItemsAsync(string? providerName, int? selectedModelCatalogId, CancellationToken cancellationToken)
+    {
+        if (!IsCatalogBackedProvider(providerName))
+        {
+            ViewBag.ModelCatalogItems = new List<SelectListItem>();
+            return;
+        }
+
+        var models = await _aiProviderModelCatalogService.GetEnabledByProviderAsync(providerName, cancellationToken);
+        ViewBag.ModelCatalogItems = models
+            .Select(model => new SelectListItem
+            {
+                Text = model.ModelName,
+                Value = model.Id.ToString(),
+                Selected = model.Id == selectedModelCatalogId
+            })
+            .ToList();
+    }
+
     private static AiProviderConfigurationViewModel MapViewModel(AiProviderConfigurationDto provider)
     {
         var model = new AiProviderConfigurationViewModel
         {
             Id = provider.Id,
+            ModelCatalogId = provider.ModelCatalogId,
             ProviderName = provider.ProviderName,
             ModelName = provider.ModelName,
             Endpoint = provider.Endpoint,
+            ApiProtocol = provider.ApiProtocol,
             ApiKeyEnvironmentVariable = provider.ApiKeyEnvironmentVariable,
             IsApiKeyConfigured = provider.IsApiKeyConfigured,
             SupportsVision = provider.SupportsVision,
@@ -376,7 +465,9 @@ public class AiProvidersController : Controller
         };
 
         model.ApiKeyStatus = BuildBadge(provider.IsApiKeyConfigured, "Configurada", "No configurada");
-        model.VisionStatus = BuildBadge(provider.SupportsVision, "Vision", "Sin vision");
+        model.VisionStatus = IsCatalogBackedProvider(provider.ProviderName)
+            ? BuildBadge(provider.SupportsVision, "Modelo con vision", "Modelo sin vision")
+            : BuildBadge(provider.SupportsVision, "Vision", "Sin vision");
         model.ActiveStatus = BuildBadge(provider.IsActive, "Activo", "Inactivo");
         model.EnabledStatus = BuildBadge(provider.IsEnabled, "Habilitado", "Deshabilitado");
         model.Task = BuildActionMenu(provider);
@@ -389,9 +480,11 @@ public class AiProvidersController : Controller
         return new AiProviderConfigurationDto
         {
             Id = model.Id,
+            ModelCatalogId = model.ModelCatalogId,
             ProviderName = model.ProviderName?.Trim() ?? string.Empty,
             ModelName = model.ModelName?.Trim() ?? string.Empty,
             Endpoint = string.IsNullOrWhiteSpace(model.Endpoint) ? null : model.Endpoint.Trim(),
+            ApiProtocol = model.ApiProtocol?.Trim() ?? string.Empty,
             ApiKeyEnvironmentVariable = model.ApiKeyEnvironmentVariable?.Trim() ?? string.Empty,
             SupportsVision = model.SupportsVision,
             TimeoutSeconds = model.TimeoutSeconds,
@@ -442,7 +535,6 @@ public class AiProvidersController : Controller
             provider.Id.ToString(),
             provider.ProviderName,
             provider.ModelName,
-            provider.Endpoint ?? string.Empty,
             provider.ApiKeyEnvironmentVariable,
             provider.IsApiKeyConfigured ? "Configurada" : "No configurada",
             provider.SupportsVision ? "Vision" : "Sin vision",

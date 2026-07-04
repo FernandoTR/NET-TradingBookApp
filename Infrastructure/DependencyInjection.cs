@@ -45,12 +45,14 @@ public static class DependencyInjection
         builder.Services.AddHttpClient<DeepSeekVisionClient>(ConfigureAiProviderHttpClient);
         builder.Services.AddHttpClient<GlmVisionClient>(ConfigureAiProviderHttpClient);
         builder.Services.AddHttpClient<KimiVisionClient>(ConfigureAiProviderHttpClient);
+        builder.Services.AddHttpClient<OpenCodeGoVisionClient>(ConfigureAiProviderHttpClient);
 
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<OpenAiVisionClient>());
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<MiniMaxVisionClient>());
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<DeepSeekVisionClient>());
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<GlmVisionClient>());
         builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<KimiVisionClient>());
+        builder.Services.AddScoped<IAiVisionClient>(serviceProvider => serviceProvider.GetRequiredService<OpenCodeGoVisionClient>());
         builder.Services.AddScoped<IAiVisionClientFactory, AiVisionClientFactory>();
 
 
@@ -137,6 +139,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAiTradeValidationRepository, AiTradeValidationRepository>();
         builder.Services.AddScoped<IAiTradeValidationMetricRepository, AiTradeValidationMetricRepository>();
         builder.Services.AddScoped<IAiProviderConfigurationRepository, AiProviderConfigurationRepository>();
+        builder.Services.AddScoped<IAiProviderModelCatalogRepository, AiProviderModelCatalogRepository>();
 
 
         // Servicio de Generación de códigos QR

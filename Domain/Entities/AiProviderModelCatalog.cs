@@ -1,18 +1,22 @@
-namespace Application.DTOs.AiProviders;
+namespace Infrastructure;
 
-public sealed class AiProviderRuntimeConfiguration
+public partial class AiProviderModelCatalog
 {
+    public int Id { get; set; }
+
     public string ProviderName { get; set; } = null!;
 
     public string ModelName { get; set; } = null!;
+
+    public string ModelId { get; set; } = null!;
 
     public string Endpoint { get; set; } = null!;
 
     public string ApiProtocol { get; set; } = null!;
 
-    public string ApiKeyEnvironmentVariable { get; set; } = null!;
-
     public bool SupportsVision { get; set; }
 
-    public int TimeoutSeconds { get; set; }
+    public bool IsEnabled { get; set; } = true;
+
+    public int SortOrder { get; set; }
 }

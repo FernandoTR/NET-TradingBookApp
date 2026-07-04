@@ -6,6 +6,8 @@ public class AiProviderConfigurationViewModel
 {
     public int Id { get; set; }
 
+    public int? ModelCatalogId { get; set; }
+
     [DisplayName("Proveedor")]
     public string ProviderName { get; set; } = string.Empty;
 
@@ -14,6 +16,9 @@ public class AiProviderConfigurationViewModel
 
     [DisplayName("Endpoint")]
     public string? Endpoint { get; set; }
+
+    [DisplayName("Protocolo API")]
+    public string ApiProtocol { get; set; } = string.Empty;
 
     [DisplayName("Variable/secret API key")]
     public string ApiKeyEnvironmentVariable { get; set; } = string.Empty;

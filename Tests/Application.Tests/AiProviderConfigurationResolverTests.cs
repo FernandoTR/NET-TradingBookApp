@@ -76,7 +76,32 @@ public class AiProviderConfigurationResolverTests
             Assert.Equal("OpenAI", configuration.ProviderName);
             Assert.Equal("gpt-test", configuration.ModelName);
             Assert.Equal("https://api.test.local/v1/responses", configuration.Endpoint);
+            Assert.Equal("OpenAiChatCompletions", configuration.ApiProtocol);
             Assert.Equal(apiKeyName, configuration.ApiKeyEnvironmentVariable);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(apiKeyName, null);
+        }
+    }
+
+    [Fact]
+    public async Task GetActiveAsync_WhenSqlProviderDefinesApiProtocol_ReturnsApiProtocol()
+    {
+        var apiKeyName = $"{nameof(GetActiveAsync_WhenSqlProviderDefinesApiProtocol_ReturnsApiProtocol)}_KEY";
+        Environment.SetEnvironmentVariable(apiKeyName, "test-key");
+
+        try
+        {
+            var repository = new FakeAiProviderConfigurationRepository(
+                hasProviders: true,
+                activeProvider: CreateProvider(apiKeyName, isEnabled: true, providerName: "OpenCodeGo", apiProtocol: "AnthropicMessages"));
+
+            var resolver = CreateResolver(repository, apiKeyName);
+            var configuration = await resolver.GetActiveAsync(CancellationToken.None);
+
+            Assert.Equal("OpenCodeGo", configuration.ProviderName);
+            Assert.Equal("AnthropicMessages", configuration.ApiProtocol);
         }
         finally
         {
@@ -108,14 +133,19 @@ public class AiProviderConfigurationResolverTests
             }));
     }
 
-    private static AiProviderConfiguration CreateProvider(string apiKeyEnvironmentVariable, bool isEnabled)
+    private static AiProviderConfiguration CreateProvider(
+        string apiKeyEnvironmentVariable,
+        bool isEnabled,
+        string providerName = "OpenAI",
+        string apiProtocol = "OpenAiChatCompletions")
     {
         return new AiProviderConfiguration
         {
             Id = 1,
-            ProviderName = "OpenAI",
+            ProviderName = providerName,
             ModelName = "gpt-test",
             Endpoint = "https://api.test.local/v1/responses",
+            ApiProtocol = apiProtocol,
             ApiKeyEnvironmentVariable = apiKeyEnvironmentVariable,
             SupportsVision = true,
             TimeoutSeconds = 30,
