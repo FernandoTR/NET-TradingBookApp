@@ -8,7 +8,7 @@ window.InputMaskHelper = (() => {
         const defaultOptions = {
             alias: 'decimal',
             groupSeparator: ',',
-            digits: 2,
+            digits: 4,
             digitsOptional: false,
             rightAlignNumerics: false,
             allowMinus: false,
