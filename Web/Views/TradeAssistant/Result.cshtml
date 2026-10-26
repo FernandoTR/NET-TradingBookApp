@@ -6,6 +6,7 @@
     ViewData["Title"] = "Resultado de validacion IA";
 
     var result = Model.Result;
+    var contextualScore = Model.ContextualScore;
     var detected = result.DetectedValues;
     var evidence = result.HistoricalEvidence;
     var passedRules = result.Rules.Where(rule => rule.Result == ValidationRuleResult.Passed).ToList();
@@ -39,6 +40,20 @@
         AiValidationStatus.ConditionallyValid => "kt-badge-warning",
         AiValidationStatus.Invalid => "kt-badge-destructive",
         _ => "kt-badge-info"
+    };
+    var contextualStateLabel = contextualScore?.State switch
+    {
+        ContextualScoreState.Complete => "Completo",
+        ContextualScoreState.Partial => "Parcial",
+        ContextualScoreState.NotEvaluable => "No evaluable",
+        _ => "Sin evaluacion"
+    };
+    var contextualStateClass = contextualScore?.State switch
+    {
+        ContextualScoreState.Complete => "kt-badge-success",
+        ContextualScoreState.Partial => "kt-badge-warning",
+        ContextualScoreState.NotEvaluable => "kt-badge-info",
+        _ => "kt-badge-outline"
     };
 }
 
@@ -86,10 +101,83 @@
         </div>
     }
 
+    <section aria-labelledby="contextual-score-heading" class="kt-card mb-5 border border-primary/20">
+        <div class="kt-card-header flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 id="contextual-score-heading" class="kt-card-title">Evaluación contextual V2</h2>
+                <p class="text-sm text-secondary-foreground mt-1">Score ordinal sobre 100; no representa un porcentaje de efectividad.</p>
+            </div>
+            @if (contextualScore is not null)
+            {
+                <span class="kt-badge kt-badge-outline @contextualStateClass">@contextualStateLabel</span>
+            }
+        </div>
+        <div class="kt-card-content p-5">
+            @if (contextualScore is not null)
+            {
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div class="rounded-lg border border-border p-4">
+                        <div class="text-sm text-secondary-foreground">Disponibilidad</div>
+                        <div class="text-lg font-semibold text-mono mt-1">@contextualStateLabel</div>
+                    </div>
+                    <div class="rounded-lg border border-border p-4">
+                        <div class="text-sm text-secondary-foreground">Grade contextual</div>
+                        <div class="text-lg font-semibold text-mono mt-1">@(contextualScore.Grade?.ToString() ?? "N/D")</div>
+                    </div>
+                    <div class="rounded-lg border border-border p-4">
+                        <div class="text-sm text-secondary-foreground">Score ordinal</div>
+                        <div class="text-lg font-semibold text-mono mt-1">@(contextualScore.Value?.ToString("0.##", CultureInfo.CurrentCulture) ?? "Sin total") / 100</div>
+                    </div>
+                    <div class="rounded-lg border border-border p-4">
+                        <div class="text-sm text-secondary-foreground">Posición contextual</div>
+                        <div class="text-lg font-semibold text-mono mt-1">@(contextualScore.ContextRank?.ToString() ?? "N/D") / 6</div>
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-lg bg-secondary/30 p-4">
+                    <div class="text-sm font-medium text-mono">Justificación</div>
+                    @if (!string.IsNullOrWhiteSpace(contextualScore.Justification))
+                    {
+                        <p class="text-sm text-foreground leading-6 mt-2">@contextualScore.Justification</p>
+                    }
+                    @if (contextualScore.ReasonCodes.Count > 0)
+                    {
+                        <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-secondary-foreground">
+                            @foreach (var reason in contextualScore.ReasonCodes)
+                            {
+                                <li>@reason</li>
+                            }
+                        </ul>
+                    }
+                    @if (string.IsNullOrWhiteSpace(contextualScore.Justification) && contextualScore.ReasonCodes.Count == 0)
+                    {
+                        <p class="text-sm text-secondary-foreground mt-2">No se registró una justificación para esta instantánea.</p>
+                    }
+                </div>
+
+                <div class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-xs text-secondary-foreground">
+                    <span>Versión: <span class="font-medium text-mono">@contextualScore.ScoreVersion</span></span>
+                    <span>Revisión: <span class="font-medium text-mono">@(contextualScore.EvaluationRevision?.ToString() ?? "Desconocida")</span></span>
+                    <span>Calculado: <time datetime="@contextualScore.CalculatedAtUtc.ToString("O", CultureInfo.InvariantCulture)">@contextualScore.CalculatedAtUtc.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture)</time></span>
+                    @if (!string.IsNullOrWhiteSpace(contextualScore.RuleCode))
+                    {
+                        <span>Regla: <span class="font-medium text-mono">@contextualScore.RuleCode</span></span>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-sm text-secondary-foreground" role="status">
+                    @(Model.ContextualScoreMessage ?? "Aún no hay una reevaluación contextual guardada para esta validación.")
+                </div>
+            }
+        </div>
+    </section>
+
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-5 mb-5">
         <div class="kt-card">
             <div class="kt-card-content p-5">
-                <div class="text-sm text-secondary-foreground mb-2">Veredicto</div>
+                <div class="text-sm text-secondary-foreground mb-2">Estado IA legado</div>
                 <div class="text-2xl font-semibold text-mono">@result.ValidationStatus</div>
                 <div class="text-xs text-secondary-foreground mt-2">Estado final del setup evaluado.</div>
             </div>
@@ -97,7 +185,7 @@
 
         <div class="kt-card">
             <div class="kt-card-content p-5">
-                <div class="text-sm text-secondary-foreground mb-2">Score total</div>
+                <div class="text-sm text-secondary-foreground mb-2">Score total legado</div>
                 <div class="text-2xl font-semibold text-mono">@(result.TotalScore?.ToString() ?? "N/D")</div>
                 <div class="text-xs text-secondary-foreground mt-2">Score consolidado de reglas.</div>
             </div>
@@ -105,7 +193,7 @@
 
         <div class="kt-card">
             <div class="kt-card-content p-5">
-                <div class="text-sm text-secondary-foreground mb-2">Grade</div>
+                <div class="text-sm text-secondary-foreground mb-2">Grade legado</div>
                 <div class="text-2xl font-semibold text-mono">@(result.Grade ?? "N/D")</div>
                 <div class="text-xs text-secondary-foreground mt-2">Clasificacion operativa calculada.</div>
             </div>
@@ -124,7 +212,7 @@
 
     <div class="kt-card mb-5">
         <div class="kt-card-header">
-            <h3 class="kt-card-title">Resumen</h3>
+            <h3 class="kt-card-title">Resumen de validación legada</h3>
         </div>
         <div class="kt-card-content p-5">
             <p class="text-sm text-foreground leading-6">@result.FinalSummary</p>
@@ -134,7 +222,7 @@
                     <div class="font-medium text-mono">@(result.RiskRewardRatio?.ToString("0.##") ?? "N/D")</div>
                 </div>
                 <div>
-                    <div class="text-secondary-foreground">Score estructural</div>
+                    <div class="text-secondary-foreground">Score estructural legado</div>
                     <div class="font-medium text-mono">@(result.StructuralScore?.ToString() ?? "N/D")</div>
                 </div>
                 <div>

@@ -1,5 +1,7 @@
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiValidation.V2;
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 using Infrastructure;
 using Infrastructure.ArtificialIntelligence;
@@ -36,6 +38,8 @@ public class TradeAssistantController : Controller
     private readonly ICatStageService _catStageService;
     private readonly ICatFigureService _catFigureService;
     private readonly ICatTriggerService _catTriggerService;
+    private readonly IContextualScoreSnapshotRepository? _contextualScoreSnapshotRepository;
+    private readonly IContextualScoreSnapshotService? _contextualScoreSnapshotService;
 
     public TradeAssistantController(
         IIdentityService identityService,
@@ -53,7 +57,9 @@ public class TradeAssistantController : Controller
         ICatSceneryService catSceneryService,
         ICatStageService catStageService,
         ICatFigureService catFigureService,
-        ICatTriggerService catTriggerService)
+        ICatTriggerService catTriggerService,
+        IContextualScoreSnapshotRepository? contextualScoreSnapshotRepository = null,
+        IContextualScoreSnapshotService? contextualScoreSnapshotService = null)
     {
         _identityService = identityService;
         _logService = logService;
@@ -71,6 +77,8 @@ public class TradeAssistantController : Controller
         _catStageService = catStageService;
         _catFigureService = catFigureService;
         _catTriggerService = catTriggerService;
+        _contextualScoreSnapshotRepository = contextualScoreSnapshotRepository;
+        _contextualScoreSnapshotService = contextualScoreSnapshotService;
     }
 
     [HttpGet]
@@ -187,6 +195,7 @@ public class TradeAssistantController : Controller
         }
 
         var model = MapToResultViewModel(validation);
+        await PopulateContextualScoreAsync(model, userId, validation.Id, cancellationToken);
         RestoreHistoricalEvidence(model);
         await PopulateResultCatalogsAsync(model);
 
@@ -214,16 +223,42 @@ public class TradeAssistantController : Controller
         try
         {
             var saved = await _aiTradeValidationRepository.ConfirmAsync(confirmation, cancellationToken);
+            string? contextualFailure = null;
             if (saved)
             {
                 await _aiTradeValidationMetricService.CreateInitialMetricAsync(
                     confirmation.ValidationId,
                     confirmation.UserId,
                     cancellationToken);
+
+                if (_contextualScoreSnapshotService is not null)
+                {
+                    try
+                    {
+                        var batch = await _contextualScoreSnapshotService.RecalculateReviewedEvaluationsAsync(
+                            confirmation.UserId,
+                            [new ReviewedEvaluationSnapshotRequestDto(confirmation.ValidationId)],
+                            cancellationToken);
+                        var recalculation = batch.Results.SingleOrDefault();
+                        if (recalculation is not { Succeeded: true })
+                            contextualFailure = recalculation?.FailureCode ?? "CONTEXTUAL_SNAPSHOT_NOT_CREATED";
+                    }
+                    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    catch (Exception exception)
+                    {
+                        _logService.ErrorLog($"Controller: TradeAssistant, Action: {nameof(Confirm)} contextual snapshot", exception);
+                        contextualFailure = "CONTEXTUAL_SNAPSHOT_NOT_CREATED";
+                    }
+                }
             }
 
             TempData["TradeAssistantMessage"] = saved
-                ? "Confirmación guardada correctamente."
+                ? contextualFailure is null
+                    ? "Confirmación guardada correctamente."
+                    : "Confirmación guardada; el resultado contextual aún no pudo guardarse. Puedes consultarlo más tarde."
                 : "No se pudo guardar la confirmación solicitada.";
         }
         catch (Exception ex)
@@ -790,6 +825,79 @@ public class TradeAssistantController : Controller
             _ => "No fue posible completar la validacion IA. El detalle tecnico quedo registrado en logs."
         };
     }
+
+    private async Task PopulateContextualScoreAsync(
+        TradeAssistantResultViewModel model, string userId, int validationId, CancellationToken cancellationToken)
+    {
+        if (_contextualScoreSnapshotRepository is null)
+        {
+            model.ContextualScoreMessage = "La evaluacion contextual versionada aun no esta disponible.";
+            return;
+        }
+
+        try
+        {
+            var snapshots = await _contextualScoreSnapshotRepository.GetBySourceAsync(
+                userId, ContextualScoreSourceKind.ReviewedEvaluation, orderId: null,
+                validationId: validationId, cancellationToken: cancellationToken);
+            var latestKnownRevision = snapshots.Where(snapshot => snapshot.EvaluationRevision.HasValue)
+                .OrderByDescending(snapshot => snapshot.EvaluationRevision)
+                .ThenByDescending(snapshot => snapshot.CalculatedAtUtc)
+                .ThenByDescending(snapshot => snapshot.Id)
+                .FirstOrDefault();
+            var snapshot = latestKnownRevision ?? snapshots.OrderByDescending(item => item.CalculatedAtUtc)
+                .ThenByDescending(item => item.Id).FirstOrDefault();
+
+            if (snapshot is null)
+            {
+                model.ContextualScoreMessage = "Aun no hay una reevaluacion contextual guardada para esta validacion.";
+                return;
+            }
+
+            model.ContextualScore = MapContextualScoreSnapshot(snapshot);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logService.ErrorLog($"Controller: TradeAssistant, Action: {nameof(PopulateContextualScoreAsync)}", exception);
+            model.ContextualScoreMessage = "El resultado contextual no esta disponible para esta consulta.";
+        }
+    }
+
+    private static ContextualScoreDisplayViewModel MapContextualScoreSnapshot(ContextualScoreSnapshot snapshot)
+    {
+        string? ruleCode = null;
+        string? justification = null;
+        var reasons = new List<string>();
+        try
+        {
+            using var document = JsonDocument.Parse(snapshot.ComponentsJson);
+            if (document.RootElement.TryGetProperty("classification", out var classification))
+            {
+                ruleCode = ReadString(classification, "ruleCode");
+                justification = ReadString(classification, "justification");
+                if (classification.TryGetProperty("reasonCodes", out var reasonCodes) && reasonCodes.ValueKind == JsonValueKind.Array)
+                    reasons.AddRange(reasonCodes.EnumerateArray().Where(value => value.ValueKind == JsonValueKind.String)
+                        .Select(value => value.GetString()!).Where(value => !string.IsNullOrWhiteSpace(value)));
+            }
+        }
+        catch (JsonException)
+        {
+            reasons.Add("SNAPSHOT_COMPONENTS_UNAVAILABLE");
+        }
+
+        return new ContextualScoreDisplayViewModel(snapshot.ScoreVersion, snapshot.State, snapshot.ContextRank,
+            snapshot.Value, snapshot.Grade, ruleCode, justification, reasons.Distinct(StringComparer.Ordinal).ToArray(),
+            snapshot.EvaluationRevision, snapshot.CalculatedAtUtc);
+    }
+
+    private static string? ReadString(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
+            ? property.GetString()
+            : null;
 
     public async Task<List<SelectListItem>> GetInstrumentsListSelect(int? selectedId)
     {

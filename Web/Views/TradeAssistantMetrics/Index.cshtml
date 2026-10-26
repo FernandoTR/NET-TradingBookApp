@@ -1,10 +1,13 @@
 @using Application.DTOs.AiValidation
+@using Application.DTOs.AiValidation.V2
+@using Domain.Enums
 @using System.Globalization
 @model TradeAssistantMetricsViewModel
 
 @{
     ViewData["Title"] = "Metricas del asistente IA";
-    var summary = Model.Summary;
+    var summary = Model.LegacySummary;
+    var summaryV2 = Model.SummaryV2;
 }
 
 <div class="kt-container-fixed">
@@ -14,14 +17,14 @@
                 Metricas del asistente IA
             </h1>
             <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
-                Agregado operativo por proveedor y modelo.
+                Métricas agrupadas por población y versiones comparables.
             </div>
         </div>
         <div class="flex items-center gap-2.5">
-            <a class="kt-btn kt-btn-outline" data-kt-drawer-toggle="#filter_drawer">
+            <button type="button" class="kt-btn kt-btn-outline" aria-label="Abrir filtros de métricas" data-kt-drawer-toggle="#filter_drawer">
                 <i class="ki-filled ki-setting-4"></i>
                 Filtro
-            </a>
+            </button>
             <a asp-controller="TradeAssistant" asp-action="History" class="kt-btn kt-btn-outline">
                 <i class="ki-filled ki-calendar"></i>
                 Historial
@@ -45,6 +48,162 @@
         </div>
     }
 
+    <section aria-labelledby="v2-metrics-heading" class="mb-8">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div>
+                <h2 id="v2-metrics-heading" class="text-lg font-semibold text-mono">Métricas V2</h2>
+                <p class="text-sm text-secondary-foreground mt-1">Cada porcentaje conserva su propio numerador y denominador. El score ordinal no es una probabilidad.</p>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs text-secondary-foreground">
+                <span class="kt-badge kt-badge-outline">Fuentes: @summaryV2.SampleSize</span>
+                <span class="kt-badge kt-badge-outline">Validaciones: @summaryV2.DistinctValidationCount</span>
+                <span class="kt-badge kt-badge-outline">Órdenes distintas: @summaryV2.DistinctOrderCount</span>
+            </div>
+        </div>
+
+        @if (!Model.IsV2Available)
+        {
+            <div class="kt-alert kt-alert-warning kt-alert-outline mb-5" role="status">
+                <div class="kt-alert-icon"><i class="ki-filled ki-information-2" aria-hidden="true"></i></div>
+                <div class="kt-alert-content"><div class="kt-alert-description">@Model.V2UnavailableMessage</div></div>
+            </div>
+        }
+
+        @if (summaryV2.Groups.Count == 0)
+        {
+            <div class="kt-card">
+                <div class="kt-card-content p-6 text-sm text-secondary-foreground" role="status">
+                    No hay instantáneas V2 para los filtros seleccionados. Las métricas heredadas se muestran por separado y no se interpretan como evaluaciones V2.
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 gap-5">
+                @foreach (var group in summaryV2.Groups)
+                {
+                    <article class="kt-card" aria-label="Métricas @PopulationLabel(group.Versions.PopulationKind), @NotRecorded(group.Versions.ProviderName), @NotRecorded(group.Versions.ModelName)">
+                        <div class="kt-card-header flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h3 class="kt-card-title">@PopulationLabel(group.Versions.PopulationKind)</h3>
+                                <p class="text-sm text-secondary-foreground mt-1">Proveedor: @NotRecorded(group.Versions.ProviderName) · Modelo: @NotRecorded(group.Versions.ModelName)</p>
+                            </div>
+                            <span class="kt-badge kt-badge-outline">Muestra: @group.SampleSize</span>
+                        </div>
+                        <div class="kt-card-content p-5">
+                            <div class="kt-card-table kt-scrollable-x-auto">
+                                <table class="kt-table align-middle">
+                                    <caption class="sr-only">Métricas V2 con numeradores, denominadores y población de @PopulationLabel(group.Versions.PopulationKind)</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Medición</th>
+                                            <th scope="col" class="text-center">Resultado (numerador / denominador)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><th scope="row" class="font-medium">Cobertura de extracción IA</th><td class="text-center text-mono">@FormatRate(group.FieldMetrics.Coverage)</td></tr>
+                                        <tr><th scope="row" class="font-medium">Concordancia IA–usuario</th><td class="text-center text-mono">@FormatRate(group.FieldMetrics.Concordance)</td></tr>
+                                        <tr><th scope="row" class="font-medium">Correcciones humanas</th><td class="text-center text-mono">@FormatRate(group.FieldMetrics.HumanCorrections)</td></tr>
+                                        <tr><th scope="row" class="font-medium">Completados manualmente</th><td class="text-center text-mono">@FormatRate(group.FieldMetrics.ManualCompletions)</td></tr>
+                                        <tr><th scope="row" class="font-medium">Descartados como indeterminables</th><td class="text-center text-mono">@FormatRate(group.FieldMetrics.Discards)</td></tr>
+                                        <tr><th scope="row" class="font-medium">Concordancia Escenario–Grade</th><td class="text-center text-mono">@FormatRate(group.ScenarioGradeConcordance)</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-sm text-secondary-foreground">
+                                <div>Campos no aplicables con motivo: <span class="font-medium text-mono">@group.NotApplicableFieldCount</span></div>
+                                <div>Campos sin revisión humana: <span class="font-medium text-mono">@group.NoReviewCount</span></div>
+                            </div>
+
+                            <details class="mt-5 rounded-lg border border-border p-4">
+                                <summary class="cursor-pointer text-sm font-medium text-mono">Versiones y estados gráficos identificados</summary>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 mt-4 text-sm">
+                                    <div><span class="text-secondary-foreground">Métricas:</span> @NotRecorded(group.Versions.MetricsVersion)</div>
+                                    <div><span class="text-secondary-foreground">Estrategia:</span> @NotRecorded(group.Versions.StrategyVersion)</div>
+                                    <div><span class="text-secondary-foreground">Esquema de evidencia:</span> @NotRecorded(group.Versions.EvidenceSchemaVersion)</div>
+                                    <div><span class="text-secondary-foreground">Reglas gráficas:</span> @NotRecorded(group.Versions.GraphicalRulesVersion)</div>
+                                    <div><span class="text-secondary-foreground">Reglas contextuales:</span> @NotRecorded(group.Versions.ClassificationRulesVersion)</div>
+                                    <div><span class="text-secondary-foreground">Score:</span> @NotRecorded(group.Versions.ScoreVersion)</div>
+                                    <div><span class="text-secondary-foreground">Prompt:</span> @NotRecorded(group.Versions.PromptVersion)</div>
+                                    <div><span class="text-secondary-foreground">Esquema de extracción IA:</span> @NotRecorded(group.Versions.ExtractionSchemaVersion)</div>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-4" aria-label="Distribución de veredictos gráficos">
+                                    @foreach (var verdict in group.VerdictDistribution)
+                                    {
+                                        <span class="kt-badge kt-badge-outline">@VerdictLabel(verdict.Verdict): @FormatRate(new RateMetricDto(verdict.Count, verdict.Denominator, verdict.Percentage))</span>
+                                    }
+                                </div>
+                            </details>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+
+        <div class="kt-card kt-card-grid mt-5">
+            <div class="kt-card-header">
+                <h3 class="kt-card-title">Score y resultados operativos observados</h3>
+            </div>
+            <div class="kt-card-content px-5 pt-0 pb-4 text-sm text-secondary-foreground">
+                Se muestran órdenes distintas y flags SL/TP registrados. No se infiere la secuencia de ejecución ni se presenta concordancia como efectividad.
+            </div>
+            <div class="kt-card-table kt-scrollable-x-auto">
+                <table class="kt-table align-middle">
+                    <caption class="sr-only">Relación descriptiva entre score contextual y resultados SL/TP observados</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Población</th>
+                            <th scope="col">Versión / posición / Grade</th>
+                            <th scope="col">Score ordinal</th>
+                            <th scope="col" class="text-center">Órdenes</th>
+                            <th scope="col" class="text-center">SL</th>
+                            <th scope="col" class="text-center">TP1</th>
+                            <th scope="col" class="text-center">TP2</th>
+                            <th scope="col" class="text-center">TP3</th>
+                            <th scope="col">Códigos observados</th>
+                            <th scope="col">Observado (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (summaryV2.OutcomeRelationships.Count == 0)
+                        {
+                            <tr><td colspan="10" class="text-center text-secondary-foreground py-6">Sin observaciones operativas vinculadas a un snapshot de score para estos filtros.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var outcome in summaryV2.OutcomeRelationships)
+                            {
+                                <tr>
+                                    <td>@PopulationLabel(outcome.PopulationKind)</td>
+                                    <td>@NotRecorded(outcome.ScoreVersion) · @(outcome.ContextRank?.ToString() ?? "N/D") / 6 · @(outcome.Grade?.ToString() ?? "N/D")</td>
+                                    <td class="text-mono">@(outcome.ScoreValue?.ToString("0.##", CultureInfo.CurrentCulture) ?? "N/D") / 100</td>
+                                    <td class="text-center text-mono">@outcome.OrderCount</td>
+                                    <td class="text-center text-mono">@FormatRate(outcome.ReachedSl)</td>
+                                    <td class="text-center text-mono">@FormatRate(outcome.ReachedTp1)</td>
+                                    <td class="text-center text-mono">@FormatRate(outcome.ReachedTp2)</td>
+                                    <td class="text-center text-mono">@FormatRate(outcome.ReachedTp3)</td>
+                                    <td>@(outcome.OutcomeCodes.Count == 0 ? "N/D" : string.Join(", ", outcome.OutcomeCodes))</td>
+                                    <td class="text-nowrap">@FormatObservedRange(outcome.ObservedAtUtcMin, outcome.ObservedAtUtcMax)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section aria-labelledby="legacy-metrics-heading" class="mb-5">
+        <div class="kt-alert kt-alert-info kt-alert-outline mb-5">
+            <div class="kt-alert-icon"><i class="ki-filled ki-information-2" aria-hidden="true"></i></div>
+            <div class="kt-alert-content">
+                <h2 id="legacy-metrics-heading" class="kt-alert-title">Métricas heredadas</h2>
+                <div class="kt-alert-description">Las filas siguientes pertenecen al modelo anterior; no se presentan como evaluaciones normativas V2.</div>
+            </div>
+        </div>
+    </section>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         <div class="kt-card">
             <div class="kt-card-content p-5">
@@ -54,7 +213,7 @@
         </div>
         <div class="kt-card">
             <div class="kt-card-content p-5">
-                <div class="text-sm text-secondary-foreground mb-2">Correcci�n humana promedio</div>
+                <div class="text-sm text-secondary-foreground mb-2">Corrección humana promedio (legacy)</div>
                 <div class="text-2xl font-semibold text-mono">@FormatPercent(summary.AverageHumanCorrectionRate)</div>
             </div>
         </div>
@@ -62,7 +221,7 @@
 
     <div class="kt-card kt-card-grid mb-5">
         <div class="kt-card-header">
-            <h3 class="kt-card-title">Resumen por proveedor y modelo</h3>
+            <h3 class="kt-card-title">Resumen heredado por proveedor y modelo</h3>
         </div>
         <div class="kt-card-table kt-scrollable-x-auto">
             <table class="kt-table align-middle">
@@ -122,7 +281,7 @@
 
     <div class="kt-card kt-card-grid mb-10">
         <div class="kt-card-header">
-            <h3 class="kt-card-title">Grade contra resultado real</h3>
+            <h3 class="kt-card-title">Grade legado contra resultado real</h3>
         </div>
         <div class="kt-card-table kt-scrollable-x-auto">
             <table class="kt-table align-middle">
@@ -181,7 +340,7 @@
         <h3 class="kt-card-title">
             Filtros Disponibles
         </h3>
-        <button class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" data-kt-drawer-dismiss="true">
+        <button type="button" class="kt-btn kt-btn-sm kt-btn-icon kt-btn-ghost shrink-0" aria-label="Cerrar filtros" data-kt-drawer-dismiss="true">
             <i class="ki-filled ki-cross text-base">
             </i>
         </button>
@@ -190,20 +349,62 @@
         <div class="kt-card-content space-y-5 p-5 kt-scrollable-y-auto">
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label class="kt-form-label max-w-56" for="providerName">Proveedor:</label>
-                <input id="providerName" name="providerName" value="@Model.ProviderName" class="kt-input" />
+                <input id="providerName" name="providerName" value="@Model.Filter.ProviderName" class="kt-input" />
             </div>
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label class="kt-form-label max-w-56" for="modelName">Modelo:</label>
-                <input id="modelName" name="modelName" value="@Model.ModelName" class="kt-input" />
+                <input id="modelName" name="modelName" value="@Model.Filter.ModelName" class="kt-input" />
             </div>
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label class="kt-form-label max-w-56" for="from">Desde:</label>
-                <input id="from" name="from" type="date" value="@DateInputValue(Model.From)" class="kt-input" />
+                <input id="from" name="from" type="date" value="@DateInputValue(Model.Filter.FromUtc)" class="kt-input" />
             </div>
             <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label class="kt-form-label max-w-56" for="to">Hasta:</label>
-                <input id="to" name="to" type="date" value="@DateInputValue(Model.To)" class="kt-input" />
+                <input id="to" name="to" type="date" value="@DateInputValue(Model.Filter.ToUtc)" class="kt-input" />
             </div>
+            <p class="text-xs text-secondary-foreground">Las fechas se interpretan como días UTC completos.</p>
+            <div class="flex flex-col gap-2">
+                <label class="kt-form-label" for="populationKind">Población</label>
+                <select id="populationKind" name="populationKind" class="kt-select">
+                    <option value="">Todas las poblaciones</option>
+                    @foreach (var population in Enum.GetValues<MetricPopulationKind>())
+                    {
+                        <option value="@population" selected="@(Model.Filter.PopulationKind == population ? "selected" : null)">@PopulationLabel(population)</option>
+                    }
+                </select>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="kt-form-label" for="instrumentId">Instrumento ID</label>
+                    <input id="instrumentId" name="instrumentId" type="number" min="1" value="@Model.Filter.InstrumentId" class="kt-input" />
+                </div>
+                <div>
+                    <label class="kt-form-label" for="stageId">Etapa ID</label>
+                    <input id="stageId" name="stageId" type="number" min="1" value="@Model.Filter.StageId" class="kt-input" />
+                </div>
+                <div>
+                    <label class="kt-form-label" for="triggerId">Gatillo ID</label>
+                    <input id="triggerId" name="triggerId" type="number" min="1" value="@Model.Filter.TriggerId" class="kt-input" />
+                </div>
+            </div>
+            <details class="rounded-lg border border-border p-4">
+                <summary class="cursor-pointer text-sm font-medium">Versiones</summary>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <div><label class="kt-form-label" for="strategyVersion">Estrategia</label><input id="strategyVersion" name="strategyVersion" value="@Model.Filter.StrategyVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="evidenceSchemaVersion">Esquema de evidencia</label><input id="evidenceSchemaVersion" name="evidenceSchemaVersion" value="@Model.Filter.EvidenceSchemaVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="graphicalRulesVersion">Reglas gráficas</label><input id="graphicalRulesVersion" name="graphicalRulesVersion" value="@Model.Filter.GraphicalRulesVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="classificationRulesVersion">Clasificación</label><input id="classificationRulesVersion" name="classificationRulesVersion" value="@Model.Filter.ClassificationRulesVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="scoreVersion">Score</label><input id="scoreVersion" name="scoreVersion" value="@Model.Filter.ScoreVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="metricsVersion">Métricas</label><input id="metricsVersion" name="metricsVersion" value="@Model.Filter.MetricsVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="promptVersion">Prompt</label><input id="promptVersion" name="promptVersion" value="@Model.Filter.PromptVersion" class="kt-input" /></div>
+                    <div><label class="kt-form-label" for="extractionSchemaVersion">Esquema extracción IA</label><input id="extractionSchemaVersion" name="extractionSchemaVersion" value="@Model.Filter.ExtractionSchemaVersion" class="kt-input" /></div>
+                </div>
+            </details>
+            <label class="flex items-center gap-2 text-sm text-secondary-foreground">
+                <input type="checkbox" name="includeAllRevisions" value="true" checked="@(Model.Filter.IncludeAllRevisions ? "checked" : null)" />
+                Incluir todas las revisiones deduplicadas
+            </label>
         </div>
         <div class="kt-card-footer p-5 flex gap-3">
             <a asp-action="Index" class="kt-btn kt-btn-outline" data-kt-drawer-dismiss="true">
@@ -218,10 +419,27 @@
 <!--End of Filter Drawer-->
 
 @functions {
-    private static string DateInputValue(DateTime? value)
+    private static string DateInputValue(DateTimeOffset? value)
     {
         return value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
     }
+
+    private static string NotRecorded(string? value) => string.IsNullOrWhiteSpace(value) ? "No registrada" : value;
+
+    private static string PopulationLabel(MetricPopulationKind population) => population switch
+    {
+        MetricPopulationKind.HistoricalOrder => "Órdenes históricas",
+        MetricPopulationKind.ReviewedEvaluation => "Validaciones revisadas",
+        _ => "Población desconocida"
+    };
+
+    private static string VerdictLabel(SetupVerdict verdict) => verdict switch
+    {
+        SetupVerdict.Valid => "Setup gráfico válido",
+        SetupVerdict.Invalid => "Setup no válido",
+        SetupVerdict.Pending => "Evaluación pendiente",
+        _ => "Veredicto desconocido"
+    };
 
     private static string FormatPercent(decimal value)
     {
@@ -231,6 +449,19 @@
     private static string FormatNullablePercent(decimal? value)
     {
         return value.HasValue ? FormatPercent(value.Value) : "N/D";
+    }
+
+    private static string FormatRate(RateMetricDto rate)
+    {
+        var percentage = rate.Percentage.HasValue ? FormatPercent(rate.Percentage.Value) : "Sin datos";
+        return $"{percentage} ({rate.Numerator}/{rate.Denominator})";
+    }
+
+    private static string FormatObservedRange(DateTimeOffset? minimum, DateTimeOffset? maximum)
+    {
+        if (!minimum.HasValue && !maximum.HasValue) return "Hora no registrada";
+        if (minimum == maximum) return minimum?.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture) ?? "Hora no registrada";
+        return $"{minimum?.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture) ?? "N/D"} – {maximum?.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture) ?? "N/D"}";
     }
 
     private static string OutcomeClass(string outcome)

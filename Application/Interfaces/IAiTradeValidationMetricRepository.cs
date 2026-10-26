@@ -13,7 +13,7 @@ public interface IAiTradeValidationMetricRepository
 
     Task<Order?> GetOrderByIdAsync(int orderId, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<AiTradeValidationMetric>> GetForSummaryAsync(AiValidationMetricFilterDto filter, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AiTradeValidationMetric>> GetForSummaryAsync(string userId, AiValidationMetricFilterDto filter, CancellationToken cancellationToken);
 
     Task AddAsync(AiTradeValidationMetric metric, CancellationToken cancellationToken);
 

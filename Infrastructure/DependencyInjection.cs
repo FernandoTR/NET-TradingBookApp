@@ -138,6 +138,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
         builder.Services.AddScoped<IAiTradeValidationRepository, AiTradeValidationRepository>();
         builder.Services.AddScoped<IAiTradeValidationMetricRepository, AiTradeValidationMetricRepository>();
+        builder.Services.AddScoped<IContextualScoreSnapshotRepository, ContextualScoreSnapshotRepository>();
+        builder.Services.AddScoped<IAiTradeValidationMetricSnapshotRepository, AiTradeValidationMetricSnapshotRepository>();
         builder.Services.AddScoped<IAiProviderConfigurationRepository, AiProviderConfigurationRepository>();
         builder.Services.AddScoped<IAiProviderModelCatalogRepository, AiProviderModelCatalogRepository>();
 
