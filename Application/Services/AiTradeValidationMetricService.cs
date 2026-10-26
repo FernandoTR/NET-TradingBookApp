@@ -1,10 +1,11 @@
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiValidation.V2;
 using Application.Interfaces;
 using Infrastructure;
 
 namespace Application.Services;
 
-public class AiTradeValidationMetricService : IAiTradeValidationMetricService
+public partial class AiTradeValidationMetricService : IAiTradeValidationMetricService
 {
     private const int ClosedOrderStatusId = 2;
     private const string OutcomeSl = "SL";
@@ -16,13 +17,19 @@ public class AiTradeValidationMetricService : IAiTradeValidationMetricService
 
     private readonly IAiTradeValidationMetricRepository _metricRepository;
     private readonly ILogService _logService;
+    private readonly IAiTradeValidationMetricSnapshotRepository? _metricSnapshotRepositoryV2;
+    private readonly IContextualScoreSnapshotRepository? _scoreSnapshotRepository;
 
     public AiTradeValidationMetricService(
         IAiTradeValidationMetricRepository metricRepository,
-        ILogService logService)
+        ILogService logService,
+        IAiTradeValidationMetricSnapshotRepository? metricSnapshotRepositoryV2 = null,
+        IContextualScoreSnapshotRepository? scoreSnapshotRepository = null)
     {
         _metricRepository = metricRepository;
         _logService = logService;
+        _metricSnapshotRepositoryV2 = metricSnapshotRepositoryV2;
+        _scoreSnapshotRepository = scoreSnapshotRepository;
     }
 
     public async Task CreateInitialMetricAsync(int validationId, string userId, CancellationToken cancellationToken)
@@ -102,11 +109,16 @@ public class AiTradeValidationMetricService : IAiTradeValidationMetricService
         }
     }
 
-    public async Task<AiValidationMetricSummaryDto> GetSummaryAsync(AiValidationMetricFilterDto filter, CancellationToken cancellationToken)
+    public async Task<AiValidationMetricSummaryDto> GetSummaryAsync(string userId, AiValidationMetricFilterDto filter, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("UserId is required to query AI validation metrics.", nameof(userId));
+        }
+
         ArgumentNullException.ThrowIfNull(filter);
 
-        var metrics = await _metricRepository.GetForSummaryAsync(filter, cancellationToken);
+        var metrics = await _metricRepository.GetForSummaryAsync(userId, filter, cancellationToken);
         var groups = metrics
             .GroupBy(metric => new { metric.ProviderName, metric.ModelName })
             .OrderBy(group => group.Key.ProviderName)

@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs.AiValidation.V2;
+using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure;
 
@@ -6,8 +7,22 @@ namespace Application.Services;
 
 public class TradingScoreEngineService : ITradingScoreEngineService
 {
+    private readonly IContextualScoreEngineService _contextualScoreEngine;
+
+    /// <summary>Creates a scoring facade with a compatible default for existing direct callers.</summary>
+    /// <param name="contextualScoreEngine">The injected versioned engine, or the default deterministic engine for direct legacy construction.</param>
+    public TradingScoreEngineService(IContextualScoreEngineService? contextualScoreEngine = null)
+    {
+        _contextualScoreEngine = contextualScoreEngine ?? new ContextualScoreEngineService(new ContextualScenarioClassifier());
+    }
+
+    /// <inheritdoc />
+    public ContextualScoreEvaluationDto Evaluate(ContextualScoreInputDto input) => _contextualScoreEngine.Evaluate(input);
+
+    /// <inheritdoc />
     public void Evaluate(Order order)
     {
+        ArgumentNullException.ThrowIfNull(order);
         var score = CalculateStructuralScore(order);
 
         // 🔴 ETAPA 1 CAP (REGLA CRÍTICA)

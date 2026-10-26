@@ -1,16 +1,17 @@
 using Application.DTOs.AiValidation;
+using Application.DTOs.AiValidation.V2;
 
 namespace Web.Models;
 
 public sealed class TradeAssistantMetricsViewModel
 {
-    public string? ProviderName { get; set; }
+    public AiValidationMetricSummaryDto LegacySummary { get; set; } = new();
 
-    public string? ModelName { get; set; }
+    public AiValidationMetricSummaryV2Dto SummaryV2 { get; set; } = new(0, 0, 0, [], [], []);
 
-    public DateTime? From { get; set; }
+    public AiValidationMetricFilterV2Dto Filter { get; set; } = new();
 
-    public DateTime? To { get; set; }
+    public bool IsV2Available { get; set; } = true;
 
-    public AiValidationMetricSummaryDto Summary { get; set; } = new();
+    public string? V2UnavailableMessage { get; set; }
 }

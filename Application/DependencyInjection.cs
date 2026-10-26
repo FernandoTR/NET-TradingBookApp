@@ -23,6 +23,11 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICatDayService, CatDayService>();
         builder.Services.AddScoped<ICatDirectionService, CatDirectionService>();
         builder.Services.AddScoped<ICatFigureService, CatFigureService>();
+        builder.Services.AddScoped<IContextualFigureResolver, ContextualFigureResolver>();
+        builder.Services.AddScoped<IContextualScenarioClassifier, ContextualScenarioClassifier>();
+        builder.Services.AddScoped<IContextualScoreEngineService, ContextualScoreEngineService>();
+        builder.Services.AddScoped<IContextualScoreInputAdapter, ContextualScoreInputAdapter>();
+        builder.Services.AddScoped<IContextualScoreSnapshotService, ContextualScoreSnapshotService>();
         builder.Services.AddScoped<ICatFrameService, CatFrameService>();
         builder.Services.AddScoped<ICatInstrumentsService, CatInstrumentsService>();
         builder.Services.AddScoped<ICatSceneryService, CatSceneryService>();
@@ -42,6 +47,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ITradeSetupNormalizer, TradeSetupNormalizer>();
         builder.Services.AddScoped<IStrategyRuleEngine, StrategyRuleEngine>();
         builder.Services.AddScoped<IAiTradeValidationMetricService, AiTradeValidationMetricService>();
+        builder.Services.AddScoped<IAiValidationFieldMetricCalculator, AiValidationFieldMetricCalculator>();
         builder.Services.AddScoped<IAiProviderConfigurationService, AiProviderConfigurationService>();
         builder.Services.AddScoped<IAiProviderModelCatalogService, AiProviderModelCatalogService>();
         builder.Services.AddScoped<IAiProviderConfigurationResolver, AiProviderConfigurationResolver>();

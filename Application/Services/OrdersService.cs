@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.DTOs;
+using Application.DTOs.AiValidation.V2;
 using Application.Interfaces;
 using Application.Models;
 using Infrastructure;
@@ -18,6 +19,7 @@ public class OrdersService : IOrdersService
     private readonly ITradingScoreEngineService _tradingScoreEngineService;
     private readonly ITradingViewDownloaderServices _tradingViewDownloaderServices;
     private readonly IAiTradeValidationMetricService _aiTradeValidationMetricService;
+    private readonly IContextualScoreInputAdapter? _contextualScoreInputAdapter;
 
     public OrdersService(IGenericRepository<Order> repository,
                          IOrdersRepository ordersRepository,
@@ -28,7 +30,8 @@ public class OrdersService : IOrdersService
                          IAccountsService accountsService,
                          ITradingScoreEngineService tradingScoreEngineService,
                          ITradingViewDownloaderServices tradingViewDownloaderServices,
-                         IAiTradeValidationMetricService aiTradeValidationMetricService)
+                         IAiTradeValidationMetricService aiTradeValidationMetricService,
+                         IContextualScoreInputAdapter? contextualScoreInputAdapter = null)
     {
         _repository = repository;
         _ordersRepository = ordersRepository;
@@ -40,6 +43,7 @@ public class OrdersService : IOrdersService
         _tradingScoreEngineService = tradingScoreEngineService;
         _tradingViewDownloaderServices = tradingViewDownloaderServices;
         _aiTradeValidationMetricService = aiTradeValidationMetricService;
+        _contextualScoreInputAdapter = contextualScoreInputAdapter;
     }
 
     public async Task<bool> AddAsync(Order entity)
@@ -64,10 +68,11 @@ public class OrdersService : IOrdersService
 
     public async Task<bool> UpdateAsync(Order entity)
     {
-        // 🔥 EJECUTAR MOTOR ANTES DE GUARDAR
-        _tradingScoreEngineService.Evaluate(entity);
-
-        var updated = await _repository.UpdateAsync(entity);
+        ArgumentNullException.ThrowIfNull(entity);
+        var existing = await _repository.GetByIdAsync(entity.Id);
+        if (existing is null) return false;
+        ApplyRecordedChanges(existing, entity);
+        var updated = await _repository.UpdateAsync(existing);
         if (updated)
         {
             await _aiTradeValidationMetricService.RefreshOrderOutcomeAsync(entity.Id, CancellationToken.None);
@@ -88,8 +93,10 @@ public class OrdersService : IOrdersService
 
     public async Task<(bool, int)> AddOrderAsync(Order entity, Trade trade)
     {
-        // 🔥 EJECUTAR MOTOR ANTES DE GUARDAR
-        _tradingScoreEngineService.Evaluate(entity);
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(trade);
+        if (entity.StructuralScore is null && entity.TotalScore is null && entity.Grade is null)
+            _tradingScoreEngineService.Evaluate(entity);
 
         return await _ordersRepository.AddOrderAsync(entity, trade);
     }
@@ -139,13 +146,71 @@ public class OrdersService : IOrdersService
 
     public async Task<bool> CloseOrderAsync(Order entity, Trade trade)
     {
-        var closed = await _ordersRepository.CloseOrderAsync(entity, trade);
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(trade);
+        var existing = await _repository.GetByIdAsync(entity.Id);
+        if (existing is null) return false;
+        ApplyRecordedChanges(existing, entity);
+        var closed = await _ordersRepository.CloseOrderAsync(existing, trade);
         if (closed)
         {
             await _aiTradeValidationMetricService.RefreshOrderOutcomeAsync(entity.Id, CancellationToken.None);
         }
 
         return closed;
+    }
+
+    /// <inheritdoc />
+    public OrderContextualScoreEvaluationDto ReevaluateContext(Order entity, ContextualScoreInputDto input)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(input);
+        var original = new LegacyTradingScoreDto(entity.StructuralScore, entity.TotalScore, entity.Grade);
+        var evaluation = _tradingScoreEngineService.Evaluate(input);
+        return new(entity.Id > 0 ? entity.Id : null, entity.CatSceneryId, original, evaluation);
+    }
+
+    /// <inheritdoc />
+    public async Task<OrderContextualScoreEvaluationDto> ReevaluateContextAsync(Order entity, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        cancellationToken.ThrowIfCancellationRequested();
+        var adapter = _contextualScoreInputAdapter ?? throw new InvalidOperationException("Contextual input adaptation must be configured.");
+        var input = await adapter.FromOrderAsync(entity, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        return ReevaluateContext(entity, input);
+    }
+
+    // Merge onto the tracked row: detached MVC submissions omit legacy score fields.
+    // Context edits and operational updates retain the original evaluation; recalculation has its own explicit API.
+    private static void ApplyRecordedChanges(Order target, Order changes)
+    {
+        target.AlterDate = changes.AlterDate;
+        target.AuthorId = changes.AuthorId;
+        target.CatCategoryId = changes.CatCategoryId;
+        target.AccountId = changes.AccountId;
+        target.CatInstrumentId = changes.CatInstrumentId;
+        target.Date = changes.Date;
+        target.Time = changes.Time;
+        target.CatDayId = changes.CatDayId;
+        target.CatStageId = changes.CatStageId;
+        target.CatFigureId = changes.CatFigureId;
+        target.CatFrameId = changes.CatFrameId;
+        target.CatTriggerId = changes.CatTriggerId;
+        target.CatDirectionId = changes.CatDirectionId;
+        target.CatSceneryId = changes.CatSceneryId;
+        target.CatStatusId = changes.CatStatusId;
+        target.IsTrendAligned = changes.IsTrendAligned;
+        target.LocationType = changes.LocationType;
+        target.ConfirmationType = changes.ConfirmationType;
+        target.IsPivotZone = changes.IsPivotZone;
+        target.Sl = changes.Sl;
+        target.Tp1 = changes.Tp1;
+        target.Tp2 = changes.Tp2;
+        target.Tp3 = changes.Tp3;
+        target.Target = changes.Target;
+        target.Chart = changes.Chart;
+        target.Comments = changes.Comments;
     }
 
     public async Task<bool> DownloadImageTradingViewAsync()

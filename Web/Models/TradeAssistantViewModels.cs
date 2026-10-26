@@ -52,8 +52,25 @@ public sealed class TradeAssistantResultViewModel
 
     public AiValidationResultDto Result { get; set; } = null!;
 
+    public ContextualScoreDisplayViewModel? ContextualScore { get; set; }
+
+    public string? ContextualScoreMessage { get; set; }
+
     public ConfirmedAiValidationDto Confirmation { get; set; } = null!;
 }
+
+public sealed record ContextualScoreDisplayViewModel(
+    string ScoreVersion,
+    Domain.Enums.ContextualScoreState State,
+    int? ContextRank,
+    decimal? Value,
+    Domain.Enums.GradeType? Grade,
+    string? RuleCode,
+    string? Justification,
+    IReadOnlyList<string> ReasonCodes,
+    int? EvaluationRevision,
+    DateTimeOffset CalculatedAtUtc
+);
 
 public sealed class CreateOrderFromValidationViewModel
 {

@@ -57,6 +57,7 @@ public class TradeValidationOrchestrator : ITradeValidationOrchestrator
         var result = CreateResult(clientSelection, extraction, setup, historicalEvidence, rules);
 
         _resultFactory.ApplyTradingScore(result, setup);
+        await _resultFactory.ApplyContextualTradingScoreAsync(result, setup, cancellationToken);
 
         if (CanSaveCompletedValidation(setup, rules))
         {

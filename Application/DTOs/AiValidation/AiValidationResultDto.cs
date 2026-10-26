@@ -1,3 +1,4 @@
+using Application.DTOs.AiValidation.V2;
 using Domain.Enums;
 
 namespace Application.DTOs.AiValidation;
@@ -29,6 +30,12 @@ public class AiValidationResultDto
     public int? TotalScore { get; set; }
 
     public string? Grade { get; set; }
+
+    /// <summary>The independently versioned contextual calculations, retaining the original and subsequent recalculations.</summary>
+    public IReadOnlyList<ContextualScoreEvaluationDto> ContextualEvaluations { get; set; } = [];
+
+    /// <summary>The current contextual calculation, with its decimal score and availability separate from legacy integer fields.</summary>
+    public ContextualScoreEvaluationDto? ContextualEvaluation => ContextualEvaluations.LastOrDefault();
 
     public IReadOnlyList<AiValidationRuleResultDto> Rules { get; set; } = new List<AiValidationRuleResultDto>();
 }

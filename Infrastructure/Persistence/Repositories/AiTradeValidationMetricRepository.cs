@@ -45,11 +45,17 @@ public class AiTradeValidationMetricRepository : IAiTradeValidationMetricReposit
             .FirstOrDefaultAsync(order => order.Id == orderId, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<AiTradeValidationMetric>> GetForSummaryAsync(AiValidationMetricFilterDto filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<AiTradeValidationMetric>> GetForSummaryAsync(string userId, AiValidationMetricFilterDto filter, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("UserId is required to query AI validation metrics.", nameof(userId));
+        }
+
         ArgumentNullException.ThrowIfNull(filter);
 
-        var query = _context.AiTradeValidationMetrics.AsNoTracking();
+        var query = _context.AiTradeValidationMetrics.AsNoTracking()
+            .Where(metric => metric.Validation.UserId == userId);
 
         if (!string.IsNullOrWhiteSpace(filter.ProviderName))
         {
