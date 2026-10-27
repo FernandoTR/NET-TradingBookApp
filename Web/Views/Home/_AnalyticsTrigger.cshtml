@@ -1,111 +1,56 @@
-﻿@model Web.Models.AnalyticsTriggerViewModel
+@model Web.Models.AnalyticsTriggerViewModel
 
-<div class="lg:col-span-1" >
-    <div class="kt-card h-full" >
-        <div class="kt-card-header" >
-            <h3 class="kt-card-title">
-                Análisis por Gatillos
-            </h3>
-        </div>
-        @foreach (var trigger in Model.AnalyticsTriggerList)
+<section class="kt-card h-full w-full min-w-0" aria-labelledby="analytics-triggers-title" style="overflow-wrap: anywhere;">
+    <header class="kt-card-header shrink-0 py-4">
+        <h3 class="kt-card-title leading-5" id="analytics-triggers-title">Análisis por Gatillos</h3>
+    </header>
+
+    <div class="kt-card-content p-0">
+        @if (Model.AnalyticsTriggerList?.Any() == true)
         {
-            var statusConfig = trigger.Quantity switch
-            {
-                < 30 => new
+            <ul>
+                @foreach (var trigger in Model.AnalyticsTriggerList)
                 {
-                    Color = "primary",
-                    Label = "No confiable",
-                    Ring = "text-primary size-10 ring-1 ring-primary/20 bg-primary/5 "
-                },
+                    var (color, label) = trigger.Quantity switch
+                    {
+                        < 30 => ("primary", "No confiable"),
+                        <= 100 => ("warning", "En validación"),
+                        _ => ("success", "Confiable")
+                    };
+                    var percentage = Math.Clamp(trigger.TP1P, 0, 100).ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 
-                <= 100 => new
-                {
-                    Color = "warning",
-                    Label = "En validación",
-                    Ring = "text-yellow-500 size-10 rounded-2xl ring-1 ring-yellow-200 dark:ring-yellow-950 bg-yellow-50 dark:bg-yellow-950/30"
-                },
-
-                _ => new
-                {
-                    Color = "success",
-                    Label = "Confiable",
-                    Ring = "text-green-500 size-10 rounded-2xl ring-1 ring-green-200 dark:ring-green-950 bg-green-50 dark:bg-green-950/30"
+                    <li class="kt-card-group flex items-start gap-3 py-4">
+                        <span class="flex w-10 shrink-0 items-center justify-center rounded-lg bg-muted py-3 text-center text-xs font-semibold text-mono">@trigger.Code</span>
+                        <div class="flex grow min-w-0 flex-col gap-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <p class="min-w-0 text-sm font-medium leading-5 text-mono">@trigger.Description</p>
+                                <span class="shrink-0 text-lg font-semibold leading-5 text-mono tabular-nums">@trigger.TP1P.ToString("0")%</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2.5 text-xs text-secondary-foreground tabular-nums">
+                                <span>@trigger.Quantity.ToString("N0") Trades</span>
+                                <span class="kt-badge kt-badge-sm kt-badge-outline">
+                                    <span class="size-1.5 shrink-0 rounded-full kt-badge-@color" aria-hidden="true"></span>
+                                    @label
+                                </span>
+                            </div>
+                            <div class="kt-progress kt-progress-@color" role="meter" aria-label="Efectividad TP1: @trigger.Description" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@percentage">
+                                <div class="kt-progress-indicator" style="width: @percentage%"></div>
+                            </div>
+                        </div>
+                    </li>
                 }
-            };
-            <div class="kt-card-group flex items-center justify-start py-4 gap-2.5 w-full">
-                <div class="flex items-center gap-2.5 w-full">
-                    <div class="shrink-0">
-                        <div class="flex justify-center items-center min-h-[45px] h-9">
-                            <div class="flex items-center justify-center w-10 h-10 text-md @statusConfig.Ring rounded-full">
-                                @trigger.Code
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-0.5 w-full min-w-0">
-                        <a class="block leading-none font-medium text-sm text-mono hover:text-primary truncate text-left" href="#">
-                            @trigger.Description
-                        </a>
-                       @*  <div class="mt-2">
-                            <div class="kt-badge kt-badge-sm kt-badge-@statusConfig.Color  kt-badge-light">
-                                @statusConfig.Label
-                            </div>
-                        </div> *@
-                        <div class="flex items-center justify-between w-full mt-1">
-                            <span class="text-secondary-foreground text-xs">
-                                @trigger.Quantity Trades
-                            </span>
-
-                            <span class="text-secondary-foreground text-xs">
-                                @trigger.TP1P.ToString("0")%
-                            </span>
-                        </div>
-
-                        <div class="kt-progress kt-progress-@statusConfig.Color h-1 w-full">
-                            <div class="kt-progress-indicator" style="width: @trigger.TP1P.ToString("0")%">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            </ul>
         }
-        <div class="kt-card-group flex items-center justify-between py-4 gap-2.5" >
-            <div class="flex items-center flex-wrap gap-3.5">
-                <div class="flex justify-center ">
-                    <div class="relative size-[50px] shrink-0">
-                        <svg class="w-full h-full stroke-primary/10 fill-primary-soft" fill="none" height="48" viewBox="0 0 44 48" width="44" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M16 2.4641C19.7128 0.320509 24.2872 0.320508 28 2.4641L37.6506 8.0359C41.3634 10.1795 43.6506 14.141 43.6506
-                                18.4282V29.5718C43.6506 33.859 41.3634 37.8205 37.6506 39.9641L28 45.5359C24.2872 47.6795 19.7128 47.6795 16 45.5359L6.34937
-                                39.9641C2.63655 37.8205 0.349365 33.859 0.349365 29.5718V18.4282C0.349365 14.141 2.63655 10.1795 6.34937 8.0359L16 2.4641Z" fill="">
-                            </path>
-                            <path d="M16.25 2.89711C19.8081 0.842838 24.1919 0.842837 27.75 2.89711L37.4006 8.46891C40.9587 10.5232 43.1506 14.3196 43.1506
-                                18.4282V29.5718C43.1506 33.6804 40.9587 37.4768 37.4006 39.5311L27.75 45.1029C24.1919 47.1572 19.8081 47.1572 16.25 45.1029L6.59937
-                                39.5311C3.04125 37.4768 0.849365 33.6803 0.849365 29.5718V18.4282C0.849365 14.3196 3.04125 10.5232 6.59937 8.46891L16.25 2.89711Z" stroke="">
-                            </path>
-                        </svg>
-                        <div class="absolute leading-none start-2/4 top-2/4 -translate-y-2/4 -translate-x-2/4 rtl:translate-x-2/4">
-                            <i class="ki-filled ki-notification-on text-xl ps-px text-primary">
-                            </i>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col">
-                    <div class="flex items-center gap-1.5">
-                        <a class="flex items-center gap-1.5 leading-none font-medium text-sm text-mono" href="#">
-                            @Model.TotalValidRecords Gatillos con una efectividad
-                        </a>
-                    </div>
-                    <span class="text-sm text-secondary-foreground">
-                        <a class="kt-link kt-link-underlined kt-link-dashed" href="#">
-                            superior al 70%
-                        </a>
-
-                    </span>
-                </div>
+        else
+        {
+            <div class="flex min-h-52 flex-col justify-center gap-2 p-5">
+                <p class="text-sm font-medium leading-5 text-mono">Sin gatillos para este filtro</p>
+                <p class="text-xs leading-5 text-secondary-foreground">Prueba con otros filtros para ver la efectividad.</p>
             </div>
-        </div>
+        }
     </div>
-</div>
 
-
+    <footer class="kt-card-footer h-20 shrink-0 text-xs leading-5 text-secondary-foreground">
+        <p><strong class="font-semibold text-mono tabular-nums">@Model.TotalValidRecords</strong> de @Model.TotalRecords gatillos con efectividad de <strong class="font-semibold text-mono">70% o más</strong></p>
+    </footer>
+</section>
