@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arquitectura de TradingBookApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--amber:#e69955;--charcoal:#0e0f0f;--charcoal-raised:#101111;--charcoal-soft:#141514;--warm-muted:#bbbaa6;--body-muted:#aaa;--white:#fff}
+body{background:var(--charcoal);color:var(--white);font-family:'Poppins',sans-serif;padding:48px 32px}
+main{max-width:1200px;margin:auto}
+.eyebrow{color:var(--amber);font-size:13px;line-height:1.5;letter-spacing:.12em;margin-bottom:16px}
+h1{font-size:60px;font-weight:400;line-height:1.3;margin-bottom:16px}
+.intro{font-size:15px;font-weight:300;line-height:1.5;color:var(--body-muted);max-width:840px;margin-bottom:32px}
+.diagram-container{width:100%;overflow-x:auto}
+svg{display:block;width:100%;min-width:1200px;font-family:'Poppins',sans-serif}
+.node{fill:var(--charcoal-raised);stroke:#45463e;stroke-width:1}
+.focal{fill:var(--charcoal-soft);stroke:var(--amber);stroke-width:1.5}
+.external{fill:var(--charcoal-soft);stroke:#45463e;stroke-width:1;stroke-dasharray:4 4}
+.name{fill:var(--white);font-size:24px;font-weight:400}
+.body{fill:var(--body-muted);font-size:15px;font-weight:300}
+.label{fill:var(--warm-muted);font-size:13px;font-weight:400}
+.tag{fill:var(--warm-muted);font-size:13px;letter-spacing:.08em}
+.edge{fill:none;stroke:var(--warm-muted);stroke-width:1.5;marker-end:url(#architecture-arrow)}
+.integration{stroke-dasharray:5 4}
+.mask{fill:var(--charcoal)}
+footer{border-top:1px solid #30312c;padding-top:20px;color:var(--body-muted);font-size:13px;font-weight:300;line-height:1.5}
+@media(max-width:700px){body{padding:24px 16px}h1{font-size:45px}}
+@media print{body{padding:16px;print-color-adjust:exact}.diagram-container{overflow:visible}svg{min-width:0}h1{font-size:45px}}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">TRADINGBOOKAPP / ARQUITECTURA / .NET 10</p>
+<h1>Del caso de uso al dato.</h1>
+<p class="intro">Una aplicación ASP.NET Core MVC organizada en cuatro proyectos. Web compone los servicios, Application coordina el negocio e Infrastructure implementa los contratos de acceso a datos e integraciones.</p>
+<div class="diagram-container">
+<svg viewBox="0 0 1200 856" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="architecture-title architecture-desc">
+<title id="architecture-title">Arquitectura de TradingBookApp</title>
+<desc id="architecture-desc">Web referencia Application e Infrastructure, Infrastructure referencia Application y Application referencia Domain; Infrastructure conecta SQL Server y servicios externos.</desc>
+<defs><marker id="architecture-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#bbbaa6"/></marker></defs>
+<rect width="1200" height="856" fill="#0e0f0f"/>
+
+<!-- References point toward the project being referenced. -->
+<path class="edge" d="M368 144H440"/>
+<path class="edge" d="M760 144H832"/>
+<path class="edge" d="M208 252V442Q208 450 216 450H440"/>
+<path class="edge" d="M600 360V252"/>
+<path class="edge integration" d="M440 500H248Q240 500 240 508V640"/>
+<path class="edge integration" d="M760 500H968Q976 500 976 508V640"/>
+
+<!-- Connector labels occupy reserved whitespace. -->
+<rect class="mask" x="372" y="112" width="64" height="24"/>
+<text class="label" x="404" y="128" text-anchor="middle">usa</text>
+<rect class="mask" x="764" y="112" width="64" height="24"/>
+<text class="label" x="796" y="128" text-anchor="middle">usa</text>
+<rect class="mask" x="256" y="418" width="160" height="24"/>
+<text class="label" x="336" y="434" text-anchor="middle">registra adaptadores</text>
+<rect class="mask" x="608" y="284" width="152" height="56"/>
+<text class="label" x="616" y="304">implementa sus</text>
+<text class="label" x="616" y="324">interfaces</text>
+<rect class="mask" x="248" y="556" width="144" height="44"/>
+<text class="label" x="256" y="574">lectura / escritura</text>
+<text class="label" x="256" y="594">EF Core</text>
+<rect class="mask" x="984" y="556" width="128" height="44"/>
+<text class="label" x="992" y="574">HTTP / SMTP</text>
+<text class="label" x="992" y="594">automatización</text>
+
+<rect class="node" x="48" y="72" width="320" height="180" rx="8"/>
+<text class="tag" x="72" y="104">01 / PRESENTACIÓN</text>
+<text class="name" x="72" y="144">Web</text>
+<text class="body" x="72" y="176">Controllers · Views · Razor Pages</text>
+<text class="body" x="72" y="200">Middleware · archivos estáticos</text>
+<text class="label" x="72" y="228">Program.cs compone los servicios</text>
+
+<rect class="node" x="440" y="72" width="320" height="180" rx="8"/>
+<text class="tag" x="464" y="104">02 / CASOS DE USO</text>
+<text class="name" x="464" y="144">Application</text>
+<text class="body" x="464" y="176">Servicios · interfaces · DTOs</text>
+<text class="body" x="464" y="200">Órdenes · cuentas · análisis</text>
+<text class="label" x="464" y="228">Reglas y orquestación de validación IA</text>
+
+<rect class="node" x="832" y="72" width="320" height="180" rx="8"/>
+<text class="tag" x="856" y="104">03 / MODELO DE NEGOCIO</text>
+<text class="name" x="856" y="144">Domain</text>
+<text class="body" x="856" y="176">Entidades · enums · constantes</text>
+<text class="body" x="856" y="200">Modelo compartido por las capas</text>
+<text class="label" x="856" y="228">Sin referencias a otros proyectos</text>
+
+<rect class="focal" x="440" y="360" width="320" height="180" rx="8"/>
+<text class="tag" x="464" y="392" style="fill:var(--amber)">04 / ADAPTADORES</text>
+<text class="name" x="464" y="432">Infrastructure</text>
+<text class="body" x="464" y="464">Repositorios EF Core · Identity</text>
+<text class="body" x="464" y="488">Correo · logging · clientes IA</text>
+<text class="label" x="464" y="516">Implementaciones registradas por DI</text>
+
+<rect class="external" x="80" y="640" width="352" height="128" rx="8"/>
+<text class="name" x="104" y="680">SQL Server</text>
+<text class="body" x="104" y="708">ApplicationDbContext</text>
+<text class="body" x="104" y="732">LoggingDbContext</text>
+<text class="label" x="104" y="756">Tablas · vistas · procedimientos</text>
+
+<rect class="external" x="800" y="640" width="352" height="128" rx="8"/>
+<text class="name" x="824" y="680">Servicios externos</text>
+<text class="body" x="824" y="708">Proveedores de visión IA</text>
+<text class="body" x="824" y="732">SMTP · TradingView</text>
+<text class="label" x="824" y="756">Acceso mediante adaptadores</text>
+
+<line x1="48" y1="808" x2="1152" y2="808" stroke="#30312c"/>
+<path class="edge" d="M48 832H96"/>
+<text class="label" x="112" y="836">Referencia entre proyectos</text>
+<path class="edge integration" d="M440 832H488"/>
+<text class="label" x="504" y="836">Acceso a un sistema externo</text>
+<rect x="864" y="824" width="16" height="16" rx="4" fill="#141514" stroke="#e69955"/>
+<text class="label" x="896" y="836">Capa de integración</text>
+</svg>
+</div>
+<footer>Basado en las referencias de los proyectos y su registro de dependencias. Las flechas sólidas indican dependencias de código; las discontinuas indican acceso a sistemas externos. Vista de alto nivel del repositorio, 9 de octubre de 2026.</footer>
+</main>
+</body>
+</html>
+
+
+
