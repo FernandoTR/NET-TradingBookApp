@@ -36,27 +36,17 @@
                             <a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 active border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_general">
                                 <span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
                                 </span>
-                                Información Básica
+                                Datos de la operación
                             </a>
                             <a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_context">
                                 <span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
                                 </span>
-                                Contexto de Mercado
+                                Contexto de mercado
                             </a>
                             <a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_structure">
                                 <span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
                                 </span>
-                                Estructura
-                            </a>
-                            <a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_entry">
-                                <span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
-                                </span>
-                                Entrada
-                            </a>
-                            <a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_evaluation">
-                                <span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
-                                </span>
-                                Evaluación
+                                Setup y evaluación
                             </a>
                         </div>
                     </div>
@@ -67,40 +57,18 @@
         <!-- End of Sidebar -->
 
         <!-- Content -->
-        <div id="modal_orders_body" class="flex flex-col items-stretch grow gap-5 lg:gap-7.5" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="200px" id="modal_orders_content">
+        <div class="flex flex-col items-stretch grow gap-5 lg:gap-7.5 min-w-0">
 
             <div class="kt-card pb-2.5">
                 <div class="kt-card-header" id="order_general">
                     <h3 class="kt-card-title">
-                        Información Básica
+                        Datos de la operación
                     </h3>
                 </div>
                 <div class="kt-card-content grid gap-5 pt-7.5">
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Categoría:</label>
-                            @Html.DropDownList("CategoryId", CategoryItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
-                        </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Tipo de Cuenta:</label>
-                            @Html.DropDownList("AccountTypeId", AccountTypeItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
-                        </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Instrumento:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="InstrumentsId">Instrumento:</label>
                             @Html.DropDownList("InstrumentsId", InstrumentItems, new { @class = "kt-select",
                                 data_kt_select = "true",
                                 data_kt_select_enable_search = "true",
@@ -109,27 +77,51 @@
                                 data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
                         </div>
                     </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Fecha:</label>
-                            @Html.TextBoxFor(d => d.CreationDate, new { @class = "kt-input" })
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="CategoryId">Categoría:</label>
+                                @Html.DropDownList("CategoryId", CategoryItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Tiempo:</label>
-                            @Html.TextBoxFor(d => d.Time, new { @class = "kt-input" })
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="AccountTypeId">Tipo de Cuenta:</label>
+                                @Html.DropDownList("AccountTypeId", AccountTypeItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Día:</label>
-                            @Html.DropDownList("DayId", DayItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="CreationDate">Fecha:</label>
+                                @Html.TextBoxFor(d => d.CreationDate, new { @class = "kt-input" })
+                            </div>
+                        </div>
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="Time">Hora:</label>
+                                @Html.TextBoxFor(d => d.Time, new { @class = "kt-input" })
+                            </div>
+                        </div>
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="DayId">Día:</label>
+                                @Html.DropDownList("DayId", DayItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,13 +130,13 @@
             <div class="kt-card pb-2.5">
                 <div class="kt-card-header" id="order_context">
                     <h3 class="kt-card-title">
-                        Contexto de Mercado
+                        Contexto de mercado
                     </h3>
                 </div>
-                <div class="kt-card-content grid gap-5 pt-7.5">
+                <div class="kt-card-content grid grid-cols-1 md:grid-cols-2 gap-5 pt-7.5">
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Etapa:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="StageId">Etapa:</label>
                             @Html.DropDownList("StageId", StageItems, new { @class = "kt-select",
                                 data_kt_select = "true",
                                 data_kt_select_enable_search = "true",
@@ -154,8 +146,8 @@
                         </div>
                     </div>
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Dirección:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="DirectionId">Dirección:</label>
                             @Html.DropDownList("DirectionId", DirectionItems, new { @class = "kt-select",
                                 data_kt_select = "true",
                                 data_kt_select_enable_search = "true",
@@ -165,8 +157,8 @@
                         </div>
                     </div>
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Ubicación en la estructura:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="LocationType">Ubicación en la estructura:</label>
                             <select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" asp-for="LocationType" id="LocationType" name="LocationType">
                                 <option value="1">SOPORTE</option>
                                 <option value="2">MEDIO</option>
@@ -175,8 +167,8 @@
                         </div>
                     </div>
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">¿Tu trade va con la tendencia?</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="IsTrendAligned">¿Tu trade va con la tendencia?</label>
                             <select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" asp-for="IsTrendAligned" id="IsTrendAligned" name="IsTrendAligned">
                                 <option value="false">EN CONTRA</option>
                                 <option value="true">A FAVOR</option>
@@ -184,8 +176,8 @@
                         </div>
                     </div>
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Zona de indecisión:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="IsPivotZone">Zona de indecisión:</label>
                             <select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" asp-for="IsPivotZone" id="IsPivotZone" name="IsPivotZone">
                                 <option value="false">NO</option>
                                 <option value="true">SI</option>
@@ -195,81 +187,63 @@
                 </div>
             </div>
 
-            <div class="kt-card pb-2.5">
+            <div class="kt-card pb-2.5 mb-10">
                 <div class="kt-card-header" id="order_structure">
                     <h3 class="kt-card-title">
-                        Estructura
+                        Setup y evaluación
                     </h3>
                 </div>
                 <div class="kt-card-content grid gap-5 pt-7.5">
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Figura:</label>
-                            @Html.DropDownList("FigureId", FigureItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="FigureId">Figura:</label>
+                                @Html.DropDownList("FigureId", FigureItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
+                        </div>
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="FrameId">Frame:</label>
+                                @Html.DropDownList("FrameId", FrameItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
+                        </div>
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="TriggerId">Gatillo:</label>
+                                @Html.DropDownList("TriggerId", TriggerItems, new { @class = "kt-select",
+                                    data_kt_select = "true",
+                                    data_kt_select_enable_search = "true",
+                                    data_kt_select_search_placeholder = "Buscar...",
+                                    data_kt_select_placeholder="Selecciona uno...",
+                                    data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
+                            </div>
+                        </div>
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="ConfirmationType">Tipo de confirmación:</label>
+                                <select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" asp-for="ConfirmationType" id="ConfirmationType" name="ConfirmationType">
+                                    <option value="0">NONE</option>
+                                    <option value="1">CONTINUATION BREAK</option>
+                                    <option value="2">CONTINUATION RETEST</option>
+                                    <option value="3">REVERSAL BREAK</option>
+                                    <option value="4">REVERSAL RETEST</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Frame:</label>
-                            @Html.DropDownList("FrameId", FrameItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="kt-card pb-2.5">
-                <div class="kt-card-header" id="order_entry">
-                    <h3 class="kt-card-title">
-                        Entrada
-                    </h3>
-                </div>
-                <div class="kt-card-content grid gap-5 pt-7.5">
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Gatillo:</label>
-                            @Html.DropDownList("TriggerId", TriggerItems, new { @class = "kt-select",
-                                data_kt_select = "true",
-                                data_kt_select_enable_search = "true",
-                                data_kt_select_search_placeholder = "Buscar...",
-                                data_kt_select_placeholder="Selecciona uno...",
-                                data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
-                        </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Tipo de confirmación:</label>
-                            <select class="kt-select" data-kt-select="true" data-kt-select-enable-search="false" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" asp-for="ConfirmationType" id="ConfirmationType" name="ConfirmationType">
-                                <option value="0">NONE</option>
-                                <option value="1">CONTINUATION BREAK</option>
-                                <option value="2">CONTINUATION RETEST</option>
-                                <option value="3">REVERSAL BREAK</option>
-                                <option value="4">REVERSAL RETEST</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="kt-card pb-2.5 mb-10">
-                <div class="kt-card-header" id="order_evaluation">
-                    <h3 class="kt-card-title">
-                        Evaluación
-                    </h3>
-                </div>
-                <div class="kt-card-content grid gap-5 pt-7.5">
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Escenario:</label>
+                        <div class="flex flex-col gap-2.5">
+                            <label class="kt-form-label" for="SceneryId">Escenario:</label>
                             @Html.DropDownList("SceneryId", SceneryItems, new { @class = "kt-select",
                                 data_kt_select = "true",
                                 data_kt_select_enable_search = "true",
@@ -278,16 +252,18 @@
                                 data_kt_select_config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" })
                         </div>
                     </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Grade:</label>
-                            <input type="text" class="kt-input" placeholder="Grade" asp-for="Grade" id="Grade" name="Grade" disabled />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="Grade">Grade:</label>
+                                <input type="text" class="kt-input" placeholder="Grade" asp-for="Grade" id="Grade" name="Grade" disabled />
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-full fv-row">
-                        <div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                            <label class="kt-form-label max-w-56">Score:</label>
-                            <input type="text" class="kt-input" placeholder="Score" asp-for="TotalScore" id="TotalScore" name="TotalScore" disabled />
+                        <div class="w-full fv-row">
+                            <div class="flex flex-col gap-2.5">
+                                <label class="kt-form-label" for="TotalScore">Score:</label>
+                                <input type="text" class="kt-input" placeholder="Score" asp-for="TotalScore" id="TotalScore" name="TotalScore" disabled />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -297,7 +273,7 @@
         <!-- End of Content -->
     </div>
 
-    <div class="kt-modal-footer gap-2.5 justify-end">
+    <div class="kt-modal-footer gap-2.5 justify-end px-2 pb-0 pt-4">
         <button type="button" id="kt_modal_new_target_cancel" class="kt-btn kt-btn-secondary" data-kt-modal-dismiss="#modal_orders">Cancelar</button>
         <button type="button" id="btnSave" class="kt-btn kt-btn-primary">
             <span class="indicator-label">Guardar</span>            
