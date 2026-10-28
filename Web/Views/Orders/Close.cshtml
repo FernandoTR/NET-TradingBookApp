@@ -22,12 +22,12 @@
 							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 active border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_close_general">
 								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-								General
+								Resultado de la operación
 							</a>
 							<a class="flex items-center rounded-lg pl-2.5 pr-2.5 py-2.5 gap-3.5 border border-transparent text-sm text-foreground hover:text-primary hover:font-medium kt-scrollspy-active:bg-secondary-active kt-scrollspy-active:text-primary kt-scrollspy-active:font-medium hover:rounded-lg" data-kt-scrollspy-anchor="true" href="#order_close_sale">
 								<span class="flex w-1.5 relative before:absolute before:top-0 before:size-1.5 before:rounded-full before:-translate-x-2/4 before:-translate-y-2/4 kt-scrollspy-active:before:bg-primary">
 								</span>
-								Venta
+								Orden y costos
 							</a>
 						</div>
 					</div>
@@ -38,17 +38,17 @@
 		<!-- End of Sidebar -->
 
 		<!-- Content -->
-		<div id="modal_orders_body" class="flex flex-col items-stretch grow gap-5 lg:gap-7.5" data-kt-scrollable="true" data-kt-scrollable-height="auto" data-kt-scrollable-offset="200px" id="modal_orders_content">
+		<div class="flex flex-col items-stretch grow gap-5 lg:gap-7.5 min-w-0">
 
 			<div class="kt-card pb-2.5">
 				<div class="kt-card-header" id="order_close_general">
 					<h3 class="kt-card-title">
-						General
+						Resultado de la operación
 					</h3>
 				</div>
 				<div class="kt-card-content grid gap-5 pt-7.5">
 
-					<div class="flex items-center gap-5 flex-wrap mt-3">
+					<div class="flex items-center gap-5 flex-wrap">
 						<label class="flex items-center gap-2">
 							<input class="kt-checkbox" type="checkbox" value="1" id="SL" name="SL" />
 							<span class="font-semibold text-sm">SL</span>
@@ -69,22 +69,22 @@
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Target:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="Target">Target:</label>
 								<input type="text" id="Target" name="Target" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
 						</div>
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Chart:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="Chart">Chart:</label>
 								<input type="text" id="Chart" name="Chart" class="kt-input" autocomplete="off" />
 							</div>
 						</div>
 					</div>
 
 					<div class="w-full fv-row">
-						<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-							<label class="kt-form-label max-w-56">Comentarios:</label>
+						<div class="flex flex-col gap-2.5">
+							<label class="kt-form-label" for="Comments">Comentarios:</label>
 							<textarea id="Comments" name="Comments" class="kt-input" autocomplete="off" rows="3"></textarea>
 						</div>
 					</div>
@@ -95,15 +95,15 @@
 			<div class="kt-card pb-2.5 mb-10">
 				<div class="kt-card-header" id="order_close_sale">
 					<h3 class="kt-card-title">
-						Venta
+						Orden y costos
 					</h3>
 				</div>
 				<div class="kt-card-content grid gap-5 pt-7.5">
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Tipo de Orden:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="OrderTypeId">Tipo de Orden:</label>
 								@Html.DropDownList("OrderTypeId", OrderTypeItems, new { @class = "kt-select",
 									data_kt_select = "true",
 									data_kt_select_enable_search = "true",
@@ -113,8 +113,8 @@
 							</div>
 						</div>
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Tipo de Trade:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="TradeTypeId">Tipo de Trade:</label>
 								<select class="kt-select" data-kt-select="true" data-kt-select-enable-search="true" data-kt-select-search-placeholder="Buscar..." data-kt-select-placeholder="Selecciona uno..." data-kt-select-config="{''optionsClass'': ''kt-scrollable overflow-auto max-h-[250px]''}" id="TradeTypeId" name="TradeTypeId">
 									<option value=""></option>
 									<option selected="selected" value="Sell">Venta</option>
@@ -123,28 +123,28 @@
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Cantidad:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="Quantity">Cantidad:</label>
 								<input type="text" id="Quantity" name="Quantity" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
 						</div>
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Precio:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="Price">Precio:</label>
 								<input type="text" id="Price" name="Price" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
 						</div>
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Comisión:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="CommissionRate">Comisión:</label>
 								<input type="text" id="CommissionRate" name="CommissionRate" class="kt-input" autocomplete="off" maxlength="18" value="0.001" />
 							</div>
 						</div>
 						<div class="w-full fv-row">
-							<div class="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-								<label class="kt-form-label max-w-56">Total:</label>
+							<div class="flex flex-col gap-2.5">
+								<label class="kt-form-label" for="Total">Total:</label>
 								<input type="text" id="Total" name="Total" class="kt-input" autocomplete="off" maxlength="18" value="0" />
 							</div>
 						</div>
